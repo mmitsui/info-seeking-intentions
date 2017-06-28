@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="NSF Fall 2015 Intent">
+    <serverData>
+      <paths name="NSF Fall 2015 Intent">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/www/coagmento.org/htdocs/spring2016intent" local="$PROJECT_DIR$" web="/www/coagmento.org/htdocs/spring2016intent" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path=".git/**" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>

@@ -1,0 +1,154 @@
+/*
+
+Credit goes to: http://www.rocketgenius.com/survery-style-multiple-choice-fields-with-gravity-forms/
+
+*/
+
+/* the base likert box styles */
+.gform_wrapper .gf_likert ul.gfield_radio {
+	overflow:hidden;
+	position:relative;
+	padding:0;
+}
+
+.left_label .gform_wrapper .gf_likert ul.gfield_radio,
+.right_label .gform_wrapper .gf_likert ul.gfield_radio {
+	top:-16px;
+}
+
+.gform_wrapper .gf_likert ul.gfield_radio li {
+	padding:0;
+	min-height:50px;
+	display: -moz-inline-stack; 
+	display: inline-block; 
+	zoom: 1; 
+	*display: inline;
+	margin:0;
+	border:1px solid #ccc;
+	border-left:none;
+	text-align:center;
+	position:relative;
+	overflow:hidden;
+	background-color:#fff;
+}
+
+.gform_wrapper .gf_likert ul.gfield_radio li.likert-first {
+	border-left:1px solid #ccc!important;
+}
+
+.gform_wrapper .gf_likert ul.gfield_radio li input {
+	position:relative;
+	top:25px;
+	float:none!important;
+	width:auto;
+	margin:0 auto;
+}
+
+.gform_wrapper .gf_likert ul.gfield_radio li label {
+	position:relative;
+	margin:0 auto;
+	text-align:center;
+}
+
+.gform_wrapper .gf_likert ul.gfield_radio li div.likert-label {
+	position:absolute;
+	top:0;
+	left:0;
+	background-color:#eee;
+	padding:2px 0;
+	width:100%;
+}
+	
+/* styles for the hover state */
+.gform_wrapper .gf_likert ul.gfield_radio li.likert-hover {
+	background-color:#DFEFFF;
+}
+
+.gform_wrapper .gf_likert ul.gfield_radio li.likert-hover div.likert-label {
+	background-color:#C2D7EF;
+}
+
+.gform_wrapper .gf_likert ul.gfield_radio li.likert-hover div.likert-label label {
+	color:#2175A3;
+}
+	
+/* styles for the selected radio button */
+.gform_wrapper .gf_likert ul.gfield_radio li.mychoice {
+	background-color:#DFEFFF;
+}
+	
+/* hide the input and show a tick image */
+.gform_wrapper .gf_likert ul.gfield_radio li.mychoice {
+	background-image:url(../images/icon_tick.png);
+	background-repeat:no-repeat;
+	background-position:center 27px;
+}
+
+.gform_wrapper .gf_likert ul.gfield_radio li.mychoice input {
+	visibility:hidden;
+}
+
+.gform_wrapper .gf_likert ul.gfield_radio li.mychoice div.likert-label {
+	background-color:#C2D7EF;
+}
+
+.gform_wrapper .gf_likert ul.gfield_radio li.mychoice div.likert-label label {
+	color:#2175A3;
+}
+	
+/* define the box width - number connotates the pixel width of the list item */
+.gform_wrapper .gf_likert_20 ul.gfield_radio li {
+	width:20px;
+}
+
+.gform_wrapper .gf_likert_30 ul.gfield_radio li {
+	width:30px;
+}
+
+.gform_wrapper .gf_likert_40 ul.gfield_radio li {
+	width:40px;
+}
+
+.gform_wrapper .gf_likert_50 ul.gfield_radio li {
+	width:50px;
+}
+
+.gform_wrapper .gf_likert_60 ul.gfield_radio li {
+	width:60px;
+}
+
+.gform_wrapper .gf_likert_70 ul.gfield_radio li {
+	width:70px;
+}
+
+.gform_wrapper .gf_likert_80 ul.gfield_radio li {
+	width:80px;
+}
+
+.gform_wrapper .gf_likert_90 ul.gfield_radio li {
+	width:90px;
+}
+
+.gform_wrapper .gf_likert_100 ul.gfield_radio li {
+	width:100px;
+}
+
+.gform_wrapper .gf_likert_110 ul.gfield_radio li {
+	width:110px;
+}
+
+.gform_wrapper .gf_likert_120 ul.gfield_radio li {
+	width:120px;
+}
+
+.gform_wrapper .gf_likert_130 ul.gfield_radio li {
+	width:130px;
+}
+
+.gform_wrapper .gf_likert_140 ul.gfield_radio li {
+	width:140px;
+}
+
+.gform_wrapper .gf_likert_150 ul.gfield_radio li {
+	width:150px;
+}

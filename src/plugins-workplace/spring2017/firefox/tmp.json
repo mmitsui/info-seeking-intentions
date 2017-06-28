@@ -1,0 +1,29 @@
+{
+    "update_url": "https://clients2.google.com/service/update2/crx",
+    
+    "manifest_version": 2,
+    "name": "Workplace Study Extension",
+    "description": "Companion extension for Workplace Study, 2017.",
+    "version": "1.0",
+    "content_scripts": [],
+    "background": {
+        "scripts": ["background.js", "external/jquery.js"]
+    },
+    "web_accessible_resources": ["*.png"],
+    
+    "homepage_url": "http://coagmento.org/EOPN/index.php",
+    "permissions": [
+                    "activeTab",
+                    "history",
+                    "storage",
+                    "tabs",
+                    "webNavigation",
+                    "http://*/",
+                    "https://*/"
+                    ],
+    "icons": {
+        "48": "img/logo-48.png"
+    },
+    "offline_enabled": true,
+    "minimum_chrome_version": "35"
+}

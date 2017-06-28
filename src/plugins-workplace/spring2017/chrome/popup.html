@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="popup.css"></link>
+    <link rel="stylesheet" type="text/css" href="external/css/bootstrap.min.css"></link>
+    <script src="external/js/jquery-3.2.1.min.js"></script>
+    <script src="external/js/bootstrap.min.js"></script>
+    <script src="popup.js"></script>
+    
+</head>
+<body>
+
+<!-- TODO: mailto link? -->
+<!-- TODO: Validation and validation messages:
+1) Bad username/password for login
+2) Bad e-mail for login -->
+<!-- TODO: debugging
+1) Open registration link in popup -->
+
+
+<div class="container" id="signedin_no">
+
+
+	
+
+
+	<div class="form-group"><label for="username">E-mail/Username</label><input type="text" class="form-control" id="username" name="username"/></div>
+	<div class="form-group"><label for="password">Password</label><input type="password" class="form-control" id="password" name="password"/></div>
+
+	<div class="form-group">
+	<button name="login_button" id="login_button" class="btn btn-primary btn-sm">Log In</button>
+	</div>
+	<div class="form-group">
+	<button name="credentials_button" id="credentials_button" class="btn btn-sm">Send Credentials</button>
+	</div>
+
+	<div><small class="text-danger" id="login_error_text"></small></div>
+
+	<div><small class="text-muted"><a href="#" id="register_link">Register</a></small></div>
+	<div><small class="text-muted">Forgot your credentials?  Enter your e-mail and click "Send Credentials"!</small></div>
+	<div><small class="text-muted"><a href="#" id="contact_us_signedin_link">Contact us</a> if you face any issues</small></div>
+
+</div>
+
+
+
+
+<div class="container" id="signedin_yes">
+	<h6 id="greeting">Hello, <div id="first_name">Firstname</div> <div id="last_name">Lastname!</div></h6>
+	<div><small class="text-muted">Not you? Please log out and sign back in</small></div>
+
+	<!-- <div class="form-group"> -->
+	<!-- <button name="submit_id" id="submit_userid" class="btn btn-primary btn-sm">Submit</button> -->
+	<div class="form-group"><button name="homepage_button" id="homepage_button" class="btn btn-primary btn-sm">Go to Home Page</button></div>
+	<div class="form-group"><button name="logout_button" id="logout_button" class="btn btn-danger btn-sm">Log Out</button></div>
+
+	<div><small class="text-danger" id="login_error_text"></small></div>
+	<div><small class="text-muted">Please <a href="#" id="contact_us_signedout_link">contact us</a> at  if you encounter any issues!</small></div>
+
+</div>
+
+
+    
+</body>
+</html>
