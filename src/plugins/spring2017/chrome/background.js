@@ -1,25 +1,39 @@
 var device = "chrome";
-var domain = 'http://coagmento.org/EOPN';
+var domain = 'http://coagmento.org/workintent';
 var homeUrl = domain + '/index.php';
 var actionSaveUrl = domain + '/instruments/insertAction.php';
 
-var contactUrl = "mailto:mmitsui@scarletmail.rutgers.edu?Subject=Intent%20Study%20Inquiry";
-
-
-function sendContactEmail(){
-    alert("yes");
-    chrome.tabs.create({url:contactUrl}, function(tab){
-                       setTimeout(function(){
-                                  chrome.tabs.remove(tab.id);
-                                  },500);
-                       },
-                       );
-    
-}
-
+var checkLoggedInUrl = domain + "/getLoggedIn.php";
 //var serp_storage_url = domain + '/saveserp';
 //var check_userid_url = domain + '/users/checkid';
 
+
+
+function renderLoggedIn(loggedIn){
+  var red = [255,0,0,255];
+  // var green = [0,255,0,255];
+  var green = [34,139,34,255];
+  if(loggedIn){
+    chrome.browserAction.setBadgeText({text:' '});
+    chrome.browserAction.setBadgeBackgroundColor({color:green});
+  }else{
+    chrome.browserAction.setBadgeText({text:' '});
+    chrome.browserAction.setBadgeBackgroundColor({color:red});
+  }
+}
+
+$.ajax({
+  url: checkLoggedInUrl,
+  method : "post",
+  data : {},
+  dataType: "text",
+  success : function(msg){
+    renderLoggedIn(JSON.parse(msg).loggedin);
+  },
+  error: function(msg){
+
+    renderLoggedIn(false);
+  }});
 
 
 var timerLock = false; // Prevent multiple options pages from opening.
@@ -305,7 +319,7 @@ chrome.webNavigation.onCommitted.addListener(function(details){
 
 chrome.history.onVisited.addListener(function(historyItem){
   $.ajax({
-    url: "http://coagmento.org/workintent/services/savePQ.php",
+    url: domain+"/services/savePQ.php",
     method : "get",
     data : {
       URL: historyItem.url,

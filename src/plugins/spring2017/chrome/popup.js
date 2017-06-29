@@ -34,9 +34,24 @@ $(document).ready(function(){
     }
 
 
+
+    function renderLoggedIn(loggedIn){
+    	var red = [255,0,0,255];
+    	// var green = [0,255,0,255];
+    	var green = [34,139,34,255];
+    	if(loggedIn){
+    		chrome.browserAction.setBadgeText({text:' '});
+			chrome.browserAction.setBadgeBackgroundColor({color:green});
+    	}else{
+    		chrome.browserAction.setBadgeText({text:' '});
+			chrome.browserAction.setBadgeBackgroundColor({color:red});
+    	}
+    }
+
     function handleLoggedIn(msg){
         msg = JSON.parse(msg);
         if(msg.loggedin){
+            renderLoggedIn(msg.loggedin);
             $(signedinYesID).show();
             $(signedinNoID).hide();
         }else{
@@ -48,10 +63,18 @@ $(document).ready(function(){
     $.ajax({
         type: "POST",
         url: checkLoggedInUrl,
+        data : {},
+        dataType: "text",
         success: handleLoggedIn,
+        error: function(msg){
+            $(signedinNoID).show();
+            $(signedinYesID).hide();
+            renderLoggedIn(false);
+        }
     });
 
     $( "#login_button" ).click(function() {
+    	renderLoggedIn(true);
         $.ajax({
             type: "POST",
             url: loginUrl,
@@ -66,12 +89,12 @@ $(document).ready(function(){
                     $(signedinNoID).hide();
                     $(signedinYesID).show();
                     $(loginErrorTextID).text('');
-                    // TODO: Change first name text
-                    // TODO: Change last name text
+                    renderLoggedIn(true);
                 }else{
                 	$(signedinNoID).show();
                     $(signedinYesID).hide();
                 	$(loginErrorTextID).text(msg.errortext);
+                	renderLoggedIn(false);
                 }
             },
         });
@@ -87,6 +110,7 @@ $(document).ready(function(){
                 if(msg.success){
                     $(signedinNoID).show();
                     $(signedinYesID).hide();
+                    renderLoggedIn(false);
                 }
 
             },

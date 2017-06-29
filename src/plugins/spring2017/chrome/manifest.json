@@ -8,7 +8,7 @@
     "content_scripts": [],
     "background" : {
         "persistent": true,
-        "scripts" : ["background.js", "external/js/jquery-3.2.1.min.js"]
+        "scripts" : ["external/js/jquery-3.2.1.min.js","background.js"]
     },
     "web_accessible_resources":["*.png"],
     
