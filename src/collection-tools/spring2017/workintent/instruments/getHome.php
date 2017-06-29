@@ -177,32 +177,7 @@
 
 
             <div class="col-md-4">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <center><h4>Progress</h4></center>
-                    </div>
-                    <div class="panel-body">
-                        <center>
-                            <h6 >Sessions</h6>
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
-                            </div>
-                            <h6 >Tasks</h6>
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" style="width: 50%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
-                            </div>
-                            <h6>Intentions</h6>
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
-                            </div>
-<!--                            <h6>Java</h6>-->
-<!--                            <div class="progress">-->
-<!--                                <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>-->
-<!--                            </div>-->
-                        </center>
-                    </div>
 
-                </div>
             </div>
 
         </div>

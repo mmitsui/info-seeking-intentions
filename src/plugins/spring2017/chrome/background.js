@@ -84,21 +84,15 @@ chrome.tabs.onActivated.addListener(function(activeInfo){
                                     var windowId = activeInfo.windowId;
                                     var value = tabId;
                                     
-                                    
                                     var data = {
                                         action:action,
                                         value:tabId
                                     };
-                                    
-                                
-                                    
-                                    
+
                                     chrome.tabs.get(activeInfo.tabId, function(tab){
                                                     Url = tab.url;
                                                     });
-                                    
-                                    
-                                    
+
                                     saveAction(data,now);
                                     
                                     });

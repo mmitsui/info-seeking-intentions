@@ -110,6 +110,39 @@
             <div class="col-md-4">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
+                        <center><h4>Tutorial</h4></center>
+                    </div>
+                    <div class="panel-body">
+                        <center><button type="button" class="btn btn-primary">Review Tutorial</button></center>
+                    </div>
+
+
+                </div>
+            </div>
+
+
+        </div>
+
+        <!--   Actions and Trash Bin    -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <center><h4>Actions</h4></center>
+                    </div>
+                    <div class="panel-body">
+                        <center>
+                            <button type="button" class="btn btn-success">Go to Mark Sessions</button>
+                            <button type="button" class="btn btn-success">Go to Mark Segments</button>
+                            <button type="button" class="btn btn-success">Go to Mark Intentions</button>
+                        </center>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
                         <center><h4>Intentions</h4></center>
                     </div>
                     <div class="panel-body">
@@ -147,27 +180,7 @@
                         </center>
                     </div>
                 </div>
-            </div>
-
-        </div>
-
-        <!--   Actions and Trash Bin    -->
-        <div class="row">
-            <div class="col-md-8">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <center><h4>Actions</h4></center>
-                    </div>
-                    <div class="panel-body">
-                        <center>
-                            <button type="button" class="btn btn-success">Go to Mark Sessions</button>
-                            <button type="button" class="btn btn-success">Go to Mark Segments</button>
-                            <button type="button" class="btn btn-success">Go to Mark Intentions</button>
-                        </center>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
+            </div><div class="col-md-4">
 
             </div>
 
