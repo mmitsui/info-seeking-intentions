@@ -18,6 +18,13 @@ $(document).ready(function(){
     var homeUrl = homeDir + "/instruments/getHome.php";
     var contactUrl = "mailto:mmitsui@scarletmail.rutgers.edu?Subject=Intent%20Study%20Inquiry";
 
+
+    function goHome(){
+        chrome.tabs.create({url:homeUrl}, function(tab){
+        },
+        );
+    }
+
     function sendContactEmail(){
         chrome.tabs.create({url:contactUrl}, function(tab){
             setTimeout(function(){
@@ -54,7 +61,10 @@ $(document).ready(function(){
             renderLoggedIn(msg.loggedin);
             $(signedinYesID).show();
             $(signedinNoID).hide();
+            $(firstNameID).text(msg.firstName);
+            $(lastNameID).text(msg.lastName);
         }else{
+            renderLoggedIn(false);
             $(signedinNoID).show();
             $(signedinYesID).hide();
         }
@@ -74,7 +84,6 @@ $(document).ready(function(){
     });
 
     $( "#login_button" ).click(function() {
-    	renderLoggedIn(true);
         $.ajax({
             type: "POST",
             url: loginUrl,
@@ -82,10 +91,8 @@ $(document).ready(function(){
             success: function(msg){
                 msg = JSON.parse(msg);
                 if(msg.success){
-                    var firstName = msg.firstName;
-                    var lastName = msg.lastName;
-                    $(firstNameID).text(firstName);
-                    $(lastNameID).text(lastName);
+                    $(firstNameID).text(msg.firstName);
+                    $(lastNameID).text(msg.lastName);
                     $(signedinNoID).hide();
                     $(signedinYesID).show();
                     $(loginErrorTextID).text('');
@@ -96,6 +103,9 @@ $(document).ready(function(){
                 	$(loginErrorTextID).text(msg.errortext);
                 	renderLoggedIn(false);
                 }
+            },
+            error: function(msg){
+                renderLoggedIn(false);
             },
         });
     });
@@ -108,8 +118,11 @@ $(document).ready(function(){
             success: function(msg){
                 msg = JSON.parse(msg);
                 if(msg.success){
+                    $(usernameInputID).val('');
+                    $(passwordInputID).val('');
                     $(signedinNoID).show();
                     $(signedinYesID).hide();
+                    
                     renderLoggedIn(false);
                 }
 
@@ -136,23 +149,15 @@ $(document).ready(function(){
     });
 
 
-    $( "#contact_us_signedin_link" ).click(function() {
+    $( "#contact_us_signedin_link,#contact_us_signedout_link" ).click(function() {
         sendContactEmail();
     });
 
-    $( "#contact_us_signedout_link" ).click(function() {
-        sendContactEmail();
-    });
 
     $( "#register_link" ).click(function() {
         goToRegistration();
     });
 
-    function goHome(){
-        chrome.tabs.create({url:homeUrl}, function(tab){
-        },
-        );
-    }
 
     $( "#homepage_button" ).click(function() {
         goHome();

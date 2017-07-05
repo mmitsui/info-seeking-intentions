@@ -29,16 +29,26 @@ class Action extends Base{
   
 	public function save()
 	{
-		$query = "INSERT INTO actions (userID, projectID, stageID, questionID, timestamp, date, time, `localTimestamp`, `localDate`, `localTime`, ip, action, value) 
-				  VALUES('".$this->getUserID()."','".$this->getProjectID()."','".$this->getStageID()."','".$this->getQuestionID()."','".$this->getTimestamp()."','".$this->getDate()."','".$this->getTime()."','".$this->getLocalTimestamp()."','".$this->getLocalDate()."','".$this->getLocalTime()."','".$this->getIP()."','$this->actionName','$this->value')";
+        $action_json = "NULL";
+        if(isset($this->actionJSON)){
+			$action_json="'".mysql_escape_string($this->actionJSON)."'";
+        }
+//        $query = "INSERT INTO actions (userID, projectID, stageID, questionID, timestamp, date, time, `localTimestamp`, `localDate`, `localTime`, ip, action, value)
+//				  VALUES('".$this->getUserID()."','".$this->getProjectID()."','".$this->getStageID()."','".$this->getQuestionID()."','".$this->getTimestamp()."','".$this->getDate()."','".$this->getTime()."','".$this->getLocalTimestamp()."','".$this->getLocalDate()."','".$this->getLocalTime()."','".$this->getIP()."','$this->actionName','$this->value')";
+		$query = "INSERT INTO actions (userID, projectID, stageID, questionID, timestamp, date, time, `localTimestamp`, `localDate`, `localTime`, ip, action, value, `action_json`)
+				  VALUES('".$this->getUserID()."','".$this->getProjectID()."','".$this->getStageID()."','".$this->getQuestionID()."','".$this->getTimestamp()."','".$this->getDate()."','".$this->getTime()."','".$this->getLocalTimestamp()."','".$this->getLocalDate()."','".$this->getLocalTime()."','".$this->getIP()."','$this->actionName','$this->value',".$action_json.")";
+
+
 		//echo "query: ".$query;
 		$connection = Connection::getInstance();
 		$connection->commit($query);
 		$this->actionID = $connection->getLastID();
+		return $this->actionID;
 	}
 	
 	public function saveWithNewConnection(Connection $connection)
 	{
+
 		$query = "INSERT INTO actions (userID, projectID, stageID, questionID, timestamp, date, time, `localTimestamp`, `localDate`, `localTime`, ip, action, value) 
 				  VALUES('".$this->getUserID()."','".$this->getProjectID()."','".$this->getStageID()."','".$this->getQuestionID()."','".$this->getTimestamp()."','".$this->getDate()."','".$this->getTime()."','".$this->getLocalTimestamp()."','".$this->getLocalDate()."','".$this->getLocalTime()."','".$this->getIP()."','$this->actionName','$this->value')";
 		//echo "query: ".$query;
@@ -101,6 +111,10 @@ class Action extends Base{
 	public function setValue($value)
 	{
 		$this->value = $value;
+	}
+
+	public function setActionJSON($actionJSON){
+		$this->actionJSON = $actionJSON;
 	}
 	
 	//TO STRING

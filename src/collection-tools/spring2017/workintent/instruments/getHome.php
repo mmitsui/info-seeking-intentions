@@ -210,8 +210,9 @@
                             <tbody>
                             <?php
 
-                            $pagesQueries = getPagesQueries($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds);
-                            $pages =$pagesQueries['pages'];
+                            $pagesQueries = getInterleavedPagesQueries($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds);
+                            $pages =$pagesQueries;
+//                            $pages =$pagesQueries['pages'];
                             foreach($pages as $page){
                                 ?>
                                 <tr >
@@ -284,7 +285,7 @@
                                 ?>
                                 <tr >
                                     <td ><?php echo $page['time'];?></td>
-                                    <td ><?php echo "Page"; ?></td>
+                                    <td ><?php echo $page['type']; ?></td>
                                     <td ><?php echo "<input type=\"checkbox\">";?></td>
                                     <td ><?php echo $taskIDNameMap[$page['taskID']];?></td>
                                     <td ><?php echo $page['sessionID'];?></td>

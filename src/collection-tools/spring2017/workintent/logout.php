@@ -15,7 +15,7 @@ $base = Base::getInstance();
 Util::getInstance()->saveAction('logout',0,$base);
 session_destroy();
 
-return json_encode(array('success'=>true));
+echo json_encode(array('success'=>true));
 
 
 

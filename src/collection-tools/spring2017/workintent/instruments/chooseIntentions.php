@@ -107,6 +107,33 @@ $startEndTimestampList = getStartEndTimestampsList();
 
         <!--   Query Log and Progress     -->
         <div class="row">
+
+            <div class="col-md-8">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <center><h4>Actions</h4></center>
+                    </div>
+                    <div class="panel-body">
+                        <center>
+                            <?php
+                            $actionButtons = actionButtons($selectedStartTimeSeconds);
+                            echo $actionButtons['home']."\n";
+                            echo $actionButtons['sessions']."\n";
+                            echo $actionButtons['tasks']."\n";
+                            ?>
+                        </center>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+
+            </div>
+
+        </div>
+
+        <!--   Actions and Trash Bin    -->
+        <div class="row">
             <div class="col-md-8">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
@@ -243,31 +270,6 @@ $startEndTimestampList = getStartEndTimestampsList();
             </div>
 
 
-            <div class="col-md-4">
-
-            </div>
-
-        </div>
-
-        <!--   Actions and Trash Bin    -->
-        <div class="row">
-            <div class="col-md-8">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <center><h4>Actions</h4></center>
-                    </div>
-                    <div class="panel-body">
-                        <center>
-                            <?php
-                            $actionButtons = actionButtons($selectedStartTimeSeconds);
-                            echo $actionButtons['home']."\n";
-                            echo $actionButtons['sessions']."\n";
-                            echo $actionButtons['tasks']."\n";
-                            ?>
-                        </center>
-                    </div>
-                </div>
-            </div>
             <div class="col-md-4">
 
             </div>

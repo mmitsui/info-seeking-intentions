@@ -107,6 +107,57 @@ $startEndTimestampList = getStartEndTimestampsList();
 
         <!--   Query Log and Progress     -->
         <div class="row">
+
+            <div class="col-md-8">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <center><h4>Actions</h4></center>
+                    </div>
+                    <div class="panel-body">
+                        <center>
+                            <?php
+                            $actionButtons = actionButtons($selectedStartTimeSeconds);
+                            echo $actionButtons['home']."\n";
+                            echo $actionButtons['sessions']."\n";
+                            echo $actionButtons['intentions']."\n";
+                            ?>
+                        </center>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <center><h4>Assign to:</h4></center>
+                    </div>
+                    <div class="panel-body">
+                        <center>
+                            <div>
+                                <button type="button" class="btn btn-primary">Groceries</button>
+                            </div>
+
+                            <div>
+                                <button type="button" class="btn btn-primary">Important client</button>
+                            </div>
+
+
+                            <div>
+                                <button type="button" class="btn btn-success">+ Add Task</button>
+                            </div>
+                            <div class="form-group">
+                                <textarea class="form-control" rows="1" id="newtask" name="newtask"></textarea>
+                            </div>
+                        </center>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!--   Actions and Trash Bin    -->
+        <div class="row">
             <div class="col-md-8">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
@@ -115,7 +166,7 @@ $startEndTimestampList = getStartEndTimestampsList();
                     <div class="panel-body">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
-                            <center><button type="button" class="btn btn-info" data-toggle="collapse" data-target="#session1">Session 1</button></center>
+                                <center><button type="button" class="btn btn-info" data-toggle="collapse" data-target="#session1">Session 1</button></center>
                             </div>
                             <div class="panel-body">
                                 <div id="session1" class="collapse">
@@ -240,55 +291,6 @@ $startEndTimestampList = getStartEndTimestampsList();
             </div>
 
 
-            <div class="col-md-4">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <center><h4>Assign to:</h4></center>
-                    </div>
-                    <div class="panel-body">
-                        <center>
-                            <div>
-                                <button type="button" class="btn btn-primary">Groceries</button>
-                            </div>
-
-                            <div>
-                                <button type="button" class="btn btn-primary">Important client</button>
-                            </div>
-
-
-                            <div>
-                                <button type="button" class="btn btn-success">+ Add Task</button>
-                            </div>
-                            <div class="form-group">
-                                <textarea class="form-control" rows="1" id="newtask" name="newtask"></textarea>
-                            </div>
-                        </center>
-                    </div>
-
-                </div>
-            </div>
-
-        </div>
-
-        <!--   Actions and Trash Bin    -->
-        <div class="row">
-            <div class="col-md-8">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <center><h4>Actions</h4></center>
-                    </div>
-                    <div class="panel-body">
-                        <center>
-                            <?php
-                                $actionButtons = actionButtons($selectedStartTimeSeconds);
-                                echo $actionButtons['home']."\n";
-                                echo $actionButtons['sessions']."\n";
-                                echo $actionButtons['intentions']."\n";
-                            ?>
-                        </center>
-                    </div>
-                </div>
-            </div>
             <div class="col-md-4">
 
             </div>

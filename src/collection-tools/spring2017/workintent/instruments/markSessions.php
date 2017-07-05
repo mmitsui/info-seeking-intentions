@@ -105,6 +105,55 @@ $startEndTimestampList = getStartEndTimestampsList();
 
         <!--   Query Log and Progress     -->
         <div class="row">
+
+            <div class="col-md-8">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <center><h4>Actions</h4></center>
+                    </div>
+                    <div class="panel-body">
+                        <center>
+                            <?php
+                            $actionButtons = actionButtons($selectedStartTimeSeconds);
+                            echo $actionButtons['home']."\n";
+                            echo $actionButtons['tasks']."\n";
+                            echo $actionButtons['intentions']."\n";
+                            ?>
+                        </center>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="panel panel-primary">
+                    <div class="panel panel-heading">
+                    <center><h4>Assign to:</h4></center>
+                    </div>
+                    <div>
+                        <center>
+                            <div>
+                                <button type="button" class="btn btn-primary">1</button>
+                            </div>
+
+                            <div>
+                                <button type="button" class="btn btn-primary">2</button>
+                            </div>
+
+                            <div>
+                                <button type="button" class="btn btn-primary">3</button>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-success">+ Add Session</button>
+                            </div>
+                        </center>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!--   Actions and Trash Bin    -->
+        <div class="row">
             <div class="col-md-8">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
@@ -165,54 +214,6 @@ $startEndTimestampList = getStartEndTimestampsList();
                 </div>
             </div>
 
-
-            <div class="col-md-4">
-                <div class="panel panel-primary">
-                    <div class="panel panel-heading">
-                    <center><h4>Assign to:</h4></center>
-                    </div>
-                    <div>
-                        <center>
-                            <div>
-                                <button type="button" class="btn btn-primary">1</button>
-                            </div>
-
-                            <div>
-                                <button type="button" class="btn btn-primary">2</button>
-                            </div>
-
-                            <div>
-                                <button type="button" class="btn btn-primary">3</button>
-                            </div>
-                            <div>
-                                <button type="button" class="btn btn-success">+ Add Session</button>
-                            </div>
-                        </center>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <!--   Actions and Trash Bin    -->
-        <div class="row">
-            <div class="col-md-8">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <center><h4>Actions</h4></center>
-                    </div>
-                    <div class="panel-body">
-                        <center>
-                            <?php
-                            $actionButtons = actionButtons($selectedStartTimeSeconds);
-                            echo $actionButtons['home']."\n";
-                            echo $actionButtons['tasks']."\n";
-                            echo $actionButtons['intentions']."\n";
-                            ?>
-                        </center>
-                    </div>
-                </div>
-            </div>
             <div class="col-md-4">
             </div>
         </div>

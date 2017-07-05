@@ -11,6 +11,6 @@ Maybe we can use this as a replacement for the sidebar login as well.
 	$base = Base::getInstance();
 	$cxn = Connection::getInstance();
 
-	echo json_encode(array('loggedin'=>$base->isUserActive()));
+	echo json_encode(array('loggedin'=>$base->isUserActive(),'firstName'=>$base->getFirstName(),'lastName'=>$base->getLastName()));
 
 ?>
