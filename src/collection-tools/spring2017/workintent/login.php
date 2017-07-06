@@ -50,7 +50,7 @@ Maybe we can use this as a replacement for the sidebar login as well.
             $success['firstName'] = $firstName;
             $success['lastName'] = $lastName;
 
-            Util::getInstance()->saveAction('login',0,$base);
+            Util::getInstance()->saveAction('login',"browser-".$_POST['browser'],$base);
         }
 
 

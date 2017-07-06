@@ -77,7 +77,7 @@ function savePQ(url,title,active,tabId,windowId,now){
     data : data,
     dataType: "text",
     success : function(resp){
-      // alert("success!");
+
 
     },
     error: function(resp){
@@ -230,7 +230,11 @@ chrome.tabs.onReplaced.addListener(function(addedTabId, removedTabId){
 
 chrome.tabs.onZoomChange.addListener(function(ZoomChangeInfo){
   var now = new Date();
-  saveAction("tabs.onZoomChange",ZoomChangeInfo.oldZoomFactor + "," + ZoomChangeInfo.newZoomFactor,ZoomChangeInfo,now);
+  chrome.tabs.get(ZoomChangeInfo.tabId, function(tab){
+    ZoomChangeInfo.windowId = windowId;
+    saveAction("tabs.onZoomChange",ZoomChangeInfo.oldZoomFactor + "," + ZoomChangeInfo.newZoomFactor,ZoomChangeInfo,now);
+  });
+  
 });
 
 

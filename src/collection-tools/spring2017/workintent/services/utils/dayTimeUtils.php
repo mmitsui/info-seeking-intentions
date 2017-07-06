@@ -1,6 +1,22 @@
 <?php
 
-function getStartEndTimestampsList($startTimeSeconds = null,$numiters = 10){
+require_once($_SERVER["DOCUMENT_ROOT"]."/workintent/core/Connection.class.php");
+function getFirstActivityStartTimestamp($userID){
+    $cxn = Connection::getInstance();
+
+    $results = $cxn->commit("SELECT * FROM pages WHERE `userID`=$userID ORDER BY `localTimestamp` ASC LIMIT 10");
+    if(mysql_num_rows($results)==0){
+        return -1;
+    }else{
+        $line = mysql_fetch_array($results,MYSQL_ASSOC);
+        $firstTime = $line['localTimestamp'];
+        $firstDayMidnight = $firstTime -($firstTime %86400000);
+        return $firstDayMidnight/1000;
+    }
+}
+
+function getStartEndTimestampsList($userID,$startTimeSeconds = null,$numiters = 5){
+    $firstDayMidnightTimestamp = getFirstActivityStartTimestamp($userID);
     $SECONDSPERDAY = 86400;
     if(is_null($startTimeSeconds)){
         $startTimeSeconds = strtotime('today midnight');
@@ -9,6 +25,9 @@ function getStartEndTimestampsList($startTimeSeconds = null,$numiters = 10){
     $startTimeIter = $startTimeSeconds;
     $timesArray = array();
     for( $i = 0; $i<$numiters; $i++ ) {
+        if($startTimeIter < $firstDayMidnightTimestamp and $i>0){
+            break;
+        }
         $timesArray[] = array('startTime'=>$startTimeIter,'endTime'=>$startTimeIter+$SECONDSPERDAY);
         $startTimeIter -=$SECONDSPERDAY;
     }
@@ -54,7 +73,7 @@ function dayButtonStrings($startEndTimeArray, $url, $selectedTime = null){
     return $buttonsArray;
 }
 
-function actionButtons($selectedTime = null){
+function actionUrls($selectedTime = null){
 
     $SECONDSPERDAY = 86400;
     $todayMignightSeconds = strtotime('today midnight');
@@ -71,20 +90,28 @@ function actionButtons($selectedTime = null){
 //    $homeUrl = 'http://coagmento.org/workintent/instruments/getHome.php'."?startTime=$selectedTime&endTime=$endSelectedTime";
 
 
-    $buttonsArray=array();
+    $urlsArray =array();
 
 
 
 
-    $buttonsArray['home'] = "<a type=\"button\" class=\"btn btn-success\" href='$homeUrl'>Go to Home</a>";
+//    $buttonsArray['home'] = "<a type=\"button\" class=\"btn btn-success\" href='$homeUrl'>Go to Home</a>";
+//
+//    $buttonsArray['sessions'] = "<a type=\"button\" class=\"btn btn-success\" href='$markSessionsUrl'>Go to Mark Sessions</a>";
+//
+//    $buttonsArray['tasks'] = "<a type=\"button\" class=\"btn btn-success\" href='$markTasksUrl'>Go to Mark Tasks</a>";
+//
+//    $buttonsArray['intentions'] = "<a type=\"button\" class=\"btn btn-success\" href='$chooseIntentionsUrl'>Go to Mark Intentions</a>";
 
-    $buttonsArray['sessions'] = "<a type=\"button\" class=\"btn btn-success\" href='$markSessionsUrl'>Go to Mark Sessions</a>";
+    $urlsArray['home'] = $homeUrl;
 
-    $buttonsArray['tasks'] = "<a type=\"button\" class=\"btn btn-success\" href='$markTasksUrl'>Go to Mark Tasks</a>";
+    $urlsArray['sessions'] = $markSessionsUrl;
 
-    $buttonsArray['intentions'] = "<a type=\"button\" class=\"btn btn-success\" href='$chooseIntentionsUrl'>Go to Mark Intentions</a>";
+    $urlsArray['tasks'] = $markTasksUrl;
 
-    return $buttonsArray;
+    $urlsArray['intentions'] = $chooseIntentionsUrl;
+
+    return $urlsArray;
 
 }
 

@@ -4,8 +4,13 @@ require_once('../core/Base.class.php');
 require_once('../core/Util.class.php');
 require_once('../services/utils/loginUtils.php');
 require_once('../services/utils/dayTimeUtils.php');
+require_once('../services/utils/pageQueryUtils.php');
+require_once('../services/utils/sessionTaskUtils.php');
 
 isSessionOrDie();
+
+$base = Base::getInstance();
+$userID = $base->getUserID();
 
 $selectedStartTimeSeconds = null;
 if(isset($_GET['startTime'])){
@@ -16,7 +21,9 @@ if(isset($_GET['startTime'])){
 $selectedEndTimeSeconds = getStartEndTimestamp($selectedStartTimeSeconds);
 $selectedEndTimeSeconds  =$selectedEndTimeSeconds['endTime'];
 
-$startEndTimestampList = getStartEndTimestampsList();
+$startEndTimestampList = getStartEndTimestampsList($userID,strtotime('today midnight'),20);
+
+$taskIDNameMap = getTaskIDNameMap($userID);
 
 ?>
 
@@ -116,7 +123,7 @@ $startEndTimestampList = getStartEndTimestampsList();
                     <div class="panel-body">
                         <center>
                             <?php
-                            $actionButtons = actionButtons($selectedStartTimeSeconds);
+                            $actionButtons = actionUrls($selectedStartTimeSeconds);
                             echo $actionButtons['home']."\n";
                             echo $actionButtons['sessions']."\n";
                             echo $actionButtons['tasks']."\n";

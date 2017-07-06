@@ -21,16 +21,18 @@
     $selectedEndTimeSeconds = getStartEndTimestamp($selectedStartTimeSeconds);
     $selectedEndTimeSeconds  =$selectedEndTimeSeconds['endTime'];
 
-    $startEndTimestampList = getStartEndTimestampsList(strtotime('today midnight'),20);
+    $startEndTimestampList = getStartEndTimestampsList($userID,strtotime('today midnight'),20);
 
     $taskIDNameMap = getTaskIDNameMap($userID);
+
+    $homePageTables = getHomePageTables($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds);
 ?>
 
 
     <html>
     <head>
         <title>
-            Research Study Registration: Introduction
+            Home
         </title>
 
         <link rel="stylesheet" href="../study_styles/bootstrap-3.3.7-dist/css/bootstrap.min.css">
@@ -47,7 +49,7 @@
                 /*width: 100%;*/
             /*}*/
 
-            /*thead, tbody, tr, td, th { display: block; }*/
+            /*thead, tbody, tr, td, th { display,: block; }*/
 
             /*tr:after {*/
                 /*content: ' ';*/
@@ -94,6 +96,91 @@
                 /*border-bottom-width: 0;*/
             /*}*/
         </style>
+
+        <script>
+            var trash_form_id = '#to_trash_form';
+            var delete_form_id = '#permanently_delete_form';
+
+            $(document).ready(function(){
+                    $(trash_form_id).submit(function(event) {
+                        // Stop the browser from submitting the form.
+                        event.preventDefault();
+
+                        var formData = $(trash_form_id).serialize();
+
+
+                        $.ajax({
+                            type: 'POST',
+                            url: $(trash_form_id).attr('action'),
+                            data: formData
+                        }).done(function(response) {
+                            response = JSON.parse(response);
+                            $('#log_panel').html(response.loghtml);
+                            $('#trash_panel').html(response.trashhtml);
+                            alert("Page has been sent to trash.");
+//                // Make sure that the formMessages div has the 'success' class.
+//                $(formMessages).removeClass('error');
+//                $(formMessages).addClass('success');
+//
+//                // Set the message text.
+//                $(formMessages).text(response);
+//
+//                // Clear the form.
+//                $('#name').val('');
+//                $('#email').val('');
+//                $('#message').val('');
+                        }).fail(function(data) {
+//                // Make sure that the formMessages div has the 'error' class.
+//                $(formMessages).removeClass('success');
+//                $(formMessages).addClass('error');
+//
+//                // Set the message text.
+//                if (data.responseText !== '') {
+//                    $(formMessages).text(data.responseText);
+//                } else {
+//                    $(formMessages).text('Oops! An error occured and your message could not be sent.');
+//                }
+                        });
+                        // TODO
+                    });
+
+
+
+
+                $(delete_form_id+" button").click(function(ev){
+                    ev.preventDefault()// cancel form submission
+
+                    var formData = $(delete_form_id).serialize();
+                    if($(this).attr("value")=="restore_button"){
+                        $.ajax({
+                            type: 'POST',
+                            url: $(delete_form_id).attr('action')+"?action=restore",
+                            data: formData
+                        }).done(function(response) {
+                            response = JSON.parse(response);
+                            $('#log_panel').html(response.loghtml);
+                            $('#trash_panel').html(response.trashhtml);
+                            alert("Page has been restored.")
+                        });
+                    }else if($(this).attr("value")=="permanently_delete_button"){
+                        $.ajax({
+                            type: 'POST',
+                            url: $(delete_form_id).attr('action')+"?action=permanentlyDelete",
+                            data: formData
+                        }).done(function(response) {
+                            response = JSON.parse(response);
+                            $('#log_panel').html(response.loghtml);
+                            $('#trash_panel').html(response.trashhtml);
+                            alert("Page has been deleted.")
+                        });
+                    }
+                });
+
+                }
+            );
+
+
+        </script>
     </head>
 
 
@@ -156,18 +243,13 @@
 
         <!--   Query Log and Progress     -->
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-12">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <center><h4>Actions</h4></center>
-                    </div>
-                    <div class="panel-body">
                         <center>
                             <?php
-                            $actionButtons = actionButtons($selectedStartTimeSeconds);
-                            echo $actionButtons['sessions']."\n";
-                            echo $actionButtons['tasks']."\n";
-                            echo $actionButtons['intentions']."\n";
+                            $actionUrls = actionUrls($selectedStartTimeSeconds);
+                            echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['sessions']."'>Start Annotation &raquo;</a>";
                             ?>
                         </center>
                     </div>
@@ -176,141 +258,162 @@
 
 
 
-            <div class="col-md-4">
 
-            </div>
 
         </div>
 
         <!--   Actions and Trash Bin    -->
         <div class="row">
 
-            <div class="col-md-8">
+            <div class="col-md-12">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <center><h4>Log</h4></center>
 
                     </div>
-                    <div class="panel-body tab-pane">
-                        <table class="table table-striped table-fixed">
-                            <thead>
-                            <tr>
+                    <form id="to_trash_form" action="../services/utils/runPageQueryUtils.php?action=sendToTrash">
+                    <div class="panel-body tab-pane" id="log_panel">
+                        <?php
+                            echo $homePageTables['loghtml'];
+                        ?>
+<!--                            <table class="table table-striped table-fixed">-->
+<!--                                <thead>-->
+<!--                                <tr>-->
+<!---->
+<!--                                    <th >Time</th>-->
+<!--                                    <th >Type</th>-->
+<!--                                    <th >Delete</th>-->
+<!--                                    <th >Task</th>-->
+<!--                                    <th >Session</th>-->
+<!--                                    <th >Title/Query</th>-->
+<!--                                    <th >URL</th>-->
+<!--                                </tr>-->
+<!--                                </thead>-->
+<!---->
+<!---->
+<!--                                <tbody>-->
+<!--                                --><?php
+//
+//                                $pagesQueries = getInterleavedPagesQueries($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds,0);
+//                                $pages =$pagesQueries;
+//                                //                            $pages =$pagesQueries['pages'];
+//                                foreach($pages as $page){
+//                                    ?>
+<!--                                    <tr >-->
+<!--                                        <td >--><?php //echo isset($page['time'])?$page['time']:"";?><!--</td>-->
+<!--                                        <td >--><?php //echo isset($page['type'])?$page['type']:""; ?><!--</td>-->
+<!--                                        <td >--><?php
+//                                            $name = '';
+//                                            if($page['type']=='page'){
+//                                                $name='pages[]';
+//                                            }else{
+//                                                $name='queries[]';
+//                                            }
+//                                            $value = $page['id'];
+//                                            echo "<input type=\"checkbox\" name='$name' value='$value'>";
+//                                            ?><!--</td>-->
+<!--                                        <td >--><?php //echo isset($page['taskID'])? $taskIDNameMap[$page['taskID']] :"";?><!--</td>-->
+<!--                                        <td >--><?php //echo isset($page['sessionID']) ?$page['sessionID'] : "";?><!--</td>-->
+<!--                                        <td >--><?php //echo isset($page['title'])?substr($page['title'],0,15)."...":"";?><!--</td>-->
+<!--                                        <td >--><?php //echo isset($page['url'])?substr($page['url'],0,15)."...":""; ;?><!--</td>-->
+<!---->
+<!--                                    </tr>-->
+<!--                                    --><?php
+//
+//                                }
+//                                ?>
+<!---->
+<!---->
+<!---->
+<!--                                </tbody>-->
+<!--                            </table>-->
 
-                                <th >Time</th>
-                                <th >Type</th>
-                                <th >Delete</th>
-                                <th >Task</th>
-                                <th >Session</th>
-                                <th >Title/Query</th>
-                                <th >URL</th>
-                            </tr>
-                            </thead>
-
-
-                            <tbody>
-                            <?php
-
-                            $pagesQueries = getInterleavedPagesQueries($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds);
-                            $pages =$pagesQueries;
-//                            $pages =$pagesQueries['pages'];
-                            foreach($pages as $page){
-                                ?>
-                                <tr >
-                                    <td ><?php echo $page['time'];?></td>
-                                    <td ><?php echo "Page"; ?></td>
-                                    <td ><?php echo "<input type=\"checkbox\">";?></td>
-                                    <td ><?php echo $taskIDNameMap[$page['taskID']];?></td>
-                                    <td ><?php echo $page['sessionID'];?></td>
-                                    <td ><?php echo $page['title'];?></td>
-                                    <td ><?php echo substr($page['url'],0,15)."...";?></td>
-                                    <!--                                        <td class="col-xs-1">--><?php //echo $page['localTime'];?><!--</td>-->
-                                    <!--                                        <td class="col-xs-1">Page</td>-->
-                                    <!--                                        <td class="col-xs-1">Checkbox</td>-->
-                                    <!--                                        <td class="col-xs-1">Checkbox</td>-->
-                                    <!--                                        <td class="col-xs-1">ID</td>-->
-                                    <!--                                        <td class="col-xs-2">ID</td>-->
-                                    <!--                                        <td class="col-xs-2">Title</td>-->
-                                    <!--                                        <td class="col-xs-2">URL</td>-->
-                                </tr>
-                                <?php
-
-                            }
-                            ?>
-
-
-
-                            </tbody>
-                        </table>
 
                     </div>
                     <center>
-                        <button type="button" class="btn btn-warning">Toggle Privacy</button>
-                        <button type="button" class="btn btn-warning">Send to Trash</button>
+                        <input type="hidden" name="userID" <?php echo "value='$userID'"?>/>
+                        <input type="hidden" name="startTimestamp" <?php echo "value='$selectedStartTimeSeconds'"?>/>
+                        <input type="hidden" name="endTimestamp" <?php echo "value='$selectedEndTimeSeconds'"?>/>
+                        <input type="submit" class="btn btn-warning" value="Send to Trash">
                     </center>
+                    </form>
 
 
 
                 </div>
             </div>
 
-            <div class="col-md-4">
-                <div class="panel panel-primary">
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
                     <div class="panel-heading">
                         <center><h4>Trash Bin</h4></center>
                     </div>
-                    <div class="panel-body tab-pane">
-                        <table class="table table-striped table-fixed">
-                            <thead>
-                            <tr>
-                                <th >Time</th>
-                                <th >Type</th>
-                                <th >Destroy</th>
-                                <th >Task</th>
-                                <th >Session</th>
-                                <th >Title/Query</th>
-                                <th >URL</th>
-
-
-
-
-                                <th class="col-xs-8">Name</th><th class="col-xs-2">Points</th>
-                            </tr>
-                            </thead>
-                            <tbody>
+                    <form id="permanently_delete_form" action="../services/utils/runPageQueryUtils.php">
+                        <div class="panel-body tab-pane" id="trash_panel">
                             <?php
-
-                            $pagesQueries = getPagesQueries($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds);
-                            $pages =$pagesQueries['pages'];
-                            foreach($pages as $page){
-                                ?>
-                                <tr >
-                                    <td ><?php echo $page['time'];?></td>
-                                    <td ><?php echo $page['type']; ?></td>
-                                    <td ><?php echo "<input type=\"checkbox\">";?></td>
-                                    <td ><?php echo $taskIDNameMap[$page['taskID']];?></td>
-                                    <td ><?php echo $page['sessionID'];?></td>
-                                    <td ><?php echo $page['title'];?></td>
-                                    <td ><?php echo substr($page['url'],0,15)."...";?></td>
-                                    <!--                                        <td class="col-xs-1">--><?php //echo $page['localTime'];?><!--</td>-->
-                                    <!--                                        <td class="col-xs-1">Page</td>-->
-                                    <!--                                        <td class="col-xs-1">Checkbox</td>-->
-                                    <!--                                        <td class="col-xs-1">Checkbox</td>-->
-                                    <!--                                        <td class="col-xs-1">ID</td>-->
-                                    <!--                                        <td class="col-xs-2">ID</td>-->
-                                    <!--                                        <td class="col-xs-2">Title</td>-->
-                                    <!--                                        <td class="col-xs-2">URL</td>-->
-                                </tr>
-                                <?php
-
-                            }
+                            echo $homePageTables['trashhtml'];
                             ?>
-                            </tbody>
-                        </table>
-                    </div>
-                    <center>
-                        <button type="button" class="btn btn-success">Undo Delete</button>
-                        <button type="button" class="btn btn-danger">Permanently Delete</button>
-                    </center>
+<!--                            <table class="table table-striped table-fixed">-->
+<!--                                <thead>-->
+<!--                                <tr>-->
+<!--                                    <th >Time</th>-->
+<!--                                    <th >Type</th>-->
+<!--                                    <th >Destroy</th>-->
+<!--                                    <th >Task</th>-->
+<!--                                    <th >Session</th>-->
+<!--                                    <th >Title/Query</th>-->
+<!--                                    <th >URL</th>-->
+<!---->
+<!---->
+<!---->
+<!---->
+<!--                                </tr>-->
+<!--                                </thead>-->
+<!--                                <tbody>-->
+<!--                                --><?php
+//
+//                                $pagesQueries = getInterleavedPagesQueries($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds,1);
+//                                //                            $pagesQueries = getPagesQueries($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds);
+//                                //                            $pages =$pagesQueries['pages'];
+//                                $pages =$pagesQueries;
+//                                foreach($pages as $page){
+//                                    ?>
+<!--                                    <tr >-->
+<!--                                        <td >--><?php //echo isset($page['time'])?$page['time']:"";?><!--</td>-->
+<!--                                        <td >--><?php //echo isset($page['type'])?$page['type']:""; ?><!--</td>-->
+<!--                                        <td >--><?php
+//                                            $name = '';
+//                                            if($page['type']=='page'){
+//                                                $name='pages[]';
+//                                            }else{
+//                                                $name='queries[]';
+//                                            }
+//                                            $value = $page['id'];
+//                                            echo "<input type=\"checkbox\" name='$name' value='$value'>";
+//                                            ?><!--</td>-->
+<!--                                        <td >--><?php //echo isset($page['taskID'])? $taskIDNameMap[$page['taskID']] :"";?><!--</td>-->
+<!--                                        <td >--><?php //echo isset($page['sessionID']) ?$page['sessionID'] : "";?><!--</td>-->
+<!--                                        <td >--><?php //echo isset($page['title'])?$page['title']:"";?><!--</td>-->
+<!--                                        <td >--><?php //echo isset($page['url'])?substr($page['url'],0,15)."...":""; ;?><!--</td>-->
+<!--                                    </tr>-->
+<!--                                    --><?php
+//
+//                                }
+//                                ?>
+<!--                                </tbody>-->
+<!--                            </table>-->
+                        </div>
+                        <center>
+                            <input type="hidden" name="userID" <?php echo "value='$userID'"?>/>
+                            <input type="hidden" name="startTimestamp" <?php echo "value='$selectedStartTimeSeconds'"?>/>
+                            <input type="hidden" name="endTimestamp" <?php echo "value='$selectedEndTimeSeconds'"?>/>
+                            <button type="button" value="restore_button" class="btn btn-success">Undo Delete</button>
+                            <button type="button" value="permanently_delete_button" class="btn btn-danger">Permanently Delete</button>
+                        </center>
+                    </form>
+
 
 
                 </div>

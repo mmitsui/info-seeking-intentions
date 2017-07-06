@@ -4,8 +4,13 @@ require_once('../core/Base.class.php');
 require_once('../core/Util.class.php');
 require_once('../services/utils/loginUtils.php');
 require_once('../services/utils/dayTimeUtils.php');
+require_once('../services/utils/pageQueryUtils.php');
+require_once('../services/utils/sessionTaskUtils.php');
 
 isSessionOrDie();
+
+$base = Base::getInstance();
+$userID = $base->getUserID();
 
 $selectedStartTimeSeconds = null;
 if(isset($_GET['startTime'])){
@@ -16,7 +21,9 @@ if(isset($_GET['startTime'])){
 $selectedEndTimeSeconds = getStartEndTimestamp($selectedStartTimeSeconds);
 $selectedEndTimeSeconds  =$selectedEndTimeSeconds['endTime'];
 
-$startEndTimestampList = getStartEndTimestampsList();
+$startEndTimestampList = getStartEndTimestampsList($userID,strtotime('today midnight'),20);
+
+$taskIDNameMap = getTaskIDNameMap($userID);
 
 
 ?>
@@ -28,26 +35,107 @@ $startEndTimestampList = getStartEndTimestampsList();
             Research Study Registration: Introduction
         </title>
 
-        <!--        <link rel="stylesheet" href="../study_styles/bootstrap-lumen/css/bootstrap.min.css">-->
         <link rel="stylesheet" href="../study_styles/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
         <style>
-            .table-fixed thead {
-                width: 97%;
+            .tab-pane{
+                height:300px;
+                overflow-y:scroll;
+                width:100%;
             }
-            .table-fixed tbody {
-                height: 230px;
-                overflow-y: auto;
-                width: 100%;
-            }
-            .table-fixed thead, .table-fixed tbody, .table-fixed tr, .table-fixed td, .table-fixed th {
-                display: block;
-            }
-            .table-fixed tbody td, .table-fixed thead > tr> th {
-                float: left;
-                border-bottom-width: 0;
-            }
+            /*table {*/
+            /*width: 100%;*/
+            /*}*/
+
+            /*thead, tbody, tr, td, th { display,: block; }*/
+
+            /*tr:after {*/
+            /*content: ' ';*/
+            /*display: block;*/
+            /*visibility: hidden;*/
+            /*clear: both;*/
+            /*}*/
+
+            /*thead th {*/
+            /*height: 30px;*/
+
+            /*!*text-align: left;*!*/
+            /*}*/
+
+            /*tbody {*/
+            /*height: 120px;*/
+            /*overflow-y: auto;*/
+            /*}*/
+
+            /*thead {*/
+            /*!* fallback *!*/
+            /*}*/
+
+
+            /*tbody td, thead th {*/
+            /*width: 19.2%;*/
+            /*float: left;*/
+            /*}*/
+
+
+            /*.table-fixed thead {*/
+            /*width: 97%;*/
+            /*}*/
+            /*.table-fixed tbody {*/
+            /*height: 230px;*/
+            /*overflow-y: auto;*/
+            /*width: 100%;*/
+            /*}*/
+            /*.table-fixed thead, .table-fixed tbody, .table-fixed tr, .table-fixed td, .table-fixed th {*/
+            /*display: block;*/
+            /*}*/
+            /*.table-fixed tbody td, .table-fixed thead > tr> th {*/
+            /*float: left;*/
+            /*border-bottom-width: 0;*/
+            /*}*/
         </style>
+
+        <script>
+            var session_form_id= '#session_form';
+
+            $(document).ready(function(){
+                    $(session_form_id+" button").click(function(ev){
+                        ev.preventDefault()// cancel form submission
+                        var formData = $(session_form_id).serialize();
+                        if($(this).attr("value")=="restore_button"){
+                            $.ajax({
+                                type: 'POST',
+                                url: $(session_form_id).attr('action'),
+                                data: formData
+                            }).done(function(response) { alert("Sessions have been marked.")});
+                        }
+                    });
+
+                }
+            );
+
+
+        </script>
+
+<!--        <style>-->
+<!--            .table-fixed thead {-->
+<!--                width: 97%;-->
+<!--            }-->
+<!--            .table-fixed tbody {-->
+<!--                height: 230px;-->
+<!--                overflow-y: auto;-->
+<!--                width: 100%;-->
+<!--            }-->
+<!--            .table-fixed thead, .table-fixed tbody, .table-fixed tr, .table-fixed td, .table-fixed th {-->
+<!--                display: block;-->
+<!--            }-->
+<!--            .table-fixed tbody td, .table-fixed thead > tr> th {-->
+<!--                float: left;-->
+<!--                border-bottom-width: 0;-->
+<!--            }-->
+<!--        </style>-->
     </head>
 
 
@@ -106,28 +194,108 @@ $startEndTimestampList = getStartEndTimestampsList();
         <!--   Query Log and Progress     -->
         <div class="row">
 
-            <div class="col-md-8">
+            <div class="col-md-12">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <center><h4>Actions</h4></center>
-                    </div>
-                    <div class="panel-body">
                         <center>
                             <?php
-                            $actionButtons = actionButtons($selectedStartTimeSeconds);
-                            echo $actionButtons['home']."\n";
-                            echo $actionButtons['tasks']."\n";
-                            echo $actionButtons['intentions']."\n";
+                            $actionUrls = actionUrls($selectedStartTimeSeconds);
+                            echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['home']."'>&laquo; Back (Home)</a>";
+                            echo "&nbsp;&nbsp;&nbsp;&nbsp;";
+                            echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['tasks']."'>Next (Tasks) &raquo;</a>";
                             ?>
                         </center>
                     </div>
+
+                </div>
+            </div>
+
+
+
+        </div>
+
+        <!--   Actions and Trash Bin    -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <center><h4>Log</h4></center>
+
+                    </div>
+                    <form id="session_form" action="../services/utils/runPageQueryUtils.php?action=markSession">
+                        <div class="panel-body tab-pane">
+                            <table class="table table-striped table-fixed">
+                                <thead>
+                                <tr>
+                                    <th >Time</th>
+                                    <th >Type</th>
+                                    <th >Session</th>
+                                    <th >Task</th>
+                                    <th >Session</th>
+                                    <th >Title/Query</th>
+                                    <th >URL</th>
+
+
+
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php
+
+                                $pagesQueries = getInterleavedPagesQueries($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds,0);
+                                //                            $pagesQueries = getPagesQueries($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds);
+                                //                            $pages =$pagesQueries['pages'];
+                                $pages =$pagesQueries;
+                                foreach($pages as $page){
+                                    ?>
+                                    <tr >
+                                        <td ><?php echo isset($page['time'])?$page['time']:"";?></td>
+                                        <td ><?php echo isset($page['type'])?$page['type']:"";?></td>
+                                        <td ><?php
+                                            $name = '';
+                                            if($page['type']=='page'){
+                                                $name='pages[]';
+                                            }else{
+                                                $name='queries[]';
+                                            }
+                                            $value = $page['id'];
+                                            echo "<input type=\"checkbox\" name='$name' value='$value'>";
+                                            ?></td>
+                                        <td ><?php echo isset($page['taskID'])? $taskIDNameMap[$page['taskID']] :"";?></td>
+                                        <td ><?php echo isset($page['sessionID']) ?$page['sessionID'] : "";?></td>
+                                        <td ><?php echo isset($page['title']) ?$page['title'] : "";?></td>
+                                        <td ><?php echo isset($page['url']) ?substr($page['url'],0,15)."..." : "";?></td>
+                                        <!--                                        <td class="col-xs-1">--><?php //echo $page['localTime'];?><!--</td>-->
+                                        <!--                                        <td class="col-xs-1">Page</td>-->
+                                        <!--                                        <td class="col-xs-1">Checkbox</td>-->
+                                        <!--                                        <td class="col-xs-1">Checkbox</td>-->
+                                        <!--                                        <td class="col-xs-1">ID</td>-->
+                                        <!--                                        <td class="col-xs-2">ID</td>-->
+                                        <!--                                        <td class="col-xs-2">Title</td>-->
+                                        <!--                                        <td class="col-xs-2">URL</td>-->
+                                    </tr>
+                                    <?php
+
+                                }
+                                ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <center>
+                            <input type="hidden" name="userID" <?php echo "value='$userID'"?>/>
+                            <button type="button" value="restore_button" class="btn btn-success">Mark Session Test</button>
+                        </center>
+                    </form>
+
+
                 </div>
             </div>
 
             <div class="col-md-4">
                 <div class="panel panel-primary">
                     <div class="panel panel-heading">
-                    <center><h4>Assign to:</h4></center>
+                        <center><h4>Assign to:</h4></center>
                     </div>
                     <div>
                         <center>
@@ -148,73 +316,6 @@ $startEndTimestampList = getStartEndTimestampsList();
                         </center>
                     </div>
                 </div>
-            </div>
-
-        </div>
-
-        <!--   Actions and Trash Bin    -->
-        <div class="row">
-            <div class="col-md-8">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <center><h4>Log</h4></center>
-
-                    </div>
-                    <div class="panel-body">
-                        <table class="table table-striped table-fixed">
-                            <thead>
-                            <tr>
-                                <th class="col-xs-2">#</th><th class="col-xs-8">Name</th><th class="col-xs-2">Points</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td class="col-xs-2">1</td><td class="col-xs-8">Mike Adams</td><td class="col-xs-2">23</td>
-                            </tr>
-                            <tr>
-                                <td class="col-xs-2">2</td><td class="col-xs-8">Holly Galivan</td><td class="col-xs-2">44</td>
-                            </tr>
-                            <tr>
-                                <td class="col-xs-2">3</td><td class="col-xs-8">Mary Shea</td><td class="col-xs-2">86</td>
-                            </tr>
-                            <tr>
-                                <td class="col-xs-2">4</td><td class="col-xs-8">Jim Adams</td><td>23</td>
-                            </tr>
-                            <tr>
-                                <td class="col-xs-2">5</td><td class="col-xs-8">Henry Galivan</td><td class="col-xs-2">44</td>
-                            </tr>
-                            <tr>
-                                <td class="col-xs-2">6</td><td class="col-xs-8">Bob Shea</td><td class="col-xs-2">26</td>
-                            </tr>
-                            <tr>
-                                <td class="col-xs-2">7</td><td class="col-xs-8">Andy Parks</td><td class="col-xs-2">56</td>
-                            </tr>
-                            <tr>
-                                <td class="col-xs-2">8</td><td class="col-xs-8">Bob Skelly</td><td class="col-xs-2">96</td>
-                            </tr>
-                            <tr>
-                                <td class="col-xs-2">9</td><td class="col-xs-8">William Defoe</td><td class="col-xs-2">13</td>
-                            </tr>
-                            <tr>
-                                <td class="col-xs-2">10</td><td class="col-xs-8">Will Tripp</td><td class="col-xs-2">16</td>
-                            </tr>
-                            <tr>
-                                <td class="col-xs-2">11</td><td class="col-xs-8">Bill Champion</td><td class="col-xs-2">44</td>
-                            </tr>
-                            <tr>
-                                <td class="col-xs-2">12</td><td class="col-xs-8">Lastly Jane</td><td class="col-xs-2">6</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        <center>
-                            <button type="button" class="btn btn-warning">Toggle Privacy</button>
-                            <button type="button" class="btn btn-warning">Send to Trash</button>
-                        </center>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
             </div>
         </div>
 

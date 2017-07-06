@@ -1,7 +1,7 @@
 <?php
 
 require_once($_SERVER["DOCUMENT_ROOT"]."/workintent/core/Connection.class.php");
-function getItems($userID,$startTimestamp,$endTimestamp,$type){
+function getItems($userID,$startTimestamp,$endTimestamp,$type,$trash=0){
     $table = null;
     if($type=='pages'){
         $table ='pages';
@@ -11,9 +11,8 @@ function getItems($userID,$startTimestamp,$endTimestamp,$type){
     $startTimestampMillis = $startTimestamp * 1000.0;
     $endTimestampMillis = $endTimestamp * 1000.0;
 
-    $query = "SELECT * FROM $table WHERE userID=$userID AND `localTimestamp` >= $startTimestampMillis AND `localTimestamp` <= $endTimestampMillis ORDER BY `localTimestamp` ASC";
-//    echo $query;
-//    exit();
+    $query = "SELECT * FROM $table WHERE userID=$userID AND `is_coagmento`=0 AND `localTimestamp` >= $startTimestampMillis AND `localTimestamp` <= $endTimestampMillis AND `trash`='$trash' AND `permanently_delete`=0 ORDER BY `localTimestamp` ASC";
+
     $cxn = Connection::getInstance();
     $results = $cxn->commit($query);
     $rows = array();
@@ -24,30 +23,35 @@ function getItems($userID,$startTimestamp,$endTimestamp,$type){
     return $rows;
 
 }
-function getPagesQueries($userID,$startTimestamp,$endTimestamp){
-    $pages = getItems($userID,$startTimestamp,$endTimestamp,'pages');
-    $queries = getItems($userID,$startTimestamp,$endTimestamp,'queries');
+function getPagesQueries($userID,$startTimestamp,$endTimestamp,$trash=0){
+    $pages = getItems($userID,$startTimestamp,$endTimestamp,'pages',$trash);
+    $queries = getItems($userID,$startTimestamp,$endTimestamp,'queries',$trash);
     return array('pages'=>$pages,'queries'=>$queries);
 }
 
-function getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp){
-    $pages_queries = getPagesQueries($userID,$startTimestamp,$endTimestamp);
+function getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,$trash=0){
+    $pages_queries = getPagesQueries($userID,$startTimestamp,$endTimestamp,$trash);
     $pages = $pages_queries['pages'];
     $queries = $pages_queries['queries'];
 
     $index_pages = 0;
     $index_queries = 0;
     $interleaved_objects = array();
-    while($index_pages < count($pages) and $index_queries < count($index_queries)){
+    $lastpage = null;
+    $lastquery = null;
+
+    while($index_pages < count($pages) and $index_queries < count($queries)){
         $lastpage = $pages[$index_pages];
         $lastquery = $queries[$index_queries];
         if($lastpage['localTimestamp'] < $lastquery['localTimestamp']){
             $interleaved_objects[] = $lastpage;
             $interleaved_objects[count($interleaved_objects)-1]['type'] = 'page';
+            $interleaved_objects[count($interleaved_objects)-1]['id'] = $lastpage['pageID'];
             $index_pages += 1;
         }else{
             $interleaved_objects[] = $lastquery;
             $interleaved_objects[count($interleaved_objects)-1]['type'] = 'query';
+            $interleaved_objects[count($interleaved_objects)-1]['id'] = $lastquery['queryID'];
             $index_queries += 1;
         }
     }
@@ -57,11 +61,14 @@ function getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp){
             for($i=$index_pages;$i<count($pages);$i++){
                 $interleaved_objects[] = $pages[$i];
                 $interleaved_objects[count($interleaved_objects)-1]['type'] = 'page';
+                $interleaved_objects[count($interleaved_objects)-1]['id'] = $pages[$i]['pageID'];
             }
         }else{
             for($i=$index_queries;$i<count($queries);$i++){
                 $interleaved_objects[] = $queries[$i];
                 $interleaved_objects[count($interleaved_objects)-1]['type'] = 'query';
+                $interleaved_objects[count($interleaved_objects)-1]['id'] = $queries[$i]['queryID'];
+
             }
         }
 
@@ -71,4 +78,97 @@ function getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp){
 }
 
 
+
+function getHomePageTables($userID,$startTimestamp,$endTimestamp){
+    $day_log = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0);
+    $trash = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,1);
+
+    $day_table = "<table class=\"table table-striped table-fixed\">
+                                <thead>
+                                <tr>
+                                    <th >Time</th>
+                                    <th >Type</th>
+                                    <th >Delete</th>
+                                    <th >Task</th>
+                                    <th >Session</th>
+                                    <th >Title/Query</th>
+                                    <th >URL</th>
+                                </tr>
+                                </thead>
+                                <tbody>";
+
+    foreach($day_log as $page){
+        $day_table .= "<tr>";
+        $day_table .= "<td>".(isset($page['time'])?$page['time']:"")."</td>";
+        $day_table .= "<td>".(isset($page['type'])?$page['type']:"")."</td>";
+
+        $name = '';
+        if($page['type']=='page'){
+            $name='pages[]';
+        }else{
+            $name='queries[]';
+        }
+        $value = $page['id'];
+
+        $day_table .= "<td>"."<input type=\"checkbox\" name='$name' value='$value'>"."</td>";
+
+        $day_table .= "<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>"; //TODO: FIX
+        $day_table .= "<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
+        $day_table .= "<td>".(isset($page['title'])?substr($page['title'],0,15)."...":"")."</td>";
+        $day_table .= "<td>".(isset($page['url'])?substr($page['url'],0,15)."...":"")."</td>";
+        $day_table .= "</tr>";
+
+    }
+    $day_table .= "</tbody>
+                    </table>";
+
+
+
+    $trash_table = "<table class=\"table table-striped table-fixed\">
+                                <thead>
+                                <tr>
+                                    <th >Time</th>
+                                    <th >Type</th>
+                                    <th >Destroy</th>
+                                    <th >Task</th>
+                                    <th >Session</th>
+                                    <th >Title/Query</th>
+                                    <th >URL</th>
+                                </tr>
+                                </thead>
+                                <tbody>";
+
+    foreach($trash as $page){
+        $trash_table .= "<tr>";
+        $trash_table .= "<td>".(isset($page['time'])?$page['time']:"")."</td>";
+        $trash_table .= "<td>".(isset($page['type'])?$page['type']:"")."</td>";
+
+        $name = '';
+        if($page['type']=='page'){
+            $name='pages[]';
+        }else{
+            $name='queries[]';
+        }
+        $value = $page['id'];
+
+
+        $trash_table .= "<td>"."<input type=\"checkbox\" name='$name' value='$value'>"."</td>";
+
+        $trash_table .= "<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>"; //TODO: FIX
+        $trash_table .= "<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
+        $trash_table .= "<td>".(isset($page['title'])?substr($page['title'],0,15)."...":"")."</td>";
+        $trash_table .= "<td>".(isset($page['url'])?substr($page['url'],0,15)."...":"")."</td>";
+        $trash_table .= "</tr>";
+
+    }
+
+    $trash_table .= "</tbody>
+                       </table>";
+
+
+
+    $tables = array('loghtml'=> $day_table,'trashhtml'=>$trash_table);
+    return $tables;
+
+}
 ?>

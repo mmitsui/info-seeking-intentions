@@ -87,7 +87,7 @@ $(document).ready(function(){
         $.ajax({
             type: "POST",
             url: loginUrl,
-            data:{username:$(usernameInputID).val(),password:$(passwordInputID).val()},
+            data:{username:$(usernameInputID).val(),password:$(passwordInputID).val(),browser:"chrome"},
             success: function(msg){
                 msg = JSON.parse(msg);
                 if(msg.success){
@@ -114,7 +114,7 @@ $(document).ready(function(){
         $.ajax({
             type: "POST",
             url: logoutUrl,
-            data:{},
+            data:{browser:"chrome"},
             success: function(msg){
                 msg = JSON.parse(msg);
                 if(msg.success){
