@@ -117,7 +117,9 @@
                             response = JSON.parse(response);
                             $('#log_panel').html(response.loghtml);
                             $('#trash_panel').html(response.trashhtml);
-                            alert("Page has been sent to trash.");
+                            $('#log_confirmation').html("Sent to trash!");
+                            $('#log_confirmation').show();
+                            $('#log_confirmation').fadeOut(1000);
 //                // Make sure that the formMessages div has the 'success' class.
 //                $(formMessages).removeClass('error');
 //                $(formMessages).addClass('success');
@@ -160,7 +162,9 @@
                             response = JSON.parse(response);
                             $('#log_panel').html(response.loghtml);
                             $('#trash_panel').html(response.trashhtml);
-                            alert("Page has been restored.")
+                            $('#trash_confirmation').html("Pages were restored!");
+                            $('#trash_confirmation').show();
+                            $('#trash_confirmation').fadeOut(1000);
                         });
                     }else if($(this).attr("value")=="permanently_delete_button"){
                         $.ajax({
@@ -171,7 +175,9 @@
                             response = JSON.parse(response);
                             $('#log_panel').html(response.loghtml);
                             $('#trash_panel').html(response.trashhtml);
-                            alert("Page has been deleted.")
+                            $('#trash_confirmation').html("Pages were permanently deleted!");
+                            $('#trash_confirmation').show();
+                            $('#trash_confirmation').fadeOut(1000);
                         });
                     }
                 });
@@ -336,6 +342,7 @@
                         <input type="hidden" name="endTimestamp" <?php echo "value='$selectedEndTimeSeconds'"?>/>
                         <input type="submit" class="btn btn-warning" value="Send to Trash">
                     </center>
+                        <center><div id="log_confirmation" class="bg-success"></div></center>
                     </form>
 
 
@@ -412,6 +419,7 @@
                             <button type="button" value="restore_button" class="btn btn-success">Undo Delete</button>
                             <button type="button" value="permanently_delete_button" class="btn btn-danger">Permanently Delete</button>
                         </center>
+                        <center><div id="trash_confirmation" class="bg-success"></div></center>
                     </form>
 
 

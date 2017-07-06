@@ -201,41 +201,34 @@ chrome.tabs.onReplaced.addListener(function(addedTabId, removedTabId){
 
 // Status types: either "loading" or "complete"
 // Note: only use onCommitted
+// TODO: Use only onCommitted?  Or this too?
 // chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
-//                                   var now = new Date();
-//                                   var action = "tabs.onUpdated";
-//                                   var value = tabId;
-//                                   var status = changeInfo.status;
-//                                   var url = changeInfo.url;
-//                                   var pinned = changeInfo.pinned;
-//                                   var audible = changeInfo.audible;
-//                                   var discarded = changeInfo.discarded;
-//                                   var autoDiscardable = changeInfo.autoDiscardable;
-//                                   var mutedInfo = changeInfo.mutedInfo;
-//                                   var favIconUrl = changeInfo.favIconUrl;
-//                                   var title = changeInfo.title;
-//                                   var tab = tab;
+//   var now = new Date();
+//   var action = "tabs.onUpdated";
+//   var value = tabId;
+//   changeInfo.tabId = tabId;
+//   changeInfo.tab = tab;
 
-//                                   changeInfo.tabId = tabId;
-//                                   changeInfo.tab = tab
-
-
-//                                   var data = {
-//                                     action:action,
-//                                     value:value,
-//                                     actionJSON:JSON.stringify(changeInfo)
-//                                   };
-//                                   saveAction(data,now);
-//                                   });
-
-chrome.tabs.onZoomChange.addListener(function(ZoomChangeInfo){
-  var now = new Date();
-  chrome.tabs.get(ZoomChangeInfo.tabId, function(tab){
-    ZoomChangeInfo.windowId = windowId;
-    saveAction("tabs.onZoomChange",ZoomChangeInfo.oldZoomFactor + "," + ZoomChangeInfo.newZoomFactor,ZoomChangeInfo,now);
-  });
   
-});
+//   chrome.tabs.get(changeInfo.tabId, function(tab){
+//     Url = (tab.hasOwnProperty('url')?tab.url:"");
+//     title = (tab.hasOwnProperty('title')?tab.title:"");
+//     active = tab.active;
+//     tabId = (tab.hasOwnProperty('id')?tab.id:-1);
+//     windowId = tab.windowId;
+//     saveAction("tabs.onUpdated",value,changeInfo,now);
+//     savePQ(Url,title,active,tabId,windowId,now);
+//   });
+// });
+
+// chrome.tabs.onZoomChange.addListener(function(ZoomChangeInfo){
+//   var now = new Date();
+//   chrome.tabs.get(ZoomChangeInfo.tabId, function(tab){
+//     ZoomChangeInfo.windowId = windowId;
+//     saveAction("tabs.onZoomChange",ZoomChangeInfo.oldZoomFactor + "," + ZoomChangeInfo.newZoomFactor,ZoomChangeInfo,now);
+//   });
+  
+// });
 
 
 

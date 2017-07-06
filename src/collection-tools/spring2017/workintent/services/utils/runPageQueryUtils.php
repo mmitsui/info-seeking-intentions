@@ -96,6 +96,9 @@ if(isset($_GET['action'])){
             $query = "UPDATE pages SET `sessionID`=1 WHERE `userID`='$userID' AND `pageID` IN ($pageID_list)";
             $cxn->commit($query);
         }
+
+        echo json_encode(getSessionTables($userID,$startTimestamp,$endTimestamp));
+        exit();
     }
     else if($action=='markTask'){
         $pageIDs = postInputAsArray($_POST['pages']);

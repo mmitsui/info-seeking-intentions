@@ -80,6 +80,7 @@ function getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,$trash
 
 
 function getHomePageTables($userID,$startTimestamp,$endTimestamp){
+    //    TODO: "No data" message
     $day_log = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0);
     $trash = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,1);
 
@@ -100,14 +101,21 @@ function getHomePageTables($userID,$startTimestamp,$endTimestamp){
     foreach($day_log as $page){
         $day_table .= "<tr>";
         $day_table .= "<td>".(isset($page['time'])?$page['time']:"")."</td>";
-        $day_table .= "<td>".(isset($page['type'])?$page['type']:"")."</td>";
 
         $name = '';
+        $color = '';
         if($page['type']=='page'){
             $name='pages[]';
+            $color = 'class="warning"';
         }else{
             $name='queries[]';
+            $color = 'class="info"';
         }
+
+        $day_table .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
+
+
+
         $value = $page['id'];
 
         $day_table .= "<td>"."<input type=\"checkbox\" name='$name' value='$value'>"."</td>";
@@ -115,7 +123,8 @@ function getHomePageTables($userID,$startTimestamp,$endTimestamp){
         $day_table .= "<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>"; //TODO: FIX
         $day_table .= "<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
         $day_table .= "<td>".(isset($page['title'])?substr($page['title'],0,15)."...":"")."</td>";
-        $day_table .= "<td>".(isset($page['url'])?substr($page['url'],0,15)."...":"")."</td>";
+        $day_table .= "<td><span title='".$page['url']."'>".(isset($page['url'])?substr($page['url'],0,15)."...":"")."</span></td>";
+
         $day_table .= "</tr>";
 
     }
@@ -141,14 +150,18 @@ function getHomePageTables($userID,$startTimestamp,$endTimestamp){
     foreach($trash as $page){
         $trash_table .= "<tr>";
         $trash_table .= "<td>".(isset($page['time'])?$page['time']:"")."</td>";
-        $trash_table .= "<td>".(isset($page['type'])?$page['type']:"")."</td>";
 
         $name = '';
+        $color = '';
         if($page['type']=='page'){
             $name='pages[]';
+            $color = 'class="warning"';
         }else{
             $name='queries[]';
+            $color = 'class="info"';
         }
+        $trash_table .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
+
         $value = $page['id'];
 
 
@@ -157,7 +170,7 @@ function getHomePageTables($userID,$startTimestamp,$endTimestamp){
         $trash_table .= "<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>"; //TODO: FIX
         $trash_table .= "<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
         $trash_table .= "<td>".(isset($page['title'])?substr($page['title'],0,15)."...":"")."</td>";
-        $trash_table .= "<td>".(isset($page['url'])?substr($page['url'],0,15)."...":"")."</td>";
+        $trash_table .= "<td><span title='".$page['url']."'>".(isset($page['url'])?substr($page['url'],0,15)."...":"")."</span></td>";
         $trash_table .= "</tr>";
 
     }
@@ -170,5 +183,63 @@ function getHomePageTables($userID,$startTimestamp,$endTimestamp){
     $tables = array('loghtml'=> $day_table,'trashhtml'=>$trash_table);
     return $tables;
 
+}
+
+
+function getSessionTables($userID,$startTimestamp,$endTimestamp){
+
+
+    $session_table = "<table class=\"table table-striped table-fixed\">
+                                <thead>
+                                <tr>
+                                    <th >Time</th>
+                                    <th >Type</th>
+                                    <th >Mark</th>
+                                    <th >Task</th>
+                                    <th >Session</th>
+                                    <th >Title/Query</th>
+                                    <th >URL</th>
+
+
+
+
+                                </tr>
+                                </thead>
+                                <tbody>";
+
+    $pagesQueries = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0);
+    $pages =$pagesQueries;
+    foreach($pages as $page){
+        $session_table .= "<tr >";
+        $session_table .="<td>".(isset($page['time'])?$page['time']:"")."</td>";
+
+        $name = '';
+        $color = '';
+        if($page['type']=='page'){
+            $name='pages[]';
+            $color = 'class="warning"';
+        }else{
+            $name='queries[]';
+            $color = 'class="info"';
+        }
+        $value = $page['id'];
+
+        $session_table .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
+        $session_table .= "<td><input type=\"checkbox\" name='$name' value='$value'></td>";
+        $session_table .="<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>";
+        $session_table .="<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
+        $session_table .= "<td>".(isset($page['title'])?substr($page['title'],0,15)."...":"")."</td>";
+        $session_table .= "<td><span title='".$page['url']."'>".(isset($page['url'])?substr($page['url'],0,15)."...":"")."</span></td>";
+
+
+
+
+        $session_table .= "</tr >";
+
+    }
+    $session_table .= "</tbody>
+                    </table>";
+
+    return array('sessionhtml'=>$session_table);
 }
 ?>

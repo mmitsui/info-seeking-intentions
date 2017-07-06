@@ -24,7 +24,7 @@ $selectedEndTimeSeconds  =$selectedEndTimeSeconds['endTime'];
 $startEndTimestampList = getStartEndTimestampsList($userID,strtotime('today midnight'),20);
 
 $taskIDNameMap = getTaskIDNameMap($userID);
-
+$sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds);
 
 ?>
 
@@ -104,12 +104,18 @@ $taskIDNameMap = getTaskIDNameMap($userID);
                     $(session_form_id+" button").click(function(ev){
                         ev.preventDefault()// cancel form submission
                         var formData = $(session_form_id).serialize();
-                        if($(this).attr("value")=="restore_button"){
+                        if($(this).attr("value")=="mark_session_button"){
                             $.ajax({
                                 type: 'POST',
                                 url: $(session_form_id).attr('action'),
                                 data: formData
-                            }).done(function(response) { alert("Sessions have been marked.")});
+                            }).done(function(response) {
+                                response = JSON.parse(response);
+                                $('#session_panel').html(response.sessionhtml);
+                                $('#mark_session_confirmation').html("Session marked!");
+                                $('#mark_session_confirmation').show();
+                                $('#mark_session_confirmation').fadeOut(1000);
+                            });
                         }
                     });
 
@@ -216,83 +222,41 @@ $taskIDNameMap = getTaskIDNameMap($userID);
 
         <!--   Actions and Trash Bin    -->
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-12">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <center><h4>Log</h4></center>
 
                     </div>
                     <form id="session_form" action="../services/utils/runPageQueryUtils.php?action=markSession">
-                        <div class="panel-body tab-pane">
-                            <table class="table table-striped table-fixed">
-                                <thead>
-                                <tr>
-                                    <th >Time</th>
-                                    <th >Type</th>
-                                    <th >Session</th>
-                                    <th >Task</th>
-                                    <th >Session</th>
-                                    <th >Title/Query</th>
-                                    <th >URL</th>
+                        <div class="panel-body tab-pane" id="session_panel">
+                            <?php
+                            echo $sessionTables['sessionhtml'];
+                            ?>
 
-
-
-
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <?php
-
-                                $pagesQueries = getInterleavedPagesQueries($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds,0);
-                                //                            $pagesQueries = getPagesQueries($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds);
-                                //                            $pages =$pagesQueries['pages'];
-                                $pages =$pagesQueries;
-                                foreach($pages as $page){
-                                    ?>
-                                    <tr >
-                                        <td ><?php echo isset($page['time'])?$page['time']:"";?></td>
-                                        <td ><?php echo isset($page['type'])?$page['type']:"";?></td>
-                                        <td ><?php
-                                            $name = '';
-                                            if($page['type']=='page'){
-                                                $name='pages[]';
-                                            }else{
-                                                $name='queries[]';
-                                            }
-                                            $value = $page['id'];
-                                            echo "<input type=\"checkbox\" name='$name' value='$value'>";
-                                            ?></td>
-                                        <td ><?php echo isset($page['taskID'])? $taskIDNameMap[$page['taskID']] :"";?></td>
-                                        <td ><?php echo isset($page['sessionID']) ?$page['sessionID'] : "";?></td>
-                                        <td ><?php echo isset($page['title']) ?$page['title'] : "";?></td>
-                                        <td ><?php echo isset($page['url']) ?substr($page['url'],0,15)."..." : "";?></td>
-                                        <!--                                        <td class="col-xs-1">--><?php //echo $page['localTime'];?><!--</td>-->
-                                        <!--                                        <td class="col-xs-1">Page</td>-->
-                                        <!--                                        <td class="col-xs-1">Checkbox</td>-->
-                                        <!--                                        <td class="col-xs-1">Checkbox</td>-->
-                                        <!--                                        <td class="col-xs-1">ID</td>-->
-                                        <!--                                        <td class="col-xs-2">ID</td>-->
-                                        <!--                                        <td class="col-xs-2">Title</td>-->
-                                        <!--                                        <td class="col-xs-2">URL</td>-->
-                                    </tr>
-                                    <?php
-
-                                }
-                                ?>
-                                </tbody>
-                            </table>
                         </div>
                         <center>
                             <input type="hidden" name="userID" <?php echo "value='$userID'"?>/>
-                            <button type="button" value="restore_button" class="btn btn-success">Mark Session Test</button>
+                            <input type="hidden" name="startTimestamp" <?php echo "value='$selectedStartTimeSeconds'"?>/>
+                            <input type="hidden" name="endTimestamp" <?php echo "value='$selectedEndTimeSeconds'"?>/>
+                            <button type="button" value="mark_session_button" class="btn btn-success">Mark Session</button>
                         </center>
+                        <center><div id="mark_session_confirmation" class="bg-success"></div></center>
                     </form>
 
 
                 </div>
             </div>
 
-            <div class="col-md-4">
+
+        </div>
+
+
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
                 <div class="panel panel-primary">
                     <div class="panel panel-heading">
                         <center><h4>Assign to:</h4></center>
@@ -318,9 +282,8 @@ $taskIDNameMap = getTaskIDNameMap($userID);
                 </div>
             </div>
         </div>
-
-
     </div>
+
     </body>
     </html>
 <?php
