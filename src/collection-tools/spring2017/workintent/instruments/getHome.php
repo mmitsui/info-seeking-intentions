@@ -21,7 +21,7 @@
     $selectedEndTimeSeconds = getStartEndTimestamp($selectedStartTimeSeconds);
     $selectedEndTimeSeconds  =$selectedEndTimeSeconds['endTime'];
 
-    $startEndTimestampList = getStartEndTimestampsList($userID,strtotime('today midnight'),20);
+    $startEndTimestampList = getStartEndTimestampsList($userID,strtotime('today midnight'),10);
 
     $taskIDNameMap = getTaskIDNameMap($userID);
 
@@ -119,7 +119,7 @@
                             $('#trash_panel').html(response.trashhtml);
                             $('#log_confirmation').html("Sent to trash!");
                             $('#log_confirmation').show();
-                            $('#log_confirmation').fadeOut(1000);
+                            $('#log_confirmation').fadeOut(2000);
 //                // Make sure that the formMessages div has the 'success' class.
 //                $(formMessages).removeClass('error');
 //                $(formMessages).addClass('success');
@@ -164,7 +164,7 @@
                             $('#trash_panel').html(response.trashhtml);
                             $('#trash_confirmation').html("Pages were restored!");
                             $('#trash_confirmation').show();
-                            $('#trash_confirmation').fadeOut(1000);
+                            $('#trash_confirmation').fadeOut(2000);
                         });
                     }else if($(this).attr("value")=="permanently_delete_button"){
                         $.ajax({
@@ -177,7 +177,7 @@
                             $('#trash_panel').html(response.trashhtml);
                             $('#trash_confirmation').html("Pages were permanently deleted!");
                             $('#trash_confirmation').show();
-                            $('#trash_confirmation').fadeOut(1000);
+                            $('#trash_confirmation').fadeOut(2000);
                         });
                     }
                 });
@@ -342,7 +342,7 @@
                         <input type="hidden" name="endTimestamp" <?php echo "value='$selectedEndTimeSeconds'"?>/>
                         <input type="submit" class="btn btn-warning" value="Send to Trash">
                     </center>
-                        <center><div id="log_confirmation" class="bg-success"></div></center>
+                        <center><h4 id="log_confirmation" class="bg-success"></h4></center>
                     </form>
 
 
@@ -419,7 +419,7 @@
                             <button type="button" value="restore_button" class="btn btn-success">Undo Delete</button>
                             <button type="button" value="permanently_delete_button" class="btn btn-danger">Permanently Delete</button>
                         </center>
-                        <center><div id="trash_confirmation" class="bg-success"></div></center>
+                        <center><h4 id="trash_confirmation" class="bg-success"></h4></center>
                     </form>
 
 

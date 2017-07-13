@@ -90,10 +90,8 @@ function getHomePageTables($userID,$startTimestamp,$endTimestamp){
                                     <th >Time</th>
                                     <th >Type</th>
                                     <th >Delete</th>
-                                    <th >Task</th>
-                                    <th >Session</th>
                                     <th >Title/Query</th>
-                                    <th >URL</th>
+                                    <th >Domain</th>
                                 </tr>
                                 </thead>
                                 <tbody>";
@@ -120,10 +118,10 @@ function getHomePageTables($userID,$startTimestamp,$endTimestamp){
 
         $day_table .= "<td>"."<input type=\"checkbox\" name='$name' value='$value'>"."</td>";
 
-        $day_table .= "<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>"; //TODO: FIX
-        $day_table .= "<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
-        $day_table .= "<td>".(isset($page['title'])?substr($page['title'],0,15)."...":"")."</td>";
-        $day_table .= "<td><span title='".$page['url']."'>".(isset($page['url'])?substr($page['url'],0,15)."...":"")."</span></td>";
+//        $day_table .= "<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>"; //TODO: FIX
+//        $day_table .= "<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
+        $day_table .= "<td>".(isset($page['title'])?substr($page['title'],0,40)."...":"")."</td>";
+        $day_table .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
 
         $day_table .= "</tr>";
 
@@ -139,10 +137,9 @@ function getHomePageTables($userID,$startTimestamp,$endTimestamp){
                                     <th >Time</th>
                                     <th >Type</th>
                                     <th >Select</th>
-                                    <th >Task</th>
-                                    <th >Session</th>
+                                    
                                     <th >Title/Query</th>
-                                    <th >URL</th>
+                                    <th >Domain</th>
                                 </tr>
                                 </thead>
                                 <tbody>";
@@ -167,10 +164,10 @@ function getHomePageTables($userID,$startTimestamp,$endTimestamp){
 
         $trash_table .= "<td>"."<input type=\"checkbox\" name='$name' value='$value'>"."</td>";
 
-        $trash_table .= "<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>"; //TODO: FIX
-        $trash_table .= "<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
-        $trash_table .= "<td>".(isset($page['title'])?substr($page['title'],0,15)."...":"")."</td>";
-        $trash_table .= "<td><span title='".$page['url']."'>".(isset($page['url'])?substr($page['url'],0,15)."...":"")."</span></td>";
+//        $trash_table .= "<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>"; //TODO: FIX
+//        $trash_table .= "<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
+        $trash_table .= "<td>".(isset($page['title'])?substr($page['title'],0,40)."...":"")."</td>";
+        $day_table .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
         $trash_table .= "</tr>";
 
     }

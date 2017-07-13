@@ -21,7 +21,7 @@ if(isset($_GET['startTime'])){
 $selectedEndTimeSeconds = getStartEndTimestamp($selectedStartTimeSeconds);
 $selectedEndTimeSeconds  =$selectedEndTimeSeconds['endTime'];
 
-$startEndTimestampList = getStartEndTimestampsList($userID,strtotime('today midnight'),20);
+$startEndTimestampList = getStartEndTimestampsList($userID,strtotime('today midnight'),10);
 
 $taskIDNameMap = getTaskIDNameMap($userID);
 $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds);
