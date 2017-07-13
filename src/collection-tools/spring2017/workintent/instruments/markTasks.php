@@ -141,7 +141,7 @@ $taskIDNameMap = getTaskIDNameMap($userID);
 
 
     <body style="background-color:lightgrey">
-    <div class="container">
+    <div class="container-fluid">
         <!--   Dates Tab and Review     -->
         <div class="row">
             <div class="col-md-8">
@@ -191,7 +191,7 @@ $taskIDNameMap = getTaskIDNameMap($userID);
         <!--   Query Log and Progress     -->
         <div class="row">
 
-            <div class="col-md-8">
+            <div class="col-md-12">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <center>
@@ -207,33 +207,7 @@ $taskIDNameMap = getTaskIDNameMap($userID);
                 </div>
             </div>
 
-            <div class="col-md-4">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <center><h4>Assign to:</h4></center>
-                    </div>
-                    <div class="panel-body">
-                        <center>
-                            <div>
-                                <button type="button" class="btn btn-primary">Groceries</button>
-                            </div>
 
-                            <div>
-                                <button type="button" class="btn btn-primary">Important client</button>
-                            </div>
-
-
-                            <div>
-                                <button type="button" class="btn btn-success">+ Add Task</button>
-                            </div>
-                            <div class="form-group">
-                                <textarea class="form-control" rows="1" id="newtask" name="newtask"></textarea>
-                            </div>
-                        </center>
-                    </div>
-
-                </div>
-            </div>
 
         </div>
 
@@ -399,7 +373,31 @@ $taskIDNameMap = getTaskIDNameMap($userID);
 
 
             <div class="col-md-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <center><h4>Assign to:</h4></center>
+                    </div>
+                    <div class="panel-body">
+                        <center>
+                            <div>
+                                <button type="button" class="btn btn-primary">Groceries</button>
+                            </div>
 
+                            <div>
+                                <button type="button" class="btn btn-primary">Important client</button>
+                            </div>
+
+
+                            <div>
+                                <button type="button" class="btn btn-success">+ Add Task</button>
+                            </div>
+                            <div class="form-group">
+                                <textarea class="form-control" rows="1" id="newtask" name="newtask"></textarea>
+                            </div>
+                        </center>
+                    </div>
+
+                </div>
             </div>
 
 

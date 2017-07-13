@@ -194,7 +194,7 @@
 
 
     <body style="background-color:lightgrey">
-    <div class="container">
+    <div class="container-fluid">
         <!--   Dates Tab and Review     -->
 
         <div class="row">
@@ -342,7 +342,7 @@
                         <input type="hidden" name="endTimestamp" <?php echo "value='$selectedEndTimeSeconds'"?>/>
                         <input type="submit" class="btn btn-warning" value="Send to Trash">
                     </center>
-                        <center><h4 id="log_confirmation" class="bg-success"></h4></center>
+                        <center><h3 id="log_confirmation" class="bg-success"></h3></center>
                     </form>
 
 
@@ -419,7 +419,7 @@
                             <button type="button" value="restore_button" class="btn btn-success">Undo Delete</button>
                             <button type="button" value="permanently_delete_button" class="btn btn-danger">Permanently Delete</button>
                         </center>
-                        <center><h4 id="trash_confirmation" class="bg-success"></h4></center>
+                        <center><h3 id="trash_confirmation" class="bg-success"></h3></center>
                     </form>
 
 

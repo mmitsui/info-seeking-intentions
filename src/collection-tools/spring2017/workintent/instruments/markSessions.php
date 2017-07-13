@@ -101,6 +101,10 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
             var session_form_id= '#session_form';
 
             $(document).ready(function(){
+//                $(session_form_id+" input[type='checkbox']").filter(function() {
+//                    return ($(this).data('table-index') > 3 && $(this).data('table-index') < 10);
+//                }).prop( "checked", true );
+
                     $(session_form_id+" button").click(function(ev){
                         ev.preventDefault()// cancel form submission
                         var formData = $(session_form_id).serialize();
@@ -114,7 +118,7 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
                                 $('#session_panel').html(response.sessionhtml);
                                 $('#mark_session_confirmation').html("Session marked!");
                                 $('#mark_session_confirmation').show();
-                                $('#mark_session_confirmation').fadeOut(1000);
+                                $('#mark_session_confirmation').fadeOut(2000);
                             });
                         }
                     });
@@ -149,7 +153,7 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
 
 
     <body style="background-color:lightgrey">
-    <div class="container">
+    <div class="container-fluid">
         <!--   Dates Tab and Review     -->
         <div class="row">
             <div class="col-md-8">

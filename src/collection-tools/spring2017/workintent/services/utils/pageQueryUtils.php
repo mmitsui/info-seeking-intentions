@@ -120,7 +120,7 @@ function getHomePageTables($userID,$startTimestamp,$endTimestamp){
 
 //        $day_table .= "<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>"; //TODO: FIX
 //        $day_table .= "<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
-        $day_table .= "<td>".(isset($page['title'])?substr($page['title'],0,40)."...":"")."</td>";
+        $day_table .= "<td>".(isset($page['title'])?substr($page['title'],0,60)."...":"")."</td>";
         $day_table .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
 
         $day_table .= "</tr>";
@@ -166,8 +166,8 @@ function getHomePageTables($userID,$startTimestamp,$endTimestamp){
 
 //        $trash_table .= "<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>"; //TODO: FIX
 //        $trash_table .= "<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
-        $trash_table .= "<td>".(isset($page['title'])?substr($page['title'],0,40)."...":"")."</td>";
-        $day_table .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
+        $trash_table .= "<td>".(isset($page['title'])?substr($page['title'],0,60)."...":"")."</td>";
+        $trash_table .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
         $trash_table .= "</tr>";
 
     }
@@ -195,7 +195,7 @@ function getSessionTables($userID,$startTimestamp,$endTimestamp){
                                     <th >Task</th>
                                     <th >Session</th>
                                     <th >Title/Query</th>
-                                    <th >URL</th>
+                                    <th >Domain</th>
 
 
 
@@ -206,6 +206,7 @@ function getSessionTables($userID,$startTimestamp,$endTimestamp){
 
     $pagesQueries = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0);
     $pages =$pagesQueries;
+    $table_index = 0;
     foreach($pages as $page){
         $session_table .= "<tr >";
         $session_table .="<td>".(isset($page['time'])?$page['time']:"")."</td>";
@@ -222,11 +223,12 @@ function getSessionTables($userID,$startTimestamp,$endTimestamp){
         $value = $page['id'];
 
         $session_table .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
-        $session_table .= "<td><input type=\"checkbox\" name='$name' value='$value'></td>";
+        $session_table .= "<td><input data-table-index=\"$table_index\" type=\"checkbox\" name='$name' value='$value'></td>";
         $session_table .="<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>";
         $session_table .="<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
-        $session_table .= "<td>".(isset($page['title'])?substr($page['title'],0,15)."...":"")."</td>";
-        $session_table .= "<td><span title='".$page['url']."'>".(isset($page['url'])?substr($page['url'],0,15)."...":"")."</span></td>";
+        $session_table .= "<td>".(isset($page['title'])?substr($page['title'],0,30)."...":"")."</td>";
+        $session_table .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
+        $table_index += 1;
 
 
 
