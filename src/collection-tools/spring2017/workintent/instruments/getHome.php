@@ -193,15 +193,14 @@
 
 
 
-    <body style="background-color:lightgrey">
+    <body style="background-color:gainsboro">
     <div class="container-fluid">
         <!--   Dates Tab and Review     -->
 
         <div class="row">
             <div class="col-md-8">
                 <h1>Welcome,
-                    <?php echo $base->getFirstName()." ".$base->getLastName();?>
-                    !
+                    <?php echo $base->getFirstName()." ".$base->getLastName();?>!
                 </h1>
             </div>
         </div>

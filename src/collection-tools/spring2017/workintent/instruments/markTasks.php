@@ -140,7 +140,7 @@ $taskIDNameMap = getTaskIDNameMap($userID);
 
 
 
-    <body style="background-color:lightgrey">
+    <body style="background-color:gainsboro">
     <div class="container-fluid">
         <!--   Dates Tab and Review     -->
         <div class="row">
@@ -380,17 +380,12 @@ $taskIDNameMap = getTaskIDNameMap($userID);
                     <div class="panel-body">
                         <center>
                             <div>
-                                <button type="button" class="btn btn-primary">Groceries</button>
-                            </div>
-
-                            <div>
-                                <button type="button" class="btn btn-primary">Important client</button>
+                                <p><button type="button" class="btn btn-primary btn-block">Groceries</button></p>
+                                <p><button type="button" class="btn btn-primary btn-block">Important client</button></p>
+                                <button type="button" class="btn btn-success btn-block">+ Add Task</button>
                             </div>
 
 
-                            <div>
-                                <button type="button" class="btn btn-success">+ Add Task</button>
-                            </div>
                             <div class="form-group">
                                 <textarea class="form-control" rows="1" id="newtask" name="newtask"></textarea>
                             </div>

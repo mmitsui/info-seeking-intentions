@@ -42,7 +42,7 @@
 
 
 
-    <body style="background-color:lightgrey">
+    <body style="background-color:gainsboro">
     <div class="container">
         <!--   Query Log and Progress     -->
         <div class="row">
