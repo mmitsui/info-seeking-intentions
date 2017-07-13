@@ -138,7 +138,7 @@ function getHomePageTables($userID,$startTimestamp,$endTimestamp){
                                 <tr>
                                     <th >Time</th>
                                     <th >Type</th>
-                                    <th >Destroy</th>
+                                    <th >Select</th>
                                     <th >Task</th>
                                     <th >Session</th>
                                     <th >Title/Query</th>
