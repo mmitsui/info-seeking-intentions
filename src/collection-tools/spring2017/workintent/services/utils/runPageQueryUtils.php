@@ -3,6 +3,7 @@
 require_once($_SERVER["DOCUMENT_ROOT"]."/workintent/core/Connection.class.php");
 require_once($_SERVER["DOCUMENT_ROOT"]."/workintent/core/Base.class.php");
 require_once($_SERVER["DOCUMENT_ROOT"]."/workintent/services/utils/pageQueryUtils.php");
+require_once($_SERVER["DOCUMENT_ROOT"]."/workintent/services/utils/sessionTaskUtils.php");
 
 function postInputAsArray($inp){
     $arr = array();
@@ -115,6 +116,11 @@ if(isset($_GET['action'])){
             $query = "UPDATE pages SET `taskID`=5 WHERE `userID`='$userID' AND `pageID` IN ($pageID_list)";
             $cxn->commit($query);
         }
+    }else if($action=='addTask'){
+        $taskName = $_POST['taskName'];
+        addTask($userID,$taskName);
+        echo json_encode(getTasksPanel($userID));
+        exit();
     }
 
 }

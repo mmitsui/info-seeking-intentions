@@ -36,14 +36,17 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
         </title>
 
         <link rel="stylesheet" href="../study_styles/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.1/css/bootstrap-slider.min.css">
+
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.1/bootstrap-slider.min.js"></script>
 
         <style>
             .tab-pane{
                 height:300px;
                 overflow-y:scroll;
-                width:100%;
+                width:90%;
             }
             /*table {*/
             /*width: 100%;*/
@@ -101,6 +104,11 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
             var session_form_id= '#session_form';
 
             $(document).ready(function(){
+                    $("#ex4").slider({
+                        reversed : true
+                    });
+
+
 //                $(session_form_id+" input[type='checkbox']").filter(function() {
 //                    return ($(this).data('table-index') > 3 && $(this).data('table-index') < 10);
 //                }).prop( "checked", true );
@@ -233,10 +241,23 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
 
                     </div>
                     <form id="session_form" action="../services/utils/runPageQueryUtils.php?action=markSession">
-                        <div class="panel-body tab-pane" id="session_panel">
-                            <?php
-                            echo $sessionTables['sessionhtml'];
-                            ?>
+                        <div class="panel-body" id="session_panel">
+<!--                        <div class="panel-body tab-pane" id="session_panel">-->
+<!--                            <div class="row">-->
+<!--                                <div class="col-xs-2 border col-xs-offset-4">div 1</div>-->
+<!--                                <div class="col-xs-2 border">div 2</div>-->
+<!--                            </div>-->
+                            <div class="row">
+                                <div class="col-md-1 border">
+                                    <input id="ex4" type="text" height="100%" data-slider-min="-5" data-slider-max="20" data-slider-step="1" data-slider-value="[0,10]" data-slider-orientation="vertical"/>
+                                </div>
+                                <div class="col-md-11 border tab-pane">
+                                    <?php
+                                    echo $sessionTables['sessionhtml'];
+                                    ?>
+                                </div>
+                            </div>
+
 
                         </div>
                         <center>

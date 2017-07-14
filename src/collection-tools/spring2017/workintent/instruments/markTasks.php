@@ -25,6 +25,8 @@ $startEndTimestampList = getStartEndTimestampsList($userID,strtotime('today midn
 
 $taskIDNameMap = getTaskIDNameMap($userID);
 
+$taskPanel = getTasksPanel($userID);
+
 
 ?>
 
@@ -103,8 +105,33 @@ $taskIDNameMap = getTaskIDNameMap($userID);
         <script>
             var task_form_id_1= '#task_form_1';
             var task_form_id_2= '#task_form_2';
+            var add_task_form_id = '#add_task_form';
+
 
             $(document).ready(function(){
+                $(add_task_form_id+" button").click(function(ev){
+                    ev.preventDefault()// cancel form submission
+                    var formData = $(add_task_form_id).serialize();
+                    if($(this).attr("value")=="addtask_button"){
+                        $.ajax({
+                            type: 'POST',
+                            url: $(add_task_form_id).attr('action'),
+                            data: formData
+                        }).done(function(response) {
+                            alert(response);
+                            response = JSON.parse(response);
+                            $('#addtask_panel').html(response.taskshtml);
+                            $('#addtask_confirmation').html("Task added!");
+                            $('#addtask_confirmation').show();
+                            $('#addtask_confirmation').fadeOut(2000);
+                        });
+                    }
+                });
+                $("form input[type=submit]").click(function() {
+                    $("input[type=submit]", $(this).parents("form")).removeAttr("clicked");
+                    $(this).attr("clicked", "true");
+                });
+
                     $(task_form_id_1+" button").click(function(ev){
                         ev.preventDefault()// cancel form submission
                         var formData = $(task_form_id_1).serialize();
@@ -221,7 +248,10 @@ $taskIDNameMap = getTaskIDNameMap($userID);
                     <div class="panel-body">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
-                                <center><button type="button" class="btn btn-info" data-toggle="collapse" data-target="#session1">Session 1</button></center>
+                                <center>
+                                    <input type="checkbox" name="optionsRadios" id="checkOne" value="one">
+                                    <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#session1">Session 1</button>
+                                </center>
                             </div>
 
                             <form id="task_form_1" action="../services/utils/runPageQueryUtils.php?action=markTask">
@@ -377,19 +407,13 @@ $taskIDNameMap = getTaskIDNameMap($userID);
                     <div class="panel-heading">
                         <center><h4>Assign to:</h4></center>
                     </div>
-                    <div class="panel-body">
-                        <center>
-                            <div>
-                                <p><button type="button" class="btn btn-primary btn-block">Groceries</button></p>
-                                <p><button type="button" class="btn btn-primary btn-block">Important client</button></p>
-                                <button type="button" class="btn btn-success btn-block">+ Add Task</button>
-                            </div>
+                    <div class="panel-body" id="addtask_panel">
 
+                        <?php
+                            echo $taskPanel['taskshtml'];
+                        ?>
+                        </form>
 
-                            <div class="form-group">
-                                <textarea class="form-control" rows="1" id="newtask" name="newtask"></textarea>
-                            </div>
-                        </center>
                     </div>
 
                 </div>
