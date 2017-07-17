@@ -4,6 +4,7 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/workintent/core/Connection.class.php");
 require_once($_SERVER["DOCUMENT_ROOT"]."/workintent/core/Base.class.php");
 require_once($_SERVER["DOCUMENT_ROOT"]."/workintent/services/utils/pageQueryUtils.php");
 require_once($_SERVER["DOCUMENT_ROOT"]."/workintent/services/utils/sessionTaskUtils.php");
+require_once($_SERVER["DOCUMENT_ROOT"]."/workintent/services/utils/querySegmentIntentUtils.php");
 
 function postInputAsArray($inp){
     $arr = array();
@@ -92,16 +93,25 @@ if(isset($_GET['action'])){
         echo json_encode(getSessionTables($userID,$startTimestamp,$endTimestamp));
         exit();
     }
-    else if($action=='markTask'){
+    else if($action=='markTasks'){
         $sessionIDs = postInputAsArray($_POST['sessionIDs']);
         $taskID = $_POST['taskID'];
-        $sessionIDs = markTaskID($userID,$sessionID,$taskID);
-        echo json_encode(getSessionTables($userID,$startTimestamp,$endTimestamp));
+        markTaskID($userID,$sessionIDs,$taskID);
+        echo json_encode(getMarkTasksPanels($userID,$startTimestamp,$endTimestamp));
         exit();
     }else if($action=='addTask'){
         $taskName = $_POST['taskName'];
         addTask($userID,$taskName);
         echo json_encode(getTasksPanel($userID));
+        exit();
+    }else if($action=='markQuerySegment'){
+        $pageIDs = postInputAsArray($_POST['pages']);
+        $queryIDs = postInputAsArray($_POST['queries']);
+
+        $querySegmentID = makeNextQuerySegmentID($userID);
+        markQuerySegmentID($userID,$querySegmentID,$pageIDs,$queryIDs);
+
+        echo json_encode(getQuerySegmentTables($userID,$startTimestamp,$endTimestamp));
         exit();
     }
 

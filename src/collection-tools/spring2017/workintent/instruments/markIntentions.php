@@ -1,11 +1,34 @@
 <?php
-	session_start();
-	require_once('../core/Base.class.php');
-	require_once('../core/Util.class.php');
-    require_once('../services/utils/loginUtils.php');
-    require_once('../services/utils/dayTimeUtils.php');
+session_start();
+require_once('../core/Base.class.php');
+require_once('../core/Util.class.php');
+require_once('../services/utils/loginUtils.php');
+require_once('../services/utils/dayTimeUtils.php');
+require_once('../services/utils/pageQueryUtils.php');
+require_once('../services/utils/sessionTaskUtils.php');
+require_once('../services/utils/querySegmentIntentUtils.php');
 
-    isSessionOrDie();
+isSessionOrDie();
+
+$base = Base::getInstance();
+$userID = $base->getUserID();
+
+$selectedStartTimeSeconds = null;
+if(isset($_GET['startTime'])){
+    $selectedStartTimeSeconds = $_GET['startTime'];
+}else{
+    $selectedStartTimeSeconds  = strtotime('today midnight');
+}
+$selectedEndTimeSeconds = getStartEndTimestamp($selectedStartTimeSeconds);
+$selectedEndTimeSeconds  =$selectedEndTimeSeconds['endTime'];
+
+$startEndTimestampList = getStartEndTimestampsList($userID,strtotime('today midnight'),10);
+
+$taskIDNameMap = getTaskIDNameMap($userID);
+
+$markIntentionsPanels = getMarkIntentionsPanels($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds);
+
+$intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds);
 ?>
 
 
@@ -15,27 +38,133 @@
             Research Study Registration: Introduction
         </title>
 
-<!--        <link rel="stylesheet" href="../study_styles/bootstrap-lumen/css/bootstrap.min.css">-->
+        <!--        <link rel="stylesheet" href="../study_styles/bootstrap-lumen/css/bootstrap.min.css">-->
         <link rel="stylesheet" href="../study_styles/bootstrap-3.3.7-dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="../study_styles/bootstrap-3.3.7-dist/js/bootstrap.min.js">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
 
         <style>
-            .table-fixed thead {
-                width: 97%;
+            .tab-pane{
+                height:300px;
+                overflow-y:scroll;
+                width:100%;
             }
-            .table-fixed tbody {
-                height: 230px;
-                overflow-y: auto;
-                width: 100%;
-            }
-            .table-fixed thead, .table-fixed tbody, .table-fixed tr, .table-fixed td, .table-fixed th {
-                display: block;
-            }
-            .table-fixed tbody td, .table-fixed thead > tr> th {
-                float: left;
-                border-bottom-width: 0;
-            }
+            /*table {*/
+            /*width: 100%;*/
+            /*}*/
+
+            /*thead, tbody, tr, td, th { display,: block; }*/
+
+            /*tr:after {*/
+            /*content: ' ';*/
+            /*display: block;*/
+            /*visibility: hidden;*/
+            /*clear: both;*/
+            /*}*/
+
+            /*thead th {*/
+            /*height: 30px;*/
+
+            /*!*text-align: left;*!*/
+            /*}*/
+
+            /*tbody {*/
+            /*height: 120px;*/
+            /*overflow-y: auto;*/
+            /*}*/
+
+            /*thead {*/
+            /*!* fallback *!*/
+            /*}*/
+
+
+            /*tbody td, thead th {*/
+            /*width: 19.2%;*/
+            /*float: left;*/
+            /*}*/
+
+
+            /*.table-fixed thead {*/
+            /*width: 97%;*/
+            /*}*/
+            /*.table-fixed tbody {*/
+            /*height: 230px;*/
+            /*overflow-y: auto;*/
+            /*width: 100%;*/
+            /*}*/
+            /*.table-fixed thead, .table-fixed tbody, .table-fixed tr, .table-fixed td, .table-fixed th {*/
+            /*display: block;*/
+            /*}*/
+            /*.table-fixed tbody td, .table-fixed thead > tr> th {*/
+            /*float: left;*/
+            /*border-bottom-width: 0;*/
+            /*}*/
         </style>
+
+
+        <script>
+            var mark_intentions_form_id= '#mark_intentions_form';
+            var intentions_panel_id= '#mark_intentions_panel';
+            var intentions_button_panel_id = '#intentions_buttons';
+            var add_intentions_form_id = '#add_intentions_form';
+
+
+
+
+            $(document).ready(function(){
+                $(task_button_panel_id+" button").click(function(ev) {
+                    ev.preventDefault();
+                    var taskID = $(this).data('task-id')
+                    alert(taskID);
+                    var formData = $(mark_task_form_id).serialize();
+                    formData = formData + "&taskID="+taskID;
+                    alert(formData);
+                    alert($(mark_task_form_id).attr('action'));
+                    $.ajax({
+                        type: 'POST',
+                        url: $(mark_task_form_id).attr('action'),
+                        data: formData
+                    }).done(function(response) {
+                        alert(response);
+                        response = JSON.parse(response);
+                        $(tasks_panel_id).html(response.taskpanels_html);
+                        $('#addtask_confirmation').html("Task annotated!");
+                        $('#addtask_confirmation').show();
+                        $('#addtask_confirmation').fadeOut(2000);
+                    });
+                });
+
+                $(add_task_form_id+" button").click(function(ev){
+                    ev.preventDefault()// cancel form submission
+                    var formData = $(add_task_form_id).serialize();
+                    alert(formData);
+                    if($(this).attr("value")=="addtask_button"){
+                        $.ajax({
+                            type: 'POST',
+                            url: $(add_task_form_id).attr('action'),
+                            data: formData
+                        }).done(function(response) {
+//                            alert(response);
+                            response = JSON.parse(response);
+                            $('#addtask_panel').html(response.taskshtml);
+                            $('#addtask_confirmation').html("Task added!");
+                            $('#addtask_confirmation').show();
+                            $('#addtask_confirmation').fadeOut(2000);
+                        });
+                    }
+                });
+//                $("form input[type=submit]").click(function() {
+//                    $("input[type=submit]", $(this).parents("form")).removeAttr("clicked");
+//                    $(this).attr("clicked", "true");
+//                });
+
+
+                }
+            );
+
+
+        </script>
     </head>
 
 
@@ -43,66 +172,33 @@
 
 
     <body style="background-color:gainsboro">
-    <div class="container">
-        <!--   Query Log and Progress     -->
+    <div class="container-fluid">
+        <!--   Dates Tab and Review     -->
         <div class="row">
             <div class="col-md-8">
+
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <center><h4>Query Segment</h4></center>
-
+                        <center><h4>Choose a Day</h4></center>
                     </div>
                     <div class="panel-body">
-                        <table class="table table-striped table-fixed">
-                            <thead>
-                            <tr>
-                                <th class="col-xs-2">#</th><th class="col-xs-8">Name</th><th class="col-xs-2">Points</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td class="col-xs-2">1</td><td class="col-xs-8">Mike Adams</td><td class="col-xs-2">23</td>
-                            </tr>
-                            <tr>
-                                <td class="col-xs-2">2</td><td class="col-xs-8">Holly Galivan</td><td class="col-xs-2">44</td>
-                            </tr>
-                            <tr>
-                                <td class="col-xs-2">3</td><td class="col-xs-8">Mary Shea</td><td class="col-xs-2">86</td>
-                            </tr>
-                            <tr>
-                                <td class="col-xs-2">4</td><td class="col-xs-8">Jim Adams</td><td>23</td>
-                            </tr>
-                            <tr>
-                                <td class="col-xs-2">5</td><td class="col-xs-8">Henry Galivan</td><td class="col-xs-2">44</td>
-                            </tr>
-                            <tr>
-                                <td class="col-xs-2">6</td><td class="col-xs-8">Bob Shea</td><td class="col-xs-2">26</td>
-                            </tr>
-                            <tr>
-                                <td class="col-xs-2">7</td><td class="col-xs-8">Andy Parks</td><td class="col-xs-2">56</td>
-                            </tr>
-                            <tr>
-                                <td class="col-xs-2">8</td><td class="col-xs-8">Bob Skelly</td><td class="col-xs-2">96</td>
-                            </tr>
-                            <tr>
-                                <td class="col-xs-2">9</td><td class="col-xs-8">William Defoe</td><td class="col-xs-2">13</td>
-                            </tr>
-                            <tr>
-                                <td class="col-xs-2">10</td><td class="col-xs-8">Will Tripp</td><td class="col-xs-2">16</td>
-                            </tr>
-                            <tr>
-                                <td class="col-xs-2">11</td><td class="col-xs-8">Bill Champion</td><td class="col-xs-2">44</td>
-                            </tr>
-                            <tr>
-                                <td class="col-xs-2">12</td><td class="col-xs-8">Lastly Jane</td><td class="col-xs-2">6</td>
-                            </tr>
-                            </tbody>
-                        </table>
+                        <center>
+                            <div class="btn-group btn-group-lg" role="group" aria-label="...">
+
+                                <div class="btn-group btn-group-lg" role="group" aria-label="...">
+                                    <?php
+                                    $dayButtonStrings = dayButtonStrings($startEndTimestampList, 'http://coagmento.org/workintent/instruments/markTasks.php', $selectedStartTimeSeconds);
+                                    foreach($dayButtonStrings as $button){
+                                        echo "$button\n";
+                                    }
+
+                                    ?>
+
+                                </div>
+                            </div>
+                        </center>
 
                     </div>
-
-
-
                 </div>
             </div>
 
@@ -120,6 +216,29 @@
                 </div>
             </div>
 
+        </div>
+
+
+        <!--   Query Log and Progress     -->
+        <div class="row">
+
+            <div class="col-md-12">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <center>
+                            <?php
+                            $actionUrls = actionUrls($selectedStartTimeSeconds);
+                            echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['sessions']."'>&laquo; Back (Sessions)</a>";
+                            echo "&nbsp;&nbsp;&nbsp;&nbsp;";
+                            echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['query segments']."'>Next (Query Segments) &raquo;</a>";
+                            ?>
+                        </center>
+                    </div>
+
+                </div>
+            </div>
+
+
 
         </div>
 
@@ -128,64 +247,50 @@
             <div class="col-md-8">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <center><h4>Actions</h4></center>
+                        <center><h4>Sessions</h4></center>
                     </div>
-                    <div class="panel-body">
+                    <form id="mark_task_form" action="../services/utils/runPageQueryUtils.php?action=markTasks">
+                    <div class="panel-body" id="mark_tasks_panel">
+
+
+                        <?php
+                        echo $markTasksPanels['taskpanels_html'];
+                        ?>
+
+
+                    </div>
                         <center>
-                            <button type="button" class="btn btn-success">Go to Mark Sessions</button>
-                            <button type="button" class="btn btn-success">Go to Mark Segments</button>
-                            <button type="button" class="btn btn-success">Go to Mark Intentions</button>
+                            <input type="hidden" name="userID" <?php echo "value='$userID'";?>/>
+                            <input type="hidden" name="startTimestamp" <?php echo "value='$selectedStartTimeSeconds'";?>/>
+                            <input type="hidden" name="endTimestamp" <?php echo "value='$selectedEndTimeSeconds'";?>/>
                         </center>
-                    </div>
+                    </form>
+
                 </div>
             </div>
+
 
             <div class="col-md-4">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <center><h4>Intentions</h4></center>
+                        <center><h4>Assign to:</h4></center>
                     </div>
-                    <div class="panel-body">
-                        <center>
+                    <div class="panel-body" id="addtask_panel">
 
-                            <div class="checkbox">
-                                <label data-toggle="collapse" data-target="#collapseOne">
-                                    <input type="checkbox"/> Intent 1
-                                </label>
-                            </div>
+                        <?php
+                            echo $tasksPanel['taskshtml'];
+                        ?>
 
-                            <div class="checkbox">
-                                <label data-toggle="collapse" data-target="#collapseOne">
-                                    <input type="checkbox"/> Intent 2
-                                </label>
-                            </div>
 
-                            <div class="checkbox">
-                                <label data-toggle="collapse" data-target="#collapseOne">
-                                    <input type="checkbox"/> Intent 3
-                                </label>
-                            </div>
-
-                            <div class="checkbox">
-                                <label data-toggle="collapse" data-target="#collapseOne">
-                                    <input type="checkbox"/> Intent 4
-                                </label>
-                            </div>
-
-                            <div class="checkbox">
-                                <label data-toggle="collapse" data-target="#collapseOne">
-                                    <input type="checkbox"/> Intent 5
-                                </label>
-                            </div>
-                        </center>
                     </div>
+
                 </div>
-            </div><div class="col-md-4">
-
             </div>
-
-
         </div>
+
+        <?php
+        echo $markTasksPanels['nullpanel_html'];
+        ?>
 
 
     </div>

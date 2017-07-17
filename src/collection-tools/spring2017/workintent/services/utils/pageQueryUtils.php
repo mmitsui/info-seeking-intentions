@@ -15,16 +15,14 @@ function getItems($userID,$startTimestamp,$endTimestamp,$type,$trash=0,$sessionI
         if(is_null($sessionID)){
             $sessionID_querysegment = "and sessionID IS NULL";
         }else{
-            if(is_null($sessionID)){
-                $sessionID_querysegment = "and sessionID=$sessionID";
-            }
+            $sessionID_querysegment = "and sessionID=$sessionID";
         }
     }
     $startTimestampMillis = $startTimestamp * 1000.0;
     $endTimestampMillis = $endTimestamp * 1000.0;
 
     $query = "SELECT * FROM $table WHERE userID=$userID AND `is_coagmento`=0 AND `localTimestamp` >= $startTimestampMillis AND `localTimestamp` <= $endTimestampMillis AND `trash`='$trash' AND `permanently_delete`=0 $sessionID_querysegment ORDER BY `localTimestamp` ASC";
-
+//    echo $query;
     $cxn = Connection::getInstance();
     $results = $cxn->commit($query);
     $rows = array();

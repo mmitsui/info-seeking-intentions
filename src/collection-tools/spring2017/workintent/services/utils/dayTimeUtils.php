@@ -86,7 +86,9 @@ function actionUrls($selectedTime = null){
     $homeUrl = 'http://coagmento.org/workintent/instruments/getHome.php'."?startTime=$selectedTime&endTime=$endSelectedTime";
     $markSessionsUrl = 'http://coagmento.org/workintent/instruments/markSessions.php'."?startTime=$selectedTime&endTime=$endSelectedTime";
     $markTasksUrl = 'http://coagmento.org/workintent/instruments/markTasks.php'."?startTime=$selectedTime&endTime=$endSelectedTime";
-    $chooseIntentionsUrl = 'http://coagmento.org/workintent/instruments/chooseIntentions.php'."?startTime=$selectedTime&endTime=$endSelectedTime";
+//    $chooseIntentionsUrl = 'http://coagmento.org/workintent/instruments/chooseIntentions.php'."?startTime=$selectedTime&endTime=$endSelectedTime";
+    $markIntentionsUrl = 'http://coagmento.org/workintent/instruments/markIntentions.php'."?startTime=$selectedTime&endTime=$endSelectedTime";
+    $markQuerySegmentsUrl = 'http://coagmento.org/workintent/instruments/markQuerySegments.php'."?startTime=$selectedTime&endTime=$endSelectedTime";
 //    $homeUrl = 'http://coagmento.org/workintent/instruments/getHome.php'."?startTime=$selectedTime&endTime=$endSelectedTime";
 
 
@@ -109,7 +111,9 @@ function actionUrls($selectedTime = null){
 
     $urlsArray['tasks'] = $markTasksUrl;
 
-    $urlsArray['intentions'] = $chooseIntentionsUrl;
+    $urlsArray['query segments'] = $markQuerySegmentsUrl;
+
+    $urlsArray['intentions'] = $markIntentionsUrl;
 
     return $urlsArray;
 

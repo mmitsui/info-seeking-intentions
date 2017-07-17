@@ -25,9 +25,9 @@ $startEndTimestampList = getStartEndTimestampsList($userID,strtotime('today midn
 
 $taskIDNameMap = getTaskIDNameMap($userID);
 
-$taskPanel = getTasksPanel($userID);
+$markTasksPanels = getMarkTasksPanels($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds);
 
-
+$tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds);
 ?>
 
 
@@ -104,8 +104,7 @@ $taskPanel = getTasksPanel($userID);
 
         <script>
             var mark_task_form_id= '#mark_task_form';
-            var task_form_id_1= '#task_form_1';
-            var task_form_id_2= '#task_form_2';
+            var tasks_panel_id= '#mark_tasks_panel';
             var task_button_panel_id = '#task_buttons';
             var add_task_form_id = '#add_task_form';
 
@@ -117,19 +116,22 @@ $taskPanel = getTasksPanel($userID);
                     ev.preventDefault();
                     var taskID = $(this).data('task-id')
                     alert(taskID);
-//                    var formData = $(add_task_form_id).serialize();
-//                    formData = formData + "&taskID="+taskID;
-//                    $.ajax({
-//                        type: 'POST',
-//                        url: $(add_task_form_id).attr('action'),
-//                        data: formData
-//                    }).done(function(response) {
-//                        response = JSON.parse(response);
-//                        $('#addtask_panel').html(response.taskshtml);
-//                        $('#addtask_confirmation').html("Task added!");
-//                        $('#addtask_confirmation').show();
-//                        $('#addtask_confirmation').fadeOut(2000);
-//                    });
+                    var formData = $(mark_task_form_id).serialize();
+                    formData = formData + "&taskID="+taskID;
+                    alert(formData);
+                    alert($(mark_task_form_id).attr('action'));
+                    $.ajax({
+                        type: 'POST',
+                        url: $(mark_task_form_id).attr('action'),
+                        data: formData
+                    }).done(function(response) {
+                        alert(response);
+                        response = JSON.parse(response);
+                        $(tasks_panel_id).html(response.taskpanels_html);
+                        $('#addtask_confirmation').html("Task annotated!");
+                        $('#addtask_confirmation').show();
+                        $('#addtask_confirmation').fadeOut(2000);
+                    });
                 });
 
                 $(add_task_form_id+" button").click(function(ev){
@@ -151,34 +153,11 @@ $taskPanel = getTasksPanel($userID);
                         });
                     }
                 });
-                $("form input[type=submit]").click(function() {
-                    $("input[type=submit]", $(this).parents("form")).removeAttr("clicked");
-                    $(this).attr("clicked", "true");
-                });
+//                $("form input[type=submit]").click(function() {
+//                    $("input[type=submit]", $(this).parents("form")).removeAttr("clicked");
+//                    $(this).attr("clicked", "true");
+//                });
 
-                    $(task_form_id_1+" button").click(function(ev){
-                        ev.preventDefault()// cancel form submission
-                        var formData = $(task_form_id_1).serialize();
-                        if($(this).attr("value")=="restore_button"){
-                            $.ajax({
-                                type: 'POST',
-                                url: $(task_form_id_1).attr('action'),
-                                data: formData
-                            }).done(function(response) { alert("Tasks have been marked.")});
-                        }
-                    });
-
-                $(task_form_id_2+" button").click(function(ev){
-                    ev.preventDefault()// cancel form submission
-                    var formData = $(task_form_id_2).serialize();
-                    if($(this).attr("value")=="restore_button"){
-                        $.ajax({
-                            type: 'POST',
-                            url: $(task_form_id_2).attr('action'),
-                            data: formData
-                        }).done(function(response) { alert("Tasks have been marked.")});
-                    }
-                });
 
                 }
             );
@@ -207,7 +186,7 @@ $taskPanel = getTasksPanel($userID);
 
                                 <div class="btn-group btn-group-lg" role="group" aria-label="...">
                                     <?php
-                                    $dayButtonStrings = dayButtonStrings($startEndTimestampList, 'http://coagmento.org/workintent/instruments/getHome.php', $selectedStartTimeSeconds);
+                                    $dayButtonStrings = dayButtonStrings($startEndTimestampList, 'http://coagmento.org/workintent/instruments/markTasks.php', $selectedStartTimeSeconds);
                                     foreach($dayButtonStrings as $button){
                                         echo "$button\n";
                                     }
@@ -250,7 +229,7 @@ $taskPanel = getTasksPanel($userID);
                             $actionUrls = actionUrls($selectedStartTimeSeconds);
                             echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['sessions']."'>&laquo; Back (Sessions)</a>";
                             echo "&nbsp;&nbsp;&nbsp;&nbsp;";
-                            echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['intentions']."'>Next (Intentions) &raquo;</a>";
+                            echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['query segments']."'>Next (Query Segments) &raquo;</a>";
                             ?>
                         </center>
                     </div>
@@ -267,162 +246,25 @@ $taskPanel = getTasksPanel($userID);
             <div class="col-md-8">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <center><h4>Log</h4></center>
+                        <center><h4>Sessions</h4></center>
                     </div>
-                    <div class="panel-body">
-                        <div class="panel panel-primary">
-                            <div class="panel-heading">
-                                <center>
-                                    <input type="checkbox" name="optionsRadios" id="checkOne" value="one">
-                                    <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#session1">Session 1</button>
-                                </center>
-                            </div>
-
-                            <form id="task_form_1" action="../services/utils/runPageQueryUtils.php?action=markTask">
-                                <div class="panel-body collapse" id="session1">
-                                    <div class="tab-pane">
-                                        <table class="table table-striped table-fixed ">
-                                            <thead>
-                                            <tr>
-                                                <th >Time</th>
-                                                <th >Type</th>
-                                                <th >Session</th>
-                                                <th >Task</th>
-                                                <th >Session</th>
-                                                <th >Title/Query</th>
-                                                <th >URL</th>
+                    <form id="mark_task_form" action="../services/utils/runPageQueryUtils.php?action=markTasks">
+                    <div class="panel-body" id="mark_tasks_panel">
 
 
-
-
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <?php
-
-                                            $pagesQueries = getInterleavedPagesQueries($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds,0);
-                                            //                            $pagesQueries = getPagesQueries($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds);
-                                            //                            $pages =$pagesQueries['pages'];
-                                            $pages =$pagesQueries;
-                                            foreach($pages as $page){
-                                                ?>
-                                                <tr >
-                                                    <td ><?php echo isset($page['time'])?$page['time']:"";?></td>
-                                                    <td ><?php echo isset($page['type'])?$page['type']:"";?></td>
-                                                    <td ><?php
-                                                        $name = '';
-                                                        if($page['type']=='page'){
-                                                            $name='pages[]';
-                                                        }else{
-                                                            $name='queries[]';
-                                                        }
-                                                        $value = $page['id'];
-                                                        echo "<input type=\"checkbox\" name='$name' value='$value'>";
-                                                        ?></td>
-                                                    <td ><?php echo isset($page['taskID'])? $taskIDNameMap[$page['taskID']] :"";?></td>
-                                                    <td ><?php echo isset($page['sessionID']) ?$page['sessionID'] : "";?></td>
-                                                    <td ><?php echo isset($page['title']) ?$page['title'] : "";?></td>
-                                                    <td ><?php echo isset($page['url']) ?substr($page['url'],0,15)."..." : "";?></td>
-
-
-                                                </tr>
-                                                <?php
-
-                                            }
-                                            ?>
-                                            </tbody>
-                                        </table>
-                                    </div>
-
-                                </div>
-                                <center>
-                                    <input type="hidden" name="userID" <?php echo "value='$userID'"?>/>
-                                </center>
-                            </form>
-                        </div>
-
-                        <div class="panel panel-primary">
-                            <div class="panel-heading">
-                                <center><button type="button" class="btn btn-info" data-toggle="collapse" data-target="#session2">Session 2</button></center>
-                            </div>
-                            <form id="task_form_2" action="../services/utils/runPageQueryUtils.php?action=markTask">
-                                <div class="panel-body tab-pane">
-                                    <table class="table table-striped table-fixed">
-                                        <thead>
-                                        <tr>
-                                            <th >Time</th>
-                                            <th >Type</th>
-                                            <th >Session</th>
-                                            <th >Task</th>
-                                            <th >Session</th>
-                                            <th >Title/Query</th>
-                                            <th >URL</th>
-
-
-
-
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <?php
-
-                                        $pagesQueries = getInterleavedPagesQueries($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds,0);
-                                        //                            $pagesQueries = getPagesQueries($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds);
-                                        //                            $pages =$pagesQueries['pages'];
-                                        $pages =$pagesQueries;
-                                        foreach($pages as $page){
-                                            ?>
-                                            <tr >
-                                                <td ><?php echo isset($page['time'])?$page['time']:"";?></td>
-                                                <td ><?php echo isset($page['type'])?$page['type']:"";?></td>
-                                                <td ><?php
-                                                    $name = '';
-                                                    if($page['type']=='page'){
-                                                        $name='pages[]';
-                                                    }else{
-                                                        $name='queries[]';
-                                                    }
-                                                    $value = $page['id'];
-                                                    echo "<input type=\"checkbox\" name='$name' value='$value'>";
-                                                    ?></td>
-                                                <td ><?php echo isset($page['taskID'])? $taskIDNameMap[$page['taskID']] :"";?></td>
-                                                <td ><?php echo isset($page['sessionID']) ?$page['sessionID'] : "";?></td>
-                                                <td ><?php echo isset($page['title']) ?$page['title'] : "";?></td>
-                                                <td ><?php echo isset($page['url']) ?substr($page['url'],0,15)."..." : "";?></td>
-                                                <!--                                        <td class="col-xs-1">--><?php //echo $page['localTime'];?><!--</td>-->
-                                                <!--                                        <td class="col-xs-1">Page</td>-->
-                                                <!--                                        <td class="col-xs-1">Checkbox</td>-->
-                                                <!--                                        <td class="col-xs-1">Checkbox</td>-->
-                                                <!--                                        <td class="col-xs-1">ID</td>-->
-                                                <!--                                        <td class="col-xs-2">ID</td>-->
-                                                <!--                                        <td class="col-xs-2">Title</td>-->
-                                                <!--                                        <td class="col-xs-2">URL</td>-->
-                                            </tr>
-                                            <?php
-
-                                        }
-                                        ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <center>
-                                    <input type="hidden" name="userID" <?php echo "value='$userID'"?>/>
-                                </center>
-                            </form>
-
-
-
-
-                        </div>
+                        <?php
+                        echo $markTasksPanels['taskpanels_html'];
+                        ?>
 
 
                     </div>
-                    <center>
+                        <center>
+                            <input type="hidden" name="userID" <?php echo "value='$userID'";?>/>
+                            <input type="hidden" name="startTimestamp" <?php echo "value='$selectedStartTimeSeconds'";?>/>
+                            <input type="hidden" name="endTimestamp" <?php echo "value='$selectedEndTimeSeconds'";?>/>
+                        </center>
+                    </form>
 
-
-
-
-                    </center>
                 </div>
             </div>
 
@@ -435,7 +277,7 @@ $taskPanel = getTasksPanel($userID);
                     <div class="panel-body" id="addtask_panel">
 
                         <?php
-                            echo $taskPanel['taskshtml'];
+                            echo $tasksPanel['taskshtml'];
                         ?>
 
 
@@ -445,20 +287,9 @@ $taskPanel = getTasksPanel($userID);
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-8">
-                <div class="panel panel-primary">
-
-                    <div class="panel-heading">
-                        <center><h4>Unassigned to Session:</h4></center>
-                    </div>
-                    <div class="panel-body" id="addtask_panel">
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
+        <?php
+        echo $markTasksPanels['nullpanel_html'];
+        ?>
 
 
     </div>

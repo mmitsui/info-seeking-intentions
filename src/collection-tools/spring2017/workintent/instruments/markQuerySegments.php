@@ -6,6 +6,7 @@ require_once('../services/utils/loginUtils.php');
 require_once('../services/utils/dayTimeUtils.php');
 require_once('../services/utils/pageQueryUtils.php');
 require_once('../services/utils/sessionTaskUtils.php');
+require_once('../services/utils/querySegmentIntentUtils.php');
 
 isSessionOrDie();
 
@@ -24,7 +25,7 @@ $selectedEndTimeSeconds  =$selectedEndTimeSeconds['endTime'];
 $startEndTimestampList = getStartEndTimestampsList($userID,strtotime('today midnight'),10);
 
 $taskIDNameMap = getTaskIDNameMap($userID);
-$sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds);
+$querySegmentTables = getQuerySegmentTables($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds);
 
 ?>
 
@@ -101,8 +102,8 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
         </style>
 
         <script>
-            var session_form_id= '#session_form';
-            var slider_id = '#session_slider';
+            var querysegment_form_id= '#querysegment_form';
+            var slider_id = '#querysegment_slider';
             var slider_params = {
                 reversed : false,
                 formatter : function(value){
@@ -127,11 +128,11 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
                 var minValue = values[0];
                 var maxValue = values[1];
 //                        alert("min " + minValue + "max " + maxValue + values);
-                $(session_form_id+" input[type='checkbox']").filter(function() {
+                $(querysegment_form_id+" input[type='checkbox']").filter(function() {
                     return ($(this).data('table-index') >= minValue && $(this).data('table-index') <= maxValue);
                 }).prop( "checked", true );
 
-                $(session_form_id+" input[type='checkbox']").filter(function() {
+                $(querysegment_form_id+" input[type='checkbox']").filter(function() {
                     return ($(this).data('table-index') < minValue || $(this).data('table-index') > maxValue);
                 }).prop( "checked", false );
             };
@@ -145,21 +146,21 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
 //                    return ($(this).data('table-index') > 3 && $(this).data('table-index') < 10);
 //                }).prop( "checked", true );
 
-                    $(session_form_id+" button").click(function(ev){
+                    $(querysegment_form_id+" button").click(function(ev){
                         ev.preventDefault()// cancel form submission
-                        var formData = $(session_form_id).serialize();
-                        if($(this).attr("value")=="mark_session_button"){
+                        var formData = $(querysegment_form_id).serialize();
+                        if($(this).attr("value")=="mark_querysegment_button"){
                             $.ajax({
                                 type: 'POST',
-                                url: $(session_form_id).attr('action'),
+                                url: $(querysegment_form_id).attr('action'),
                                 data: formData
                             }).done(function(response) {
-//                                alert(response);
+                                alert(response);
                                 response = JSON.parse(response);
-                                $('#session_panel').html(response.sessionhtml);
-                                $('#mark_session_confirmation').html("Session marked!");
-                                $('#mark_session_confirmation').show();
-                                $('#mark_session_confirmation').fadeOut(2000);
+                                $('#querysegment_panel').html(response.querysegmenthtml);
+                                $('#mark_querysegment_confirmation').html("Query segment marked!");
+                                $('#mark_querysegment_confirmation').show();
+                                $('#mark_querysegment_confirmation').fadeOut(2000);
                                 mySlider = slider_init_function();
                                 mySlider.on("slideStop",slider_slidestop_function);
                             });
@@ -211,7 +212,7 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
 
                                 <div class="btn-group btn-group-lg" role="group" aria-label="...">
                                     <?php
-                                    $dayButtonStrings = dayButtonStrings($startEndTimestampList, 'http://coagmento.org/workintent/instruments/markSessions.php', $selectedStartTimeSeconds);
+                                    $dayButtonStrings = dayButtonStrings($startEndTimestampList, 'http://coagmento.org/workintent/instruments/markQuerySegments.php', $selectedStartTimeSeconds);
                                     foreach($dayButtonStrings as $button){
                                         echo "$button\n";
                                     }
@@ -255,7 +256,7 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
                             $actionUrls = actionUrls($selectedStartTimeSeconds);
                             echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['home']."'>&laquo; Back (Home)</a>";
                             echo "&nbsp;&nbsp;&nbsp;&nbsp;";
-                            echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['tasks']."'>Next (Tasks) &raquo;</a>";
+                            echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['intentions']."'>Next (Intentions) &raquo;</a>";
                             ?>
                         </center>
                     </div>
@@ -275,11 +276,11 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
                         <center><h4>Log</h4></center>
 
                     </div>
-                    <form id="session_form" action="../services/utils/runPageQueryUtils.php?action=markSession">
-                        <div class="panel-body" id="session_panel">
+                    <form id="querysegment_form" action="../services/utils/runPageQueryUtils.php?action=markQuerySegment">
+                        <div class="panel-body" id="querysegment_panel">
 
                             <?php
-                            echo $sessionTables['sessionhtml'];
+                            echo $querySegmentTables['querysegmenthtml'];
                             ?>
 <!--                            <div class="row">-->
 <!--                                <div class="col-md-1 border">-->
@@ -296,9 +297,9 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
                             <input type="hidden" name="userID" <?php echo "value='$userID'"?>/>
                             <input type="hidden" name="startTimestamp" <?php echo "value='$selectedStartTimeSeconds'"?>/>
                             <input type="hidden" name="endTimestamp" <?php echo "value='$selectedEndTimeSeconds'"?>/>
-                            <button type="button" value="mark_session_button" class="btn btn-success">Mark Session</button>
+                            <button type="button" value="mark_querysegment_button" class="btn btn-success">Mark Query Segment</button>
                         </center>
-                        <center><h3 id="mark_session_confirmation" class="bg-success"></h3></center>
+                        <center><h3 id="mark_querysegment_confirmation" class="bg-success"></h3></center>
                     </form>
 
 
