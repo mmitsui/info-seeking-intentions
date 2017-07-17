@@ -113,6 +113,12 @@ if(isset($_GET['action'])){
 
         echo json_encode(getQuerySegmentTables($userID,$startTimestamp,$endTimestamp));
         exit();
+    }else if($action=='markIntentions'){
+        $querySegmentIDs = postInputAsArray($_POST['querySegmentIDs']);
+        $taskID = $_POST['taskID'];
+        markIntentions($userID,$querySegmentIDs,$checkedIntentions);
+        echo json_encode(getMarkIntentionsPanels($userID,$startTimestamp,$endTimestamp));
+        exit();
     }
 
 }

@@ -104,54 +104,55 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
 
 
         <script>
-            var mark_intentions_form_id= '#mark_intentions_form';
+            var mark_intentions_form_id= '#TODO';
             var intentions_panel_id= '#mark_intentions_panel';
             var intentions_button_panel_id = '#intentions_buttons';
-            var add_intentions_form_id = '#add_intentions_form';
+            var add_intentions_form_id = '#mark_intentions_form';
 
 
 
 
             $(document).ready(function(){
-                $(task_button_panel_id+" button").click(function(ev) {
-                    ev.preventDefault();
-                    var taskID = $(this).data('task-id')
-                    alert(taskID);
-                    var formData = $(mark_task_form_id).serialize();
-                    formData = formData + "&taskID="+taskID;
-                    alert(formData);
-                    alert($(mark_task_form_id).attr('action'));
-                    $.ajax({
-                        type: 'POST',
-                        url: $(mark_task_form_id).attr('action'),
-                        data: formData
-                    }).done(function(response) {
-                        alert(response);
-                        response = JSON.parse(response);
-                        $(tasks_panel_id).html(response.taskpanels_html);
-                        $('#addtask_confirmation').html("Task annotated!");
-                        $('#addtask_confirmation').show();
-                        $('#addtask_confirmation').fadeOut(2000);
-                    });
-                });
+//                $(intentions_button_panel_id+" button").click(function(ev) {
+//                    ev.preventDefault();
+//                    var taskID = $(this).data('task-id')
+//                    alert(taskID);
+//                    var formData = $(mark_intentions_form_id).serialize();
+//                    formData = formData + "&taskID="+taskID;
+//                    alert(formData);
+//                    alert($(mark_intentions_form_id).attr('action'));
+//                    $.ajax({
+//                        type: 'POST',
+//                        url: $(mark_intentions_form_id).attr('action'),
+//                        data: formData
+//                    }).done(function(response) {
+//                        alert(response);
+//                        response = JSON.parse(response);
+//                        $(intentions_panel_id).html(response.intentionspanels_html);
+//                        $('#addintentions_confirmation').html("Task annotated!");
+//                        $('#addintentions_confirmation').show();
+//                        $('#addintentions_confirmation').fadeOut(2000);
+//                    });
+//                });
 
-                $(add_task_form_id+" button").click(function(ev){
+                $(add_intentions_form_id+" button").click(function(ev){
                     ev.preventDefault()// cancel form submission
-                    var formData = $(add_task_form_id).serialize();
+                    var formData = $(add_intentions_form_id).serialize();
                     alert(formData);
-                    if($(this).attr("value")=="addtask_button"){
-                        $.ajax({
-                            type: 'POST',
-                            url: $(add_task_form_id).attr('action'),
-                            data: formData
-                        }).done(function(response) {
-//                            alert(response);
-                            response = JSON.parse(response);
-                            $('#addtask_panel').html(response.taskshtml);
-                            $('#addtask_confirmation').html("Task added!");
-                            $('#addtask_confirmation').show();
-                            $('#addtask_confirmation').fadeOut(2000);
-                        });
+                    if($(this).attr("value")=="markintentions_button"){
+                        alert("clicked!");
+//                        $.ajax({
+//                            type: 'POST',
+//                            url: $(add_intentions_form_id).attr('action'),
+//                            data: formData
+//                        }).done(function(response) {
+////                            alert(response);
+//                            response = JSON.parse(response);
+//                            $('#addintentions_panel').html(response.intentionshtml);
+//                            $('#addintentions_confirmation').html("Task added!");
+//                            $('#addintentions_confirmation').show();
+//                            $('#addintentions_confirmation').fadeOut(2000);
+//                        });
                     }
                 });
 //                $("form input[type=submit]").click(function() {
@@ -247,14 +248,14 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
             <div class="col-md-8">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <center><h4>Sessions</h4></center>
+                        <center><h4>Query Segments</h4></center>
                     </div>
-                    <form id="mark_task_form" action="../services/utils/runPageQueryUtils.php?action=markTasks">
-                    <div class="panel-body" id="mark_tasks_panel">
+                    <form id="select_querysegments_form" action="../services/utils/runPageQueryUtils.php?action=markTasks">
+                    <div class="panel-body" id="select_querysegments_panel">
 
 
                         <?php
-                        echo $markTasksPanels['taskpanels_html'];
+                        echo $markIntentionsPanels['intentionspanels_html'];
                         ?>
 
 
@@ -275,10 +276,10 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                     <div class="panel-heading">
                         <center><h4>Assign to:</h4></center>
                     </div>
-                    <div class="panel-body" id="addtask_panel">
+                    <div class="panel-body" id="select_intentions_panel">
 
                         <?php
-                            echo $tasksPanel['taskshtml'];
+                            echo $intentionsPanel['intentionshtml'];
                         ?>
 
 
@@ -289,7 +290,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
         </div>
 
         <?php
-        echo $markTasksPanels['nullpanel_html'];
+        echo $markIntentionsPanels['nullpanel_html'];
         ?>
 
 

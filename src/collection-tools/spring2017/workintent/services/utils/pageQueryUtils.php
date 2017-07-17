@@ -1,7 +1,7 @@
 <?php
 
 require_once($_SERVER["DOCUMENT_ROOT"]."/workintent/core/Connection.class.php");
-function getItems($userID,$startTimestamp,$endTimestamp,$type,$trash=0,$sessionID=-1){
+function getItems($userID,$startTimestamp,$endTimestamp,$type,$trash=0,$sessionID=-1,$querySegmentID=-1){
     $table = null;
     if($type=='pages'){
         $table ='pages';
@@ -18,11 +18,22 @@ function getItems($userID,$startTimestamp,$endTimestamp,$type,$trash=0,$sessionI
             $sessionID_querysegment = "and sessionID=$sessionID";
         }
     }
+
+
+
+    $querySegmentID_querysegment = '';
+
+    if($querySegmentID != -1){
+        if(is_null($querySegmentID)){
+            $querySegmentID_querysegment = "and querySegmentID IS NULL";
+        }else{
+            $querySegmentID_querysegment = "and querySegmentID=$querySegmentID";
+        }
+    }
     $startTimestampMillis = $startTimestamp * 1000.0;
     $endTimestampMillis = $endTimestamp * 1000.0;
 
-    $query = "SELECT * FROM $table WHERE userID=$userID AND `is_coagmento`=0 AND `localTimestamp` >= $startTimestampMillis AND `localTimestamp` <= $endTimestampMillis AND `trash`='$trash' AND `permanently_delete`=0 $sessionID_querysegment ORDER BY `localTimestamp` ASC";
-//    echo $query;
+    $query = "SELECT * FROM $table WHERE userID=$userID AND `is_coagmento`=0 AND `localTimestamp` >= $startTimestampMillis AND `localTimestamp` <= $endTimestampMillis AND `trash`='$trash' AND `permanently_delete`=0 $sessionID_querysegment $querySegmentID_querysegment ORDER BY `localTimestamp` ASC";
     $cxn = Connection::getInstance();
     $results = $cxn->commit($query);
     $rows = array();
@@ -33,14 +44,14 @@ function getItems($userID,$startTimestamp,$endTimestamp,$type,$trash=0,$sessionI
     return $rows;
 
 }
-function getPagesQueries($userID,$startTimestamp,$endTimestamp,$trash=0,$sessionID=-1){
-    $pages = getItems($userID,$startTimestamp,$endTimestamp,'pages',$trash,$sessionID);
-    $queries = getItems($userID,$startTimestamp,$endTimestamp,'queries',$trash,$sessionID);
+function getPagesQueries($userID,$startTimestamp,$endTimestamp,$trash=0,$sessionID=-1,$querySegmentID=-1){
+    $pages = getItems($userID,$startTimestamp,$endTimestamp,'pages',$trash,$sessionID,$querySegmentID);
+    $queries = getItems($userID,$startTimestamp,$endTimestamp,'queries',$trash,$sessionID,$querySegmentID);
     return array('pages'=>$pages,'queries'=>$queries);
 }
 
-function getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,$trash=0,$sessionID=-1){
-    $pages_queries = getPagesQueries($userID,$startTimestamp,$endTimestamp,$trash,$sessionID);
+function getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,$trash=0,$sessionID=-1,$querySegmentID=-1){
+    $pages_queries = getPagesQueries($userID,$startTimestamp,$endTimestamp,$trash,$sessionID,$querySegmentID);
     $pages = $pages_queries['pages'];
     $queries = $pages_queries['queries'];
 
