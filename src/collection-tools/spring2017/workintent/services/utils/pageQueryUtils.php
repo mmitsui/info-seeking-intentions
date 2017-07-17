@@ -1,17 +1,29 @@
 <?php
 
 require_once($_SERVER["DOCUMENT_ROOT"]."/workintent/core/Connection.class.php");
-function getItems($userID,$startTimestamp,$endTimestamp,$type,$trash=0){
+function getItems($userID,$startTimestamp,$endTimestamp,$type,$trash=0,$sessionID=-1){
     $table = null;
     if($type=='pages'){
         $table ='pages';
     }else if($type=='queries'){
         $table='queries';
     }
+
+    $sessionID_querysegment = '';
+
+    if($sessionID != -1){
+        if(is_null($sessionID)){
+            $sessionID_querysegment = "and sessionID IS NULL";
+        }else{
+            if(is_null($sessionID)){
+                $sessionID_querysegment = "and sessionID=$sessionID";
+            }
+        }
+    }
     $startTimestampMillis = $startTimestamp * 1000.0;
     $endTimestampMillis = $endTimestamp * 1000.0;
 
-    $query = "SELECT * FROM $table WHERE userID=$userID AND `is_coagmento`=0 AND `localTimestamp` >= $startTimestampMillis AND `localTimestamp` <= $endTimestampMillis AND `trash`='$trash' AND `permanently_delete`=0 ORDER BY `localTimestamp` ASC";
+    $query = "SELECT * FROM $table WHERE userID=$userID AND `is_coagmento`=0 AND `localTimestamp` >= $startTimestampMillis AND `localTimestamp` <= $endTimestampMillis AND `trash`='$trash' AND `permanently_delete`=0 $sessionID_querysegment ORDER BY `localTimestamp` ASC";
 
     $cxn = Connection::getInstance();
     $results = $cxn->commit($query);
@@ -23,14 +35,14 @@ function getItems($userID,$startTimestamp,$endTimestamp,$type,$trash=0){
     return $rows;
 
 }
-function getPagesQueries($userID,$startTimestamp,$endTimestamp,$trash=0){
-    $pages = getItems($userID,$startTimestamp,$endTimestamp,'pages',$trash);
-    $queries = getItems($userID,$startTimestamp,$endTimestamp,'queries',$trash);
+function getPagesQueries($userID,$startTimestamp,$endTimestamp,$trash=0,$sessionID=-1){
+    $pages = getItems($userID,$startTimestamp,$endTimestamp,'pages',$trash,$sessionID);
+    $queries = getItems($userID,$startTimestamp,$endTimestamp,'queries',$trash,$sessionID);
     return array('pages'=>$pages,'queries'=>$queries);
 }
 
-function getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,$trash=0){
-    $pages_queries = getPagesQueries($userID,$startTimestamp,$endTimestamp,$trash);
+function getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,$trash=0,$sessionID=-1){
+    $pages_queries = getPagesQueries($userID,$startTimestamp,$endTimestamp,$trash,$sessionID);
     $pages = $pages_queries['pages'];
     $queries = $pages_queries['queries'];
 
@@ -81,8 +93,8 @@ function getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,$trash
 
 function getHomePageTables($userID,$startTimestamp,$endTimestamp){
     //    TODO: "No data" message
-    $day_log = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0);
-    $trash = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,1);
+    $day_log = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0,-1);
+    $trash = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,1,-1);
 
     $day_table = "<table class=\"table table-striped table-fixed\">
                                 <thead>
@@ -192,7 +204,6 @@ function getSessionTables($userID,$startTimestamp,$endTimestamp){
                                     <th >Time</th>
                                     <th >Type</th>
                                     <th >Mark</th>
-                                    <th >Task</th>
                                     <th >Session</th>
                                     <th >Title/Query</th>
                                     <th >Domain</th>
@@ -204,12 +215,16 @@ function getSessionTables($userID,$startTimestamp,$endTimestamp){
                                 </thead>
                                 <tbody>";
 
-    $pagesQueries = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0);
+    $pagesQueries = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0,-1);
     $pages =$pagesQueries;
     $table_index = 0;
+
+
+
+
     foreach($pages as $page){
         $session_table .= "<tr >";
-        $session_table .="<td>".(isset($page['time'])?$page['time']:"")."</td>";
+        $session_table .="<td name=\"time_$table_index\">".(isset($page['time'])?$page['time']:"")."</td>";
 
         $name = '';
         $color = '';
@@ -224,9 +239,9 @@ function getSessionTables($userID,$startTimestamp,$endTimestamp){
 
         $session_table .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
         $session_table .= "<td><input data-table-index=\"$table_index\" type=\"checkbox\" name='$name' value='$value'></td>";
-        $session_table .="<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>";
+//        $session_table .="<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>";
         $session_table .="<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
-        $session_table .= "<td>".(isset($page['title'])?substr($page['title'],0,30)."...":"")."</td>";
+        $session_table .= "<td name=\"title_$table_index\">".(isset($page['title'])?substr($page['title'],0,30)."...":"")."</td>";
         $session_table .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
         $table_index += 1;
 
@@ -239,6 +254,20 @@ function getSessionTables($userID,$startTimestamp,$endTimestamp){
     $session_table .= "</tbody>
                     </table>";
 
-    return array('sessionhtml'=>$session_table);
+    $slider_html = "<div class=\"col-md-1 border\">
+                        <input id=\"session_slider\" type=\"text\" height=\"100%\" data-slider-min=\"0\" data-slider-max=\"$table_index\" data-slider-step=\"1\" data-slider-value=\"[0,$table_index]\" data-slider-orientation=\"vertical\"/>
+                    </div>";
+
+    $session_panel_html = "
+    <div class=\"row\">
+        $slider_html
+        <div class=\"col-md-11 border tab-pane\">
+        $session_table
+        </div>
+        
+    </div>
+        ";
+
+    return array('sessionhtml'=>$session_panel_html);
 }
 ?>

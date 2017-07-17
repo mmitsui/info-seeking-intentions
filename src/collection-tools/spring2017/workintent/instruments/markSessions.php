@@ -102,11 +102,43 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
 
         <script>
             var session_form_id= '#session_form';
+            var slider_id = '#session_slider';
+            var slider_params = {
+                reversed : false,
+                formatter : function(value){
+                    var minValue = value[0];
+                    var maxValue = value[1];
+                    var minTime = $("td[name=time_"+minValue+"]").html();
+                    var minTitle = $("td[name=title_"+minValue+"]").html();
+                    var maxTime = $("td[name=time_"+maxValue+"]").html();
+                    var maxTitle = $("td[name=title_"+maxValue+"]").html();
+                    return minTime + " (" + minTitle + ") - " + maxTime + " (" + maxTitle + ")";
+                }
+            };
+            var slider_init_function = function(){
+                return $(slider_id).slider(slider_params);
+            };
+
+            var slider_slidestop_function = function(f){
+                var values = $(slider_id).val().split(",");
+                values = $.map(values,function(elem,i){
+                    return parseInt(elem);
+                });
+                var minValue = values[0];
+                var maxValue = values[1];
+//                        alert("min " + minValue + "max " + maxValue + values);
+                $(session_form_id+" input[type='checkbox']").filter(function() {
+                    return ($(this).data('table-index') >= minValue && $(this).data('table-index') <= maxValue);
+                }).prop( "checked", true );
+
+                $(session_form_id+" input[type='checkbox']").filter(function() {
+                    return ($(this).data('table-index') < minValue || $(this).data('table-index') > maxValue);
+                }).prop( "checked", false );
+            };
 
             $(document).ready(function(){
-                    $("#ex4").slider({
-                        reversed : true
-                    });
+                    var mySlider = slider_init_function();
+                    mySlider.on("slideStop",slider_slidestop_function);
 
 
 //                $(session_form_id+" input[type='checkbox']").filter(function() {
@@ -122,11 +154,14 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
                                 url: $(session_form_id).attr('action'),
                                 data: formData
                             }).done(function(response) {
+//                                alert(response);
                                 response = JSON.parse(response);
                                 $('#session_panel').html(response.sessionhtml);
                                 $('#mark_session_confirmation').html("Session marked!");
                                 $('#mark_session_confirmation').show();
                                 $('#mark_session_confirmation').fadeOut(2000);
+                                mySlider = slider_init_function();
+                                mySlider.on("slideStop",slider_slidestop_function);
                             });
                         }
                     });
@@ -242,21 +277,18 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
                     </div>
                     <form id="session_form" action="../services/utils/runPageQueryUtils.php?action=markSession">
                         <div class="panel-body" id="session_panel">
-<!--                        <div class="panel-body tab-pane" id="session_panel">-->
+
+                            <?php
+                            echo $sessionTables['sessionhtml'];
+                            ?>
 <!--                            <div class="row">-->
-<!--                                <div class="col-xs-2 border col-xs-offset-4">div 1</div>-->
-<!--                                <div class="col-xs-2 border">div 2</div>-->
+<!--                                <div class="col-md-1 border">-->
+<!--                                    <input id="session_slider" type="text" height="100%" data-slider-min="0" data-slider-max="30" data-slider-step="1" data-slider-value="[0,10]" data-slider-orientation="vertical"/>-->
+<!--                                </div>-->
+<!--                                <div class="col-md-11 border tab-pane">-->
+<!--                                    -->
+<!--                                </div>-->
 <!--                            </div>-->
-                            <div class="row">
-                                <div class="col-md-1 border">
-                                    <input id="ex4" type="text" height="100%" data-slider-min="-5" data-slider-max="20" data-slider-step="1" data-slider-value="[0,10]" data-slider-orientation="vertical"/>
-                                </div>
-                                <div class="col-md-11 border tab-pane">
-                                    <?php
-                                    echo $sessionTables['sessionhtml'];
-                                    ?>
-                                </div>
-                            </div>
 
 
                         </div>
@@ -266,7 +298,7 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
                             <input type="hidden" name="endTimestamp" <?php echo "value='$selectedEndTimeSeconds'"?>/>
                             <button type="button" value="mark_session_button" class="btn btn-success">Mark Session</button>
                         </center>
-                        <center><div id="mark_session_confirmation" class="bg-success"></div></center>
+                        <center><h3 id="mark_session_confirmation" class="bg-success"></h3></center>
                     </form>
 
 
@@ -279,35 +311,35 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
 
     </div>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="panel panel-primary">
-                    <div class="panel panel-heading">
-                        <center><h4>Assign to:</h4></center>
-                    </div>
-                    <div>
-                        <center>
-                            <div>
-                                <button type="button" class="btn btn-primary">1</button>
-                            </div>
-
-                            <div>
-                                <button type="button" class="btn btn-primary">2</button>
-                            </div>
-
-                            <div>
-                                <button type="button" class="btn btn-primary">3</button>
-                            </div>
-                            <div>
-                                <button type="button" class="btn btn-success">+ Add Session</button>
-                            </div>
-                        </center>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<!--    <div class="container">-->
+<!--        <div class="row">-->
+<!--            <div class="col-md-12">-->
+<!--                <div class="panel panel-primary">-->
+<!--                    <div class="panel panel-heading">-->
+<!--                        <center><h4>Assign to:</h4></center>-->
+<!--                    </div>-->
+<!--                    <div>-->
+<!--                        <center>-->
+<!--                            <div>-->
+<!--                                <button type="button" class="btn btn-primary">1</button>-->
+<!--                            </div>-->
+<!---->
+<!--                            <div>-->
+<!--                                <button type="button" class="btn btn-primary">2</button>-->
+<!--                            </div>-->
+<!---->
+<!--                            <div>-->
+<!--                                <button type="button" class="btn btn-primary">3</button>-->
+<!--                            </div>-->
+<!--                            <div>-->
+<!--                                <button type="button" class="btn btn-success">+ Add Session</button>-->
+<!--                            </div>-->
+<!--                        </center>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
 
     </body>
     </html>

@@ -86,36 +86,18 @@ if(isset($_GET['action'])){
         $pageIDs = postInputAsArray($_POST['pages']);
         $queryIDs = postInputAsArray($_POST['queries']);
 
-        if(count($queryIDs) > 0){
-            $queryID_list = implode(",",$queryIDs);
-            $query = "UPDATE queries SET `sessionID`=1 WHERE `userID`=$userID' AND `queryID` IN ($queryID_list)";
-            $cxn->commit($query);
-        }
-
-        if(count($pageIDs) > 0){
-            $pageID_list = implode(",",$pageIDs);
-            $query = "UPDATE pages SET `sessionID`=1 WHERE `userID`='$userID' AND `pageID` IN ($pageID_list)";
-            $cxn->commit($query);
-        }
+        $sessionID = makeNextSessionID($userID);
+        markSessionID($userID,$sessionID,$pageIDs,$queryIDs);
 
         echo json_encode(getSessionTables($userID,$startTimestamp,$endTimestamp));
         exit();
     }
     else if($action=='markTask'){
-        $pageIDs = postInputAsArray($_POST['pages']);
-        $queryIDs = postInputAsArray($_POST['queries']);
-
-        if(count($queryIDs) > 0){
-            $queryID_list = implode(",",$queryIDs);
-            $query = "UPDATE queries SET `taskID`=5 WHERE `userID`=$userID' AND `queryID` IN ($queryID_list)";
-            $cxn->commit($query);
-        }
-
-        if(count($pageIDs) > 0){
-            $pageID_list = implode(",",$pageIDs);
-            $query = "UPDATE pages SET `taskID`=5 WHERE `userID`='$userID' AND `pageID` IN ($pageID_list)";
-            $cxn->commit($query);
-        }
+        $sessionIDs = postInputAsArray($_POST['sessionIDs']);
+        $taskID = $_POST['taskID'];
+        $sessionIDs = markTaskID($userID,$sessionID,$taskID);
+        echo json_encode(getSessionTables($userID,$startTimestamp,$endTimestamp));
+        exit();
     }else if($action=='addTask'){
         $taskName = $_POST['taskName'];
         addTask($userID,$taskName);
