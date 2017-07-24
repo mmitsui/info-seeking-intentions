@@ -44,7 +44,9 @@ function getQuerySegmentTables($userID,$startTimestamp,$endTimestamp){
         $value = $page['id'];
 
         $query_segment_table .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
-        $query_segment_table .= "<td><input data-table-index=\"$table_index\" type=\"checkbox\" name='$name' value='$value'></td>";
+        $begin_button = "<button name=\"begin_button\" data-table-index=\"$table_index\" type=\"button\" class=\"btn btn-success\">Begin</button>";
+        $end_button = "<button name=\"end_button\" data-table-index=\"$table_index\" type=\"button\" class=\"btn btn-danger\">End</button>";
+        $query_segment_table .= "<td><input data-table-index=\"$table_index\" type=\"checkbox\" name='$name' value='$value'> $begin_button $end_button </td>";
 //        $query_segment_table .="<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>";
         $query_segment_table .="<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
         $query_segment_table .="<td>".(isset($page['querySegmentID']) ?$page['querySegmentID'] : "")."</td>";
@@ -78,15 +80,19 @@ function getQuerySegmentTables($userID,$startTimestamp,$endTimestamp){
                     </table>
                     </div>";
 
+    $slider_html = "";
+
     $query_segment_panel_html = "
     <div class=\"row\">
         $slider_html
-        <div class=\"col-md-11 border tab-pane\">
+        <div class=\"col-md-12 border\">
         $query_segment_table
         </div>
         
     </div>
         ";
+
+//    <div class="col-md-12 border tab-pane">
 
     return array('querysegmenthtml'=>$query_segment_panel_html);
 }
@@ -312,9 +318,25 @@ function getIntentionsPanel($userID,$startTimestamp,$endTimestamp){
     foreach($intentions as $key=>$value){
         $intentions_html .="<div class=\"checkbox\">";
         $intentions_html .="<label>";
-        $intentions_html .="<input type=\"checkbox\" name='intentions[]' value='$key'/> $value";
+        $intentions_html .="<input type=\"checkbox\" data-toggle=\"collapse\" data-target=\"#intention_submenu_$key\" name='intentions[]' value='$key'/> $value";
         $intentions_html .="</label>";
         $intentions_html .="</div>";
+
+        $intentions_html .="<div id='intention_submenu_$key' class='collapse'>";
+        $intentions_html .= "<input type='radio' name='$key"."_success' value='1'> Yes";
+        $intentions_html .= "<input type='radio' name='$key"."_success' value='0' data-toggle=\"collapse\" data-target=\"#failure_submenu_$key\"> No";
+
+
+        $intentions_html .="<div id='failure_submenu_$key' class='collapse'>";
+        $intentions_html .= "Why Not?";
+        $intentions_html .= "<textarea class=\"form-control\" rows=\"3\" name=\"$key"."_failure_reason\"></textarea>";
+        $intentions_html .="</div>";
+
+        $intentions_html .="</div>";
+
+
+
+        
     }
 
 

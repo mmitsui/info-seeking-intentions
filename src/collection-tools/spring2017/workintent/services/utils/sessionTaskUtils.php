@@ -55,8 +55,8 @@ function getMarkTasksPanels($userID,$startTimestamp,$endTimestamp){
                 $session_panels[$sessionID] = "<div class=\"panel panel-primary\">\n";
                 $session_panels[$sessionID] .= "<div class=\"panel-heading\">\n";
                 $session_panels[$sessionID] .= "<center>\n";
-                $session_panels[$sessionID] .= "<input type=\"checkbox\" name=\"sessionIDs[]\" id=\"sessionID_checkbox_$sessionID\" value=\"$sessionID\"> Select for Annotation\n";
-                $session_panels[$sessionID] .= "<button type=\"button\" class=\"btn btn-info\" data-toggle=\"collapse\" data-target=\"#session_panel_$sessionID\">Session $sessionID (Show/Hide)</button>\n";
+                $session_panels[$sessionID] .= "<input type=\"checkbox\" name=\"sessionIDs[]\" id=\"sessionID_checkbox_$sessionID\" value=\"$sessionID\"> Session $sessionID - Select for Annotation\n";
+//                $session_panels[$sessionID] .= "<button type=\"button\" class=\"btn btn-info\" data-toggle=\"collapse\" data-target=\"#session_panel_$sessionID\">Session $sessionID (Show/Hide)</button>\n";
                 if(count($pages) > 0){
                     $all_marked = true;
                     foreach($pages as $page) {
@@ -77,7 +77,9 @@ function getMarkTasksPanels($userID,$startTimestamp,$endTimestamp){
                 $session_panels[$sessionID] .= "</center>\n";
                 $session_panels[$sessionID] .= "</div>\n";
                 $session_panels[$sessionID] .= "<form id=\"task_form_$sessionID\" action=\"../services/utils/runPageQueryUtils.php?action=markTask\">\n";
-                $session_panels[$sessionID] .= "<div class=\"panel-body collapse\" id=\"session_panel_$sessionID\">\n";
+                $session_panels[$sessionID] .= "<div class=\"panel-body\" id=\"session_panel_$sessionID\">\n";
+
+//                $session_panels[$sessionID] .= "<div class=\"panel-body collapse\" id=\"session_panel_$sessionID\">\n";
                 $session_panels[$sessionID] .= "<div class=\"tab-pane\">\n";
                 $session_panels[$sessionID] .= "<table class=\"table table-striped table-fixed \">\n";
                 $session_panels[$sessionID] .= "<thead>\n";
@@ -278,10 +280,8 @@ function markTaskID($userID,$sessionIDs,$taskID){
     if(count($sessionIDs) > 0){
         $sessionID_list = implode(",",$sessionIDs);
         $query = "UPDATE pages SET `taskID`='$taskID' WHERE `userID`='$userID' AND `sessionID` IN ($sessionID_list)";
-        echo $query;
         $cxn->commit($query);
         $query = "UPDATE queries SET `taskID`='$taskID' WHERE `userID`='$userID' AND `sessionID` IN ($sessionID_list)";
-//        echo $query;
         $cxn->commit($query);
     }
 }
