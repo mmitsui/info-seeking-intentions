@@ -62,7 +62,20 @@ function getQuerySegmentTables($userID,$startTimestamp,$endTimestamp){
                     </table>";
 
     $slider_html = "<div class=\"col-md-1 border\">
-                        <input id=\"querysegment_slider\" type=\"text\" height=\"100%\" data-slider-min=\"0\" data-slider-max=\"$table_index\" data-slider-step=\"1\" data-slider-value=\"[0,$table_index]\" data-slider-orientation=\"vertical\"/>
+<table>
+<thead>
+<th>Drag to Select</th>
+</thead>
+
+<tbody>
+<tr><td>
+            
+                        <p><input id=\"querysegment_slider\" type=\"text\" height=\"100%\" data-slider-min=\"0\" data-slider-max=\"$table_index\" data-slider-step=\"1\" data-slider-value=\"[0,$table_index]\" data-slider-orientation=\"vertical\"/></p>
+                    
+                    </td>
+                    </tr>
+                    </tbody>
+                    </table>
                     </div>";
 
     $query_segment_panel_html = "
@@ -324,8 +337,7 @@ function getIntentionsPanel($userID,$startTimestamp,$endTimestamp){
 }
 
 
-function markIntentions($userID,$querySegmentIDs,$checkedIntentions){
-
+function markIntentions($userID,$querySegmentID,$checkedIntentions){
 
     $intentions = array(
         'id_start'=>0,
@@ -355,9 +367,7 @@ function markIntentions($userID,$querySegmentIDs,$checkedIntentions){
     }
 
     $cxn = Connection::getInstance();
-    foreach($checkedIntentions as $querySegmentID){
-        $intentions[$intention] = 1;
-        $query="INSERT INTO intent_assigments (`userID`,`querySegmentID`,
+    $query="INSERT INTO intent_assignments (`userID`,`querySegmentID`,
 `id_start`,
         `id_more`,
         `learn_feature`,
@@ -378,7 +388,7 @@ function markIntentions($userID,$querySegmentIDs,$checkedIntentions){
         `access_common`,
         `access_area`,
         `evaluate_correctness`,
-        `evaluate_specificity`,
+        `evaluate_specificity`
 ) VALUES ('$userID','$querySegmentID'
 ,".$intentions['id_start']."
 ,".$intentions['id_more']."
@@ -403,7 +413,7 @@ function markIntentions($userID,$querySegmentIDs,$checkedIntentions){
 ,".$intentions['evaluate_specificity']."
           )";
         $result = $cxn->commit($query);
-    }
+
 
 }
 

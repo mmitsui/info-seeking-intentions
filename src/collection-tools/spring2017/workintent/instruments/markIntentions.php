@@ -137,22 +137,24 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
 
                 $(add_intentions_form_id+" button").click(function(ev){
                     ev.preventDefault()// cancel form submission
-                    var formData = $(add_intentions_form_id).serialize();
+                    var querySegmentID = $("input[name='querySegmentID']:checked").val();
+                    var formData = $(add_intentions_form_id).serialize()+"&querySegmentID="+querySegmentID;
                     alert(formData);
+
                     if($(this).attr("value")=="markintentions_button"){
                         alert("clicked!");
-//                        $.ajax({
-//                            type: 'POST',
-//                            url: $(add_intentions_form_id).attr('action'),
-//                            data: formData
-//                        }).done(function(response) {
-////                            alert(response);
-//                            response = JSON.parse(response);
-//                            $('#addintentions_panel').html(response.intentionshtml);
-//                            $('#addintentions_confirmation').html("Task added!");
-//                            $('#addintentions_confirmation').show();
-//                            $('#addintentions_confirmation').fadeOut(2000);
-//                        });
+                        $.ajax({
+                            type: 'POST',
+                            url: $(add_intentions_form_id).attr('action'),
+                            data: formData
+                        }).done(function(response) {
+                            alert(response);
+                            response = JSON.parse(response);
+                            $('#select_querysegments_panel').html(response.intentionspanels_html);
+                            $('#addintentions_confirmation').html("Task added!");
+                            $('#addintentions_confirmation').show();
+                            $('#addintentions_confirmation').fadeOut(2000);
+                        });
                     }
                 });
 //                $("form input[type=submit]").click(function() {
@@ -248,7 +250,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
             <div class="col-md-8">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <center><h4>Query Segments</h4></center>
+                        <center><h4>Choose a Query Segment to Mark for Intentions</h4></center>
                     </div>
                     <form id="select_querysegments_form" action="../services/utils/runPageQueryUtils.php?action=markTasks">
                     <div class="panel-body" id="select_querysegments_panel">
@@ -274,7 +276,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
             <div class="col-md-4">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <center><h4>Assign to:</h4></center>
+                        <center><h4>Choose Your Intentions</h4></center>
                     </div>
                     <div class="panel-body" id="select_intentions_panel">
 

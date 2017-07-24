@@ -47,11 +47,33 @@ function getMarkTasksPanels($userID,$startTimestamp,$endTimestamp){
     else{
         foreach($sessionIDs as $sessionID){
             if(!is_null($sessionID)){
+                $pagesQueries = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0,$sessionID);
+
+                $pages =$pagesQueries;
+
+
                 $session_panels[$sessionID] = "<div class=\"panel panel-primary\">\n";
                 $session_panels[$sessionID] .= "<div class=\"panel-heading\">\n";
                 $session_panels[$sessionID] .= "<center>\n";
-                $session_panels[$sessionID] .= "<input type=\"checkbox\" name=\"sessionIDs[]\" id=\"sessionID_checkbox_$sessionID\" value=\"$sessionID\">\n";
+                $session_panels[$sessionID] .= "<input type=\"checkbox\" name=\"sessionIDs[]\" id=\"sessionID_checkbox_$sessionID\" value=\"$sessionID\"> Select for Annotation\n";
                 $session_panels[$sessionID] .= "<button type=\"button\" class=\"btn btn-info\" data-toggle=\"collapse\" data-target=\"#session_panel_$sessionID\">Session $sessionID (Show/Hide)</button>\n";
+                if(count($pages) > 0){
+                    $all_marked = true;
+                    foreach($pages as $page) {
+                        if(!isset($page['taskID'])){
+                            $all_marked = false;
+                            break;
+                        }
+                    }
+                    if($all_marked){
+                        $session_panels[$sessionID] .= "<span class=\"label label-success glyphicon glyphicon-ok\"> </span>";
+                    }else{
+                        $session_panels[$sessionID] .= "<span class=\"label label-lg label-danger glyphicon glyphicon-remove\"> </span>";
+                    }
+                }
+
+
+
                 $session_panels[$sessionID] .= "</center>\n";
                 $session_panels[$sessionID] .= "</div>\n";
                 $session_panels[$sessionID] .= "<form id=\"task_form_$sessionID\" action=\"../services/utils/runPageQueryUtils.php?action=markTask\">\n";
@@ -69,9 +91,7 @@ function getMarkTasksPanels($userID,$startTimestamp,$endTimestamp){
                 $session_panels[$sessionID] .= "</thead>\n";
                 $session_panels[$sessionID] .= "<tbody>\n";
 
-                $pagesQueries = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0,$sessionID);
 
-                $pages =$pagesQueries;
 //            echo "SESSIONID".$sessionID."COUNT".count($pages);
                 foreach($pages as $page) {
                     $session_panels[$sessionID] .= "<tr >\n";
@@ -179,7 +199,7 @@ function getTasksPanel($userID,$startTimestamp,$endTimestamp){
     foreach($tasks as $task){
         $taskID = $task['taskID'];
         $taskName = $task['taskName'];
-        $tasks_html .=  "<p><button type=\"button\" id=\"task-button-$taskID\" data-task-id=\"$taskID\" class=\"btn btn-primary btn-block\">$taskName</button></p>";
+        $tasks_html .=  "<p><button type=\"button\" id=\"task-button-$taskID\" data-task-id=\"$taskID\" class=\"btn btn-default btn-block\">$taskName</button></p>";
     }
 
 
@@ -189,6 +209,7 @@ function getTasksPanel($userID,$startTimestamp,$endTimestamp){
     $tasks_html .= "<div class=\"form-group\">";
 
 
+    $tasks_html .= "<div class='well'>";
     $tasks_html .= "<div>";
     $tasks_html .= "<p><button type=\"button\" value=\"addtask_button\" class=\"btn btn-success btn-block\">+ Add Task</button></p>";
     $tasks_html .= "</div>";
@@ -196,6 +217,7 @@ function getTasksPanel($userID,$startTimestamp,$endTimestamp){
     $tasks_html .= "<input type=\"hidden\" name=\"userID\" value=\"$userID\"/>";
     $tasks_html .= "<input type=\"hidden\" name=\"startTimestamp\" value=\"$startTimestamp\"/>";
     $tasks_html .= "<input type=\"hidden\" name=\"endTimestamp\" value=\"$endTimestamp\"/>";
+    $tasks_html .= "</div>";
     $tasks_html .= "</div>";
     $tasks_html .= "<center><h3 id=\"addtask_confirmation\" class=\"bg-success\"></h3></center>";
     $tasks_html .= "</form>";

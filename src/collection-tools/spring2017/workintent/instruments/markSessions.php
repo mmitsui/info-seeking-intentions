@@ -43,6 +43,10 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.1/bootstrap-slider.min.js"></script>
 
         <style>
+            .slider {
+                height: 100% !important;
+            }
+
             .tab-pane{
                 height:300px;
                 overflow-y:scroll;
@@ -138,6 +142,7 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
 
             $(document).ready(function(){
                     var mySlider = slider_init_function();
+                    mySlider.css('width','100% !important');
                     mySlider.on("slideStop",slider_slidestop_function);
 
 
@@ -272,12 +277,14 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
             <div class="col-md-12">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <center><h4>Log</h4></center>
+                        <center><h4>Mark Your Day's Sessions</h4></center>
 
                     </div>
+                </div>
                     <form id="session_form" action="../services/utils/runPageQueryUtils.php?action=markSession">
-                        <div class="panel-body" id="session_panel">
-
+<!--                        <div class="panel-body tab-pane" id="session_panel">-->
+<!--                        </div>-->
+                        <div class="container" id="session_panel">
                             <?php
                             echo $sessionTables['sessionhtml'];
                             ?>
@@ -291,7 +298,7 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
 <!--                            </div>-->
 
 
-                        </div>
+
                         <center>
                             <input type="hidden" name="userID" <?php echo "value='$userID'"?>/>
                             <input type="hidden" name="startTimestamp" <?php echo "value='$selectedStartTimeSeconds'"?>/>
@@ -299,10 +306,11 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
                             <button type="button" value="mark_session_button" class="btn btn-success">Mark Session</button>
                         </center>
                         <center><h3 id="mark_session_confirmation" class="bg-success"></h3></center>
+                        </div>
                     </form>
 
 
-                </div>
+
             </div>
 
 

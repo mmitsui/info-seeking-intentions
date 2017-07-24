@@ -115,11 +115,11 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
                 $(task_button_panel_id+" button").click(function(ev) {
                     ev.preventDefault();
                     var taskID = $(this).data('task-id')
-                    alert(taskID);
+//                    alert(taskID);
                     var formData = $(mark_task_form_id).serialize();
                     formData = formData + "&taskID="+taskID;
-                    alert(formData);
-                    alert($(mark_task_form_id).attr('action'));
+//                    alert(formData);
+//                    alert($(mark_task_form_id).attr('action'));
                     $.ajax({
                         type: 'POST',
                         url: $(mark_task_form_id).attr('action'),
@@ -246,7 +246,7 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
             <div class="col-md-8">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <center><h4>Sessions</h4></center>
+                        <center><h4>Step 1) Choose Sessions to Assign to a Task</h4></center>
                     </div>
                     <form id="mark_task_form" action="../services/utils/runPageQueryUtils.php?action=markTasks">
                     <div class="panel-body" id="mark_tasks_panel">
@@ -272,7 +272,7 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
             <div class="col-md-4">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <center><h4>Assign to:</h4></center>
+                        <center><h4>Step 2) Click to Assign a Task</h4></center>
                     </div>
                     <div class="panel-body" id="addtask_panel">
 

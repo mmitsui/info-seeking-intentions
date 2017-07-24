@@ -155,7 +155,7 @@ $querySegmentTables = getQuerySegmentTables($userID,$selectedStartTimeSeconds,$s
                                 url: $(querysegment_form_id).attr('action'),
                                 data: formData
                             }).done(function(response) {
-                                alert(response);
+//                                alert(response);
                                 response = JSON.parse(response);
                                 $('#querysegment_panel').html(response.querysegmenthtml);
                                 $('#mark_querysegment_confirmation').html("Query segment marked!");
@@ -273,7 +273,7 @@ $querySegmentTables = getQuerySegmentTables($userID,$selectedStartTimeSeconds,$s
             <div class="col-md-12">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <center><h4>Log</h4></center>
+                        <center><h4>Mark Your Day's Query Segments</h4></center>
 
                     </div>
                     <form id="querysegment_form" action="../services/utils/runPageQueryUtils.php?action=markQuerySegment">

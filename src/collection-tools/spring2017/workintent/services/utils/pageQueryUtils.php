@@ -77,7 +77,7 @@ function getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,$trash
         }
     }
 
-    if($index_pages < count($pages) or $index_pages < count($pages)){
+    if($index_pages < count($pages) or $index_queries < count($queries)){
         if($index_pages < count($pages)){
             for($i=$index_pages;$i<count($pages);$i++){
                 $interleaved_objects[] = $pages[$i];
@@ -263,14 +263,34 @@ function getSessionTables($userID,$startTimestamp,$endTimestamp){
     $session_table .= "</tbody>
                     </table>";
 
+//    <div id="slider-range" style="height:250px;"></div>
+
+//    <div class="col-md-1 border">
+//<table>
+//<thead>
+//<th>Drag to Select</th>
+//</thead>
+//
+//<tbody>
+//<tr><td>
+//
+
+//    </td>
+//                    </tr>
+//                    </tbody>
+//                    </table>
+//                    </div>
     $slider_html = "<div class=\"col-md-1 border\">
-                        <input id=\"session_slider\" type=\"text\" height=\"100%\" data-slider-min=\"0\" data-slider-max=\"$table_index\" data-slider-step=\"1\" data-slider-value=\"[0,$table_index]\" data-slider-orientation=\"vertical\"/>
-                    </div>";
+                        <p><input id=\"session_slider\" type=\"text\" height=\"100%\" data-slider-min=\"0\" data-slider-max=\"$table_index\" data-slider-step=\"1\" data-slider-value=\"[0,$table_index]\" data-slider-orientation=\"vertical\"/></p>
+                        </div>
+                    
+                    
+                    ";
 
     $session_panel_html = "
     <div class=\"row\">
         $slider_html
-        <div class=\"col-md-11 border tab-pane\">
+        <div class=\"col-md-11 border\">
         $session_table
         </div>
         

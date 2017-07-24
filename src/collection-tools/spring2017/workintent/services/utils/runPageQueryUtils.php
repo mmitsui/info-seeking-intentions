@@ -29,7 +29,7 @@ if(isset($_GET['action'])){
 
         if(count($queryIDs) > 0){
             $queryID_list = implode(",",$queryIDs);
-            $query = "UPDATE queries SET `trash`=1 WHERE `userID`=$userID' AND `queryID` IN ($queryID_list)";
+            $query = "UPDATE queries SET `trash`=1 WHERE `userID`='$userID' AND `queryID` IN ($queryID_list)";
             $cxn->commit($query);
         }
 
@@ -40,7 +40,6 @@ if(isset($_GET['action'])){
         }
         echo json_encode(getHomePageTables($userID,$startTimestamp,$endTimestamp));
         exit();
-//        return json_encode(getHomePageTables($userID,$startTimestamp,$endTimestamp));
 
     }
     else if($action == 'permanentlyDelete'){
@@ -114,9 +113,10 @@ if(isset($_GET['action'])){
         echo json_encode(getQuerySegmentTables($userID,$startTimestamp,$endTimestamp));
         exit();
     }else if($action=='markIntentions'){
-        $querySegmentIDs = postInputAsArray($_POST['querySegmentIDs']);
+        $querySegmentID = $_POST['querySegmentID'];
         $taskID = $_POST['taskID'];
-        markIntentions($userID,$querySegmentIDs,$checkedIntentions);
+        $checkedIntentions = $_POST['intentions'];
+        markIntentions($userID,$querySegmentID,$checkedIntentions);
         echo json_encode(getMarkIntentionsPanels($userID,$startTimestamp,$endTimestamp));
         exit();
     }

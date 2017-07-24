@@ -107,6 +107,7 @@
                         event.preventDefault();
 
                         var formData = $(trash_form_id).serialize();
+                        alert(formData);
 
 
                         $.ajax({
@@ -114,7 +115,9 @@
                             url: $(trash_form_id).attr('action'),
                             data: formData
                         }).done(function(response) {
+                            alert(response);
                             response = JSON.parse(response);
+
                             $('#log_panel').html(response.loghtml);
                             $('#trash_panel').html(response.trashhtml);
                             $('#log_confirmation').html("Sent to trash!");
@@ -273,68 +276,18 @@
             <div class="col-md-12">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <center><h4>Log</h4></center>
+                        <center><h4>Send Private Items to Trash</h4></center>
 
                     </div>
+                </div>
+
                     <form id="to_trash_form" action="../services/utils/runPageQueryUtils.php?action=sendToTrash">
-                    <div class="panel-body tab-pane" id="log_panel">
+                        <div class="container" id="log_panel">
+<!--                    <div class="panel-body tab-pane" id="log_panel">-->
                         <?php
                             echo $homePageTables['loghtml'];
                         ?>
-<!--                            <table class="table table-striped table-fixed">-->
-<!--                                <thead>-->
-<!--                                <tr>-->
-<!---->
-<!--                                    <th >Time</th>-->
-<!--                                    <th >Type</th>-->
-<!--                                    <th >Delete</th>-->
-<!--                                    <th >Task</th>-->
-<!--                                    <th >Session</th>-->
-<!--                                    <th >Title/Query</th>-->
-<!--                                    <th >URL</th>-->
-<!--                                </tr>-->
-<!--                                </thead>-->
-<!---->
-<!---->
-<!--                                <tbody>-->
-<!--                                --><?php
-//
-//                                $pagesQueries = getInterleavedPagesQueries($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds,0);
-//                                $pages =$pagesQueries;
-//                                //                            $pages =$pagesQueries['pages'];
-//                                foreach($pages as $page){
-//                                    ?>
-<!--                                    <tr >-->
-<!--                                        <td >--><?php //echo isset($page['time'])?$page['time']:"";?><!--</td>-->
-<!--                                        <td >--><?php //echo isset($page['type'])?$page['type']:""; ?><!--</td>-->
-<!--                                        <td >--><?php
-//                                            $name = '';
-//                                            if($page['type']=='page'){
-//                                                $name='pages[]';
-//                                            }else{
-//                                                $name='queries[]';
-//                                            }
-//                                            $value = $page['id'];
-//                                            echo "<input type=\"checkbox\" name='$name' value='$value'>";
-//                                            ?><!--</td>-->
-<!--                                        <td >--><?php //echo isset($page['taskID'])? $taskIDNameMap[$page['taskID']] :"";?><!--</td>-->
-<!--                                        <td >--><?php //echo isset($page['sessionID']) ?$page['sessionID'] : "";?><!--</td>-->
-<!--                                        <td >--><?php //echo isset($page['title'])?substr($page['title'],0,15)."...":"";?><!--</td>-->
-<!--                                        <td >--><?php //echo isset($page['url'])?substr($page['url'],0,15)."...":""; ;?><!--</td>-->
-<!---->
-<!--                                    </tr>-->
-<!--                                    --><?php
-//
-//                                }
-//                                ?>
-<!---->
-<!---->
-<!---->
-<!--                                </tbody>-->
-<!--                            </table>-->
-
-
-                    </div>
+<!--                    </div>-->
                     <center>
                         <input type="hidden" name="userID" <?php echo "value='$userID'"?>/>
                         <input type="hidden" name="startTimestamp" <?php echo "value='$selectedStartTimeSeconds'"?>/>
@@ -342,11 +295,13 @@
                         <input type="submit" class="btn btn-warning" value="Send to Trash">
                     </center>
                         <center><h3 id="log_confirmation" class="bg-success"></h3></center>
+                        </div>
                     </form>
 
 
 
-                </div>
+
+<!--                </div>-->
             </div>
 
         </div>
@@ -356,8 +311,10 @@
                     <div class="panel-heading">
                         <center><h4>Trash Bin</h4></center>
                     </div>
+                </div>
                     <form id="permanently_delete_form" action="../services/utils/runPageQueryUtils.php">
-                        <div class="panel-body tab-pane" id="trash_panel">
+                        <div class="container" id="trash_panel">
+<!--                        <div class="panel-body tab-pane" id="trash_panel">-->
                             <?php
                             echo $homePageTables['trashhtml'];
                             ?>
@@ -410,7 +367,7 @@
 //                                ?>
 <!--                                </tbody>-->
 <!--                            </table>-->
-                        </div>
+<!--                        </div>-->
                         <center>
                             <input type="hidden" name="userID" <?php echo "value='$userID'"?>/>
                             <input type="hidden" name="startTimestamp" <?php echo "value='$selectedStartTimeSeconds'"?>/>
@@ -419,8 +376,8 @@
                             <button type="button" value="permanently_delete_button" class="btn btn-danger">Permanently Delete</button>
                         </center>
                         <center><h3 id="trash_confirmation" class="bg-success"></h3></center>
+                        </div>
                     </form>
-
 
 
                 </div>
