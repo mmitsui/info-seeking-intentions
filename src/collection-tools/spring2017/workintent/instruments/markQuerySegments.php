@@ -33,7 +33,7 @@ $querySegmentTables = getQuerySegmentTables($userID,$selectedStartTimeSeconds,$s
     <html>
     <head>
         <title>
-            Research Study Registration: Introduction
+            Mark Query Segments
         </title>
 
         <link rel="stylesheet" href="../study_styles/bootstrap-3.3.7-dist/css/bootstrap.min.css">

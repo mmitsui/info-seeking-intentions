@@ -266,7 +266,7 @@ function getMarkIntentionsPanels($userID,$startTimestamp,$endTimestamp){
 //        $null_html .= "</div>";
     }
 
-    return array('intentionspanels_html'=>$session_panels_html,'nullpanel_html'=>$null_panel);
+    return array('intentionspanels_html'=>utf8_encode($session_panels_html),'nullpanel_html'=>utf8_encode($null_panel));
 
 }
 
@@ -332,7 +332,7 @@ function getIntentionsPanel($userID,$startTimestamp,$endTimestamp){
     $intentions_html .= "</center>";
     $intentions_html .= "</form>";
 
-    return array('intentionshtml'=>$intentions_html);
+    return array('intentionshtml'=>utf8_encode($intentions_html));
 
 }
 

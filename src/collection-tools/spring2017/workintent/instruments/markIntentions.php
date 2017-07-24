@@ -35,7 +35,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
     <html>
     <head>
         <title>
-            Research Study Registration: Introduction
+            Mark Intentions
         </title>
 
         <!--        <link rel="stylesheet" href="../study_styles/bootstrap-lumen/css/bootstrap.min.css">-->

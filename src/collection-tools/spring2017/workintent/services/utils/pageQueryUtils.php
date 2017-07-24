@@ -141,8 +141,8 @@ function getHomePageTables($userID,$startTimestamp,$endTimestamp){
 
 //        $day_table .= "<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>"; //TODO: FIX
 //        $day_table .= "<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
-        $day_table .= "<td>".(isset($page['title'])?substr($page['title'],0,60)."...":"")."</td>";
-        $day_table .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
+        $day_table .= "<td>".(isset($page['title'])?htmlentities(substr($page['title'],0,60))."...":"")."</td>";
+        $day_table .= "<td><span title='".(isset($page['host'])?htmlentities($page['host']):"")."'>".(isset($page['host'])?htmlentities($page['host']):"")."</span></td>";
 
         $day_table .= "</tr>";
 
@@ -187,8 +187,8 @@ function getHomePageTables($userID,$startTimestamp,$endTimestamp){
 
 //        $trash_table .= "<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>"; //TODO: FIX
 //        $trash_table .= "<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
-        $trash_table .= "<td>".(isset($page['title'])?substr($page['title'],0,60)."...":"")."</td>";
-        $trash_table .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
+        $trash_table .= "<td>".(isset($page['title'])?htmlentities(substr($page['title'],0,60))."...":"")."</td>";
+        $trash_table .= "<td><span title='".(isset($page['host'])?htmlentities($page['host']):"")."'>".(isset($page['host'])?htmlentities($page['host']):"")."</span></td>";
         $trash_table .= "</tr>";
 
     }
@@ -197,8 +197,8 @@ function getHomePageTables($userID,$startTimestamp,$endTimestamp){
                        </table>";
 
 
-
-    $tables = array('loghtml'=> $day_table,'trashhtml'=>$trash_table);
+//    echo $day_table;
+    $tables = array('loghtml'=> utf8_encode($day_table),'trashhtml'=>utf8_encode($trash_table));
     return $tables;
 
 }
@@ -247,17 +247,17 @@ function getSessionTables($userID,$startTimestamp,$endTimestamp){
         $value = $page['id'];
 
         $session_table .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
-        $session_table .= "<td><input data-table-index=\"$table_index\" type=\"checkbox\" name='$name' value='$value'></td>";
+        $begin_button = "<button name=\"begin_button\" data-table-index=\"$table_index\" type=\"button\" class=\"btn btn-success\">Begin</button>";
+        $end_button = "<button name=\"end_button\" data-table-index=\"$table_index\" type=\"button\" class=\"btn btn-danger\">End</button>";
+        $session_table .= "<td><input data-table-index=\"$table_index\" type=\"checkbox\" name='$name' value='$value'> $begin_button $end_button </td>";
 //        $session_table .="<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>";
+
         $session_table .="<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
         $session_table .= "<td name=\"title_$table_index\">".(isset($page['title'])?substr($page['title'],0,30)."...":"")."</td>";
         $session_table .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
-        $table_index += 1;
-
-
-
-
         $session_table .= "</tr >";
+
+        $table_index += 1;
 
     }
     $session_table .= "</tbody>
@@ -280,23 +280,27 @@ function getSessionTables($userID,$startTimestamp,$endTimestamp){
 //                    </tbody>
 //                    </table>
 //                    </div>
-    $slider_html = "<div class=\"col-md-1 border\">
-                        <p><input id=\"session_slider\" type=\"text\" height=\"100%\" data-slider-min=\"0\" data-slider-max=\"$table_index\" data-slider-step=\"1\" data-slider-value=\"[0,$table_index]\" data-slider-orientation=\"vertical\"/></p>
-                        </div>
-                    
-                    
-                    ";
 
+
+
+//    $slider_html = "<div class=\"col-md-1 border\">
+//                        <p><input id=\"session_slider\" type=\"text\" height=\"100%\" data-slider-min=\"0\" data-slider-max=\"$table_index\" data-slider-step=\"1\" data-slider-value=\"[0,$table_index]\" data-slider-orientation=\"vertical\"/></p>
+//                        </div>
+//
+//
+//                    ";
+
+    $slider_html = "";
     $session_panel_html = "
     <div class=\"row\">
         $slider_html
-        <div class=\"col-md-11 border\">
+        <div class=\"col-md-12 border\">
         $session_table
         </div>
         
     </div>
         ";
 
-    return array('sessionhtml'=>$session_panel_html);
+    return array('sessionhtml'=>utf8_encode($session_panel_html));
 }
 ?>

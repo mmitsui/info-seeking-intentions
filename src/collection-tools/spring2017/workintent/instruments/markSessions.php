@@ -32,20 +32,20 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
     <html>
     <head>
         <title>
-            Research Study Registration: Introduction
+            Mark Sessions
         </title>
 
         <link rel="stylesheet" href="../study_styles/bootstrap-3.3.7-dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.1/css/bootstrap-slider.min.css">
+<!--        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.1/css/bootstrap-slider.min.css">-->
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.1/bootstrap-slider.min.js"></script>
+<!--        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.1/bootstrap-slider.min.js"></script>-->
 
         <style>
-            .slider {
-                height: 100% !important;
-            }
+            /*.slider {*/
+                /*height: 100% !important;*/
+            /*}*/
 
             .tab-pane{
                 height:300px;
@@ -106,70 +106,135 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
 
         <script>
             var session_form_id= '#session_form';
-            var slider_id = '#session_slider';
-            var slider_params = {
-                reversed : false,
-                formatter : function(value){
-                    var minValue = value[0];
-                    var maxValue = value[1];
-                    var minTime = $("td[name=time_"+minValue+"]").html();
-                    var minTitle = $("td[name=title_"+minValue+"]").html();
-                    var maxTime = $("td[name=time_"+maxValue+"]").html();
-                    var maxTitle = $("td[name=title_"+maxValue+"]").html();
-                    return minTime + " (" + minTitle + ") - " + maxTime + " (" + maxTitle + ")";
+            var begin_index = -1;
+            var end_index = -1;
+//            var slider_id = '#session_slider';
+//            var slider_params = {
+//                reversed : false,
+//                formatter : function(value){
+//                    var minValue = value[0];
+//                    var maxValue = value[1];
+//                    var minTime = $("td[name=time_"+minValue+"]").html();
+//                    var minTitle = $("td[name=title_"+minValue+"]").html();
+//                    var maxTime = $("td[name=time_"+maxValue+"]").html();
+//                    var maxTitle = $("td[name=title_"+maxValue+"]").html();
+//                    return minTime + " (" + minTitle + ") - " + maxTime + " (" + maxTitle + ")";
+//                }
+//            };
+//            var slider_init_function = function(){
+//                return $(slider_id).slider(slider_params);
+//            };
+
+//            var slider_slidestop_function = function(f){
+//                var values = $(slider_id).val().split(",");
+//                values = $.map(values,function(elem,i){
+//                    return parseInt(elem);
+//                });
+//                var minValue = values[0];
+//                var maxValue = values[1];
+////                        alert("min " + minValue + "max " + maxValue + values);
+//                $(session_form_id+" input[type='checkbox']").filter(function() {
+//                    return ($(this).data('table-index') >= minValue && $(this).data('table-index') <= maxValue);
+//                }).prop( "checked", true );
+//
+//                $(session_form_id+" input[type='checkbox']").filter(function() {
+//                    return ($(this).data('table-index') < minValue || $(this).data('table-index') > maxValue);
+//                }).prop( "checked", false );
+//            };
+            var denote_beginend_function = function(ev){
+                if($(this).attr("name")=='begin_button'){
+                    $("button[name='begin_button']").removeClass('active');
+                    if(end_index != -1){
+                        $(this).addClass('active');
+                    }else{
+                        $(this).toggleClass('active');
+                    }
+
+                    begin_index = $(this).data('table-index');
+                }else if($(this).attr("name")=='end_button'){
+                    $("button[name='end_button']").removeClass('active');
+                    if(begin_index != -1){
+                        $(this).addClass('active');
+                    }else{
+                        $(this).toggleClass('active');
+                    }
+                    end_index = $(this).data('table-index');
                 }
-            };
-            var slider_init_function = function(){
-                return $(slider_id).slider(slider_params);
-            };
 
-            var slider_slidestop_function = function(f){
-                var values = $(slider_id).val().split(",");
-                values = $.map(values,function(elem,i){
-                    return parseInt(elem);
-                });
-                var minValue = values[0];
-                var maxValue = values[1];
-//                        alert("min " + minValue + "max " + maxValue + values);
-                $(session_form_id+" input[type='checkbox']").filter(function() {
-                    return ($(this).data('table-index') >= minValue && $(this).data('table-index') <= maxValue);
-                }).prop( "checked", true );
+                if(begin_index != -1 && end_index != -1){
+                    $(session_form_id+" input[type='checkbox']").filter(function() {
+                        return ($(this).data('table-index') >= begin_index && $(this).data('table-index') <= end_index);
+                    }).prop( "checked", true );
 
-                $(session_form_id+" input[type='checkbox']").filter(function() {
-                    return ($(this).data('table-index') < minValue || $(this).data('table-index') > maxValue);
-                }).prop( "checked", false );
+                    $(session_form_id+" input[type='checkbox']").filter(function() {
+                        return ($(this).data('table-index') < begin_index || $(this).data('table-index') > end_index);
+                    }).prop( "checked", false );
+
+                }else{
+                    if(begin_index != -1){
+                        $(session_form_id+" input[type='checkbox']").filter(function() {
+                            return ($(this).data('table-index') == begin_index);
+                        }).prop( "checked", true );
+
+                        $(session_form_id+" input[type='checkbox']").filter(function() {
+                            return ($(this).data('table-index') != begin_index);
+                        }).prop( "checked", false );
+
+                    }else if(end_index != -1){
+                        $(session_form_id+" input[type='checkbox']").filter(function() {
+                            return ($(this).data('table-index') == end_index);
+                        }).prop( "checked", true );
+
+                        $(session_form_id+" input[type='checkbox']").filter(function() {
+                            return ($(this).data('table-index') != end_index);
+                        }).prop( "checked", false );
+
+                    }else{
+                        $(session_form_id+" input[type='checkbox']").filter(function() {
+                            return true;
+                        }).prop( "checked", false );
+
+                    }
+                }
+            }
+            var mark_session_button_function = function(ev){
+                ev.preventDefault()// cancel form submission
+                var formData = $(session_form_id).serialize();
+                if($(this).attr("value")=="mark_session_button"){
+                    $.ajax({
+                        type: 'POST',
+                        url: $(session_form_id).attr('action'),
+                        data: formData
+                    }).done(function(response) {
+//                                alert(response);
+                        response = JSON.parse(response);
+                        $('#session_panel').html(response.sessionhtml);
+                        $(session_form_id+" button[name='begin_button']").click(denote_beginend_function);
+                        $(session_form_id+" button[name='end_button']").click(denote_beginend_function);
+                        begin_index = -1;
+                        end_index = -1;
+                        $('#mark_session_confirmation').html("Session marked!");
+                        $('#mark_session_confirmation').show();
+                        $('#mark_session_confirmation').fadeOut(2000);
+//                                mySlider = slider_init_function();
+//                                mySlider.on("slideStop",slider_slidestop_function);
+                    });
+                }
             };
 
             $(document).ready(function(){
-                    var mySlider = slider_init_function();
-                    mySlider.css('width','100% !important');
-                    mySlider.on("slideStop",slider_slidestop_function);
+//                    var mySlider = slider_init_function();
+//                    mySlider.css('width','100% !important');
+//                    mySlider.on("slideStop",slider_slidestop_function);
 
 
 //                $(session_form_id+" input[type='checkbox']").filter(function() {
 //                    return ($(this).data('table-index') > 3 && $(this).data('table-index') < 10);
 //                }).prop( "checked", true );
 
-                    $(session_form_id+" button").click(function(ev){
-                        ev.preventDefault()// cancel form submission
-                        var formData = $(session_form_id).serialize();
-                        if($(this).attr("value")=="mark_session_button"){
-                            $.ajax({
-                                type: 'POST',
-                                url: $(session_form_id).attr('action'),
-                                data: formData
-                            }).done(function(response) {
-//                                alert(response);
-                                response = JSON.parse(response);
-                                $('#session_panel').html(response.sessionhtml);
-                                $('#mark_session_confirmation').html("Session marked!");
-                                $('#mark_session_confirmation').show();
-                                $('#mark_session_confirmation').fadeOut(2000);
-                                mySlider = slider_init_function();
-                                mySlider.on("slideStop",slider_slidestop_function);
-                            });
-                        }
-                    });
+                    $(session_form_id+" button[name='mark_session_button']").click(mark_session_button_function);
+                    $(session_form_id+" button[name='begin_button']").click(denote_beginend_function);
+                    $(session_form_id+" button[name='end_button']").click(denote_beginend_function);
 
                 }
             );
@@ -298,12 +363,13 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
 <!--                            </div>-->
 
 
-
+                        </div>
+                        <div class="container">
                         <center>
                             <input type="hidden" name="userID" <?php echo "value='$userID'"?>/>
                             <input type="hidden" name="startTimestamp" <?php echo "value='$selectedStartTimeSeconds'"?>/>
                             <input type="hidden" name="endTimestamp" <?php echo "value='$selectedEndTimeSeconds'"?>/>
-                            <button type="button" value="mark_session_button" class="btn btn-success">Mark Session</button>
+                            <button type="button" name="mark_session_button" value="mark_session_button" class="btn btn-success">Mark Session</button>
                         </center>
                         <center><h3 id="mark_session_confirmation" class="bg-success"></h3></center>
                         </div>

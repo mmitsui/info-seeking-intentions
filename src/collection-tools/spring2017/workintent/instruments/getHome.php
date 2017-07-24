@@ -26,6 +26,7 @@
     $taskIDNameMap = getTaskIDNameMap($userID);
 
     $homePageTables = getHomePageTables($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds);
+//    print_r($homePageTables);
 ?>
 
 
@@ -107,7 +108,6 @@
                         event.preventDefault();
 
                         var formData = $(trash_form_id).serialize();
-                        alert(formData);
 
 
                         $.ajax({
@@ -115,7 +115,7 @@
                             url: $(trash_form_id).attr('action'),
                             data: formData
                         }).done(function(response) {
-                            alert(response);
+//                            alert(response);
                             response = JSON.parse(response);
 
                             $('#log_panel').html(response.loghtml);
@@ -162,6 +162,7 @@
                             url: $(delete_form_id).attr('action')+"?action=restore",
                             data: formData
                         }).done(function(response) {
+//                            alert(response);
                             response = JSON.parse(response);
                             $('#log_panel').html(response.loghtml);
                             $('#trash_panel').html(response.trashhtml);
@@ -175,6 +176,7 @@
                             url: $(delete_form_id).attr('action')+"?action=permanentlyDelete",
                             data: formData
                         }).done(function(response) {
+//                            alert(response);
                             response = JSON.parse(response);
                             $('#log_panel').html(response.loghtml);
                             $('#trash_panel').html(response.trashhtml);
@@ -288,7 +290,9 @@
                             echo $homePageTables['loghtml'];
                         ?>
 <!--                    </div>-->
-                    <center>
+                        </div>
+                        <div class="container">
+                            <center>
                         <input type="hidden" name="userID" <?php echo "value='$userID'"?>/>
                         <input type="hidden" name="startTimestamp" <?php echo "value='$selectedStartTimeSeconds'"?>/>
                         <input type="hidden" name="endTimestamp" <?php echo "value='$selectedEndTimeSeconds'"?>/>
@@ -368,7 +372,9 @@
 <!--                                </tbody>-->
 <!--                            </table>-->
 <!--                        </div>-->
-                        <center>
+                        </div>
+                        <div class="container">
+                            <center>
                             <input type="hidden" name="userID" <?php echo "value='$userID'"?>/>
                             <input type="hidden" name="startTimestamp" <?php echo "value='$selectedStartTimeSeconds'"?>/>
                             <input type="hidden" name="endTimestamp" <?php echo "value='$selectedEndTimeSeconds'"?>/>

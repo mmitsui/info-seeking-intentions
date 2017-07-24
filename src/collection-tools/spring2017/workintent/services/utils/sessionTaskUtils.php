@@ -188,7 +188,7 @@ function getMarkTasksPanels($userID,$startTimestamp,$endTimestamp){
 //        $null_html .= "</div>";
     }
 
-    return array('taskpanels_html'=>$session_panels_html,'nullpanel_html'=>$null_panel);
+    return array('taskpanels_html'=>utf8_encode($session_panels_html),'nullpanel_html'=>utf8_encode($null_panel));
 }
 
 function getTasksPanel($userID,$startTimestamp,$endTimestamp){
@@ -223,7 +223,7 @@ function getTasksPanel($userID,$startTimestamp,$endTimestamp){
     $tasks_html .= "</form>";
     $tasks_html .= "</center>";
 
-    return array('taskshtml'=>$tasks_html);
+    return array('taskshtml'=>utf8_encode($tasks_html));
 
 }
 

@@ -34,7 +34,7 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
     <html>
     <head>
         <title>
-            Research Study Registration: Introduction
+            Mark Tasks
         </title>
 
         <!--        <link rel="stylesheet" href="../study_styles/bootstrap-lumen/css/bootstrap.min.css">-->
@@ -114,7 +114,7 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
             $(document).ready(function(){
                 $(task_button_panel_id+" button").click(function(ev) {
                     ev.preventDefault();
-                    var taskID = $(this).data('task-id')
+                    var taskID = $(this).data('task-id');
 //                    alert(taskID);
                     var formData = $(mark_task_form_id).serialize();
                     formData = formData + "&taskID="+taskID;
