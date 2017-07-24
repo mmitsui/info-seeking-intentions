@@ -104,6 +104,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
 
         <script>
             var querysegment_form_id= '#querysegment_form';
+            var intents_form_id= '#intentions_form';
             var begin_index = -1;
             var end_index = -1;
 //            var slider_id = '#querysegment_slider';
@@ -199,6 +200,35 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
             }
 
 
+            var mark_intentions_button_function = function(ev){
+
+                ev.preventDefault()// cancel form submission
+                var formData = $(querysegment_form_id).serialize()+"&"+$(intents_form_id).serialize();
+
+                if($(this).attr("value")=="mark_intentions_button"){
+
+                    $.ajax({
+                        type: 'POST',
+                        url: $(intents_form_id).attr('action'),
+                        data: formData
+                    }).done(function(response) {
+                        response = JSON.parse(response);
+                        $('#querysegment_panel').html(response.querysegmenthtml);
+                        $('#select_intentions_panel').html(response.intentionshtml);
+                        $("button[name='mark_intentions_button']").click(mark_intentions_button_function);
+                        $(querysegment_form_id+" button[name='begin_button']").click(denote_beginend_function);
+                        $(querysegment_form_id+" button[name='end_button']").click(denote_beginend_function);
+                        begin_index = -1;
+                        end_index = -1;
+                        $('#mark_querysegment_confirmation').html("Query segment and intentions marked!");
+                        $('#mark_querysegment_confirmation').show();
+                        $('#mark_querysegment_confirmation').fadeOut(2000);
+//                        mySlider = slider_init_function();
+//                        mySlider.on("slideStop",slider_slidestop_function);
+                    });
+                }
+            };
+
             var mark_querysegment_button_function = function(ev){
                 ev.preventDefault()// cancel form submission
                 var formData = $(querysegment_form_id).serialize();
@@ -230,7 +260,8 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
 //                    mySlider.on("slideStop",slider_slidestop_function);
 
 
-                    $(querysegment_form_id+" button[name='mark_querysegment_button']").click(mark_querysegment_button_function);
+                    $("button[name='mark_intentions_button']").click(mark_intentions_button_function);
+//                    $(querysegment_form_id+" button[name='mark_querysegment_button']").click(mark_querysegment_button_function);
                     $(querysegment_form_id+" button[name='begin_button']").click(denote_beginend_function);
                     $(querysegment_form_id+" button[name='end_button']").click(denote_beginend_function);
 
@@ -399,7 +430,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
 
 
 
-                <form id="select_querysegments_form" action="../services/utils/runPageQueryUtils.php?action=markQuerySegmentsAndIntentions">
+                <form id="intentions_form" action="../services/utils/runPageQueryUtils.php?action=markQuerySegmentsAndIntentions">
                 <div class="modal-body" id="select_intentions_panel">
                     <?php
                     echo $intentionsPanel['intentionshtml'];
@@ -410,7 +441,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                         <input type="hidden" name="userID" <?php echo "value='$userID'";?>/>
                         <input type="hidden" name="startTimestamp" <?php echo "value='$selectedStartTimeSeconds'";?>/>
                         <input type="hidden" name="endTimestamp" <?php echo "value='$selectedEndTimeSeconds'";?>/>
-                        <button type="button" class="btn btn-primary">Mark Query Segment + Intentions</button>
+                        <button type="button" name='mark_intentions_button' value='mark_intentions_button' class="btn btn-primary">Mark Query Segment + Intentions</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 
                     </center>

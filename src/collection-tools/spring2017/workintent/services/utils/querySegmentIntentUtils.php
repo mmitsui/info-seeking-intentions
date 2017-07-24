@@ -344,7 +344,7 @@ function getIntentionsPanel($userID,$startTimestamp,$endTimestamp){
     $intentions_html .= "<input type=\"hidden\" name=\"startTimestamp\" value=\"$startTimestamp\"/>";
     $intentions_html .= "<input type=\"hidden\" name=\"endTimestamp\" value=\"$endTimestamp\"/>";
 
-    $intentions_html .= "<p><button type=\"button\" value=\"markintentions_button\" class=\"btn btn-success btn-block\">+ Mark Intentions</button></p>";
+//    $intentions_html .= "<p><button type=\"button\" value=\"markintentions_button\" class=\"btn btn-success btn-block\">+ Mark Intentions</button></p>";
     $intentions_html .="</center>";
     $intentions_html .= "<center><h3 id=\"addintentions_confirmation\" class=\"bg-success\"></h3></center>";
 
@@ -437,6 +437,12 @@ function markIntentions($userID,$querySegmentID,$checkedIntentions){
         $result = $cxn->commit($query);
 
 
+}
+
+function getQuerySegmentAndMarkIntentionsPanels($userID,$startTimestamp,$endTimestamp){
+    $intentionsPanel = getIntentionsPanel($userID,$startTimestamp,$endTimestamp);
+    $querySegmentTables = getQuerySegmentTables($userID,$startTimestamp,$endTimestamp);
+    return array_merge($intentionsPanel,$querySegmentTables);
 }
 
 
