@@ -26,7 +26,7 @@ $startEndTimestampList = getStartEndTimestampsList($userID,strtotime('today midn
 
 $taskIDNameMap = getTaskIDNameMap($userID);
 $querySegmentTables = getQuerySegmentTables($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds);
-
+$intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSeconds);
 ?>
 
 
@@ -322,8 +322,8 @@ $querySegmentTables = getQuerySegmentTables($userID,$selectedStartTimeSeconds,$s
                             <?php
                             $actionUrls = actionUrls($selectedStartTimeSeconds);
                             echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['home']."'>&laquo; Back (Home)</a>";
-                            echo "&nbsp;&nbsp;&nbsp;&nbsp;";
-                            echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['intentions']."'>Next (Intentions) &raquo;</a>";
+//                            echo "&nbsp;&nbsp;&nbsp;&nbsp;";
+//                            echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['intentions']."'>Next (Intentions) &raquo;</a>";
                             ?>
                         </center>
                     </div>
@@ -367,7 +367,8 @@ $querySegmentTables = getQuerySegmentTables($userID,$selectedStartTimeSeconds,$s
                             <input type="hidden" name="userID" <?php echo "value='$userID'"?>/>
                             <input type="hidden" name="startTimestamp" <?php echo "value='$selectedStartTimeSeconds'"?>/>
                             <input type="hidden" name="endTimestamp" <?php echo "value='$selectedEndTimeSeconds'"?>/>
-                            <button type="button" name="mark_querysegment_button" value="mark_querysegment_button" class="btn btn-success">Mark Query Segment</button>
+                            <button type="button" name="intent_modal_button" value="intent_modal_button" class="btn btn-success" data-toggle="modal" data-target="#intent_modal">Mark Intentions</button>
+<!--                            <button type="button" name="mark_querysegment_button" value="mark_querysegment_button" class="btn btn-success">Mark Query Segment</button>-->
                         </center>
                         <center><h3 id="mark_querysegment_confirmation" class="bg-success"></h3></center>
                         </div>
@@ -380,8 +381,45 @@ $querySegmentTables = getQuerySegmentTables($userID,$selectedStartTimeSeconds,$s
 
         </div>
 
+    <!-- Button trigger modal -->
+<!--    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#intent_modal">-->
+<!--        Launch demo modal-->
+<!--    </button>-->
 
+    <!-- Modal -->
+    <div class="modal fade" id="intent_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Intentions</h4>
+                </div>
+
+
+
+
+
+                <form id="select_querysegments_form" action="../services/utils/runPageQueryUtils.php?action=markQuerySegmentsAndIntentions">
+                <div class="modal-body" id="select_intentions_panel">
+                    <?php
+                    echo $intentionsPanel['intentionshtml'];
+                    ?>
+                </div>
+                <div class="modal-footer">
+                    <center>
+                        <input type="hidden" name="userID" <?php echo "value='$userID'";?>/>
+                        <input type="hidden" name="startTimestamp" <?php echo "value='$selectedStartTimeSeconds'";?>/>
+                        <input type="hidden" name="endTimestamp" <?php echo "value='$selectedEndTimeSeconds'";?>/>
+                        <button type="button" class="btn btn-primary">Mark Query Segment + Intentions</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+
+                    </center>
+                </div>
+                </form>
+            </div>
+        </div>
     </div>
+
 
 <!--    <div class="container">-->
 <!--        <div class="row">-->
