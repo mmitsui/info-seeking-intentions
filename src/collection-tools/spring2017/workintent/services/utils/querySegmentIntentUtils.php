@@ -50,7 +50,7 @@ function getQuerySegmentTables($userID,$startTimestamp,$endTimestamp){
 //        $query_segment_table .="<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>";
         $query_segment_table .="<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
         $query_segment_table .="<td>".(isset($page['querySegmentID']) ?$page['querySegmentID'] : "")."</td>";
-        $query_segment_table .= "<td name=\"title_$table_index\">".(isset($page['title'])?substr($page['title'],0,30)."...":"")."</td>";
+        $query_segment_table .= "<td name=\"title_$table_index\">".(isset($page['title'])?substr($page['title'],0,60)."...":"")."</td>";
         $query_segment_table .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
         $table_index += 1;
 
@@ -283,7 +283,7 @@ function getIntentionsPanel($userID,$startTimestamp,$endTimestamp){
     $tasks = getTasks($userID);
 
     $intentions = array(
-        'id_start'=>'id_start',
+        'id_start'=>'Identify something to get started',
         'id_more'=>'id_more',
         'learn_feature'=>'learn_feature',
         'learn_structure'=>'learn_structure',

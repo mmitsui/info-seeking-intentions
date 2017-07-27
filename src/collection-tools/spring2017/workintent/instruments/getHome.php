@@ -197,8 +197,8 @@
 
 
 
-
-    <body style="background-color:gainsboro">
+    <body >
+<!--    <body style="background-color:gainsboro">-->
     <div class="container-fluid">
         <!--   Dates Tab and Review     -->
 
@@ -252,25 +252,7 @@
 
 
         <!--   Query Log and Progress     -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <center>
-                            <?php
-                            $actionUrls = actionUrls($selectedStartTimeSeconds);
-                            echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['sessions']."'>Start Annotation &raquo;</a>";
-                            ?>
-                        </center>
-                    </div>
-                </div>
-            </div>
 
-
-
-
-
-        </div>
 
         <!--   Actions and Trash Bin    -->
         <div class="row">
@@ -388,6 +370,22 @@
 
                 </div>
             </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <center>
+                            <?php
+                            $actionUrls = actionUrls($selectedStartTimeSeconds);
+                            echo "<a type=\"button\" class=\"btn btn-info btn-lg\" href='".$actionUrls['sessions']."'>Start Annotation &raquo;</a>";
+                            ?>
+                        </center>
+                    </div>
+                </div>
+            </div>
+
+        </div>
 
 
         </div>

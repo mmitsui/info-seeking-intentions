@@ -170,7 +170,8 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
 
 
 
-    <body style="background-color:gainsboro">
+    <body >
+<!--    <body style="background-color:gainsboro">-->
     <div class="container-fluid">
         <!--   Dates Tab and Review     -->
         <div class="row">
@@ -218,28 +219,7 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
         </div>
 
 
-        <!--   Query Log and Progress     -->
-        <div class="row">
 
-            <div class="col-md-12">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <center>
-                            <?php
-                            $actionUrls = actionUrls($selectedStartTimeSeconds);
-                            echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['sessions']."'>&laquo; Back (Sessions)</a>";
-                            echo "&nbsp;&nbsp;&nbsp;&nbsp;";
-                            echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['query segments']."'>Next (Query Segments + Intentions) &raquo;</a>";
-                            ?>
-                        </center>
-                    </div>
-
-                </div>
-            </div>
-
-
-
-        </div>
 
         <!--   Actions and Trash Bin    -->
         <div class="row">
@@ -281,6 +261,26 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
                         ?>
 
 
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!--   Query Log and Progress     -->
+        <div class="row">
+
+            <div class="col-md-12">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <center>
+                            <?php
+                            $actionUrls = actionUrls($selectedStartTimeSeconds);
+                            echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['sessions']."'>&laquo; Back (Sessions)</a>";
+                            echo "&nbsp;&nbsp;&nbsp;&nbsp;";
+                            echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['query segments']."'>Next (Query Segments + Intentions) &raquo;</a>";
+                            ?>
+                        </center>
                     </div>
 
                 </div>
