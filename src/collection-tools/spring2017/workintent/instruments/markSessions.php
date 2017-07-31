@@ -370,9 +370,9 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
                         <center>
                             <?php
                             $actionUrls = actionUrls($selectedStartTimeSeconds);
-                            echo "<a type=\"button\" class=\"btn btn-default btn-lg\" href='".$actionUrls['home']."'>&laquo; Back (Home)</a>";
+                            echo "<a type=\"button\" class=\"btn btn-info btn-lg\" href='".$actionUrls['home']."'>&laquo; Back (Home)</a>";
                             echo "&nbsp;&nbsp;&nbsp;&nbsp;";
-                            echo "<a type=\"button\" class=\"btn btn-default btn-lg\" href='".$actionUrls['tasks']."'>Next (Tasks) &raquo;</a>";
+                            echo "<a type=\"button\" class=\"btn btn-info btn-lg\" href='".$actionUrls['tasks']."'>Next (Tasks) &raquo;</a>";
                             ?>
                         </center>
                     </div>

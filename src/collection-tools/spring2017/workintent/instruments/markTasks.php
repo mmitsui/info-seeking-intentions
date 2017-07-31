@@ -268,6 +268,12 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
         </div>
 
         <!--   Query Log and Progress     -->
+
+
+        <?php
+        echo $markTasksPanels['nullpanel_html'];
+        ?>
+
         <div class="row">
 
             <div class="col-md-12">
@@ -276,9 +282,9 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
                         <center>
                             <?php
                             $actionUrls = actionUrls($selectedStartTimeSeconds);
-                            echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['sessions']."'>&laquo; Back (Sessions)</a>";
+                            echo "<a type=\"button\" class=\"btn btn-info btn-lg\" href='".$actionUrls['sessions']."'>&laquo; Back (Sessions)</a>";
                             echo "&nbsp;&nbsp;&nbsp;&nbsp;";
-                            echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['query segments']."'>Next (Query Segments + Intentions) &raquo;</a>";
+                            echo "<a type=\"button\" class=\"btn btn-info btn-lg\" href='".$actionUrls['query segments']."'>Next (Query Segments + Intentions) &raquo;</a>";
                             ?>
                         </center>
                     </div>
@@ -286,10 +292,6 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
                 </div>
             </div>
         </div>
-
-        <?php
-        echo $markTasksPanels['nullpanel_html'];
-        ?>
 
 
     </div>
