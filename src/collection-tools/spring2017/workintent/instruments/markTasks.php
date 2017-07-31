@@ -304,6 +304,7 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
 
 
     </div>
+    <center><h3 id="addtask_confirmation" class="alert alert-success"></h3></center>
     </body>
     </html>
 <?php

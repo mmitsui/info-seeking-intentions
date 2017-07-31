@@ -208,6 +208,8 @@
 
     <body >
 <!--    <body style="background-color:gainsboro">-->
+
+
     <div class="container-fluid">
         <!--   Dates Tab and Review     -->
 
@@ -289,7 +291,7 @@
                         <input type="hidden" name="endTimestamp" <?php echo "value='$selectedEndTimeSeconds'"?>/>
                         <input type="submit" class="btn btn-warning" value="Send to Trash">
                     </center>
-                        <center><h3 id="log_confirmation" class="alert alert-success"></h3></center>
+
                         </div>
                     </form>
 
@@ -397,7 +399,8 @@
         </div>
 
 
-        </div>
+    </div>
+    <center><h3 id="log_confirmation" class="alert alert-success"></h3></center>
 
 
     </div>

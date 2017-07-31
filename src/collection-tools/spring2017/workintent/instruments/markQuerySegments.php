@@ -100,13 +100,16 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
             /*float: left;*/
             /*border-bottom-width: 0;*/
             /*}*/
+
+
+
             .alert{
-                position:fixed;
-                top:0;
+                /*position:fixed;*/
+                /*top:0;*/
                 align:center;
-                width:100%;
+                /*width:100%;*/
                 display:none;
-                margin: 0 auto;
+                /*margin: 0 auto;*/
             }
         </style>
 
@@ -389,7 +392,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                             <button type="button" name="intent_modal_button" value="intent_modal_button" class="btn btn-success" data-toggle="modal" data-target="#intent_modal">Mark Intentions</button>
 <!--                            <button type="button" name="mark_querysegment_button" value="mark_querysegment_button" class="btn btn-success">Mark Query Segment</button>-->
                         </center>
-                        <center><h3 id="mark_querysegment_confirmation" class="alert alert-success"></h3></center>
+
                         </div>
                     </form>
 
@@ -422,6 +425,9 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
 
         </div>
 
+
+
+
     <!-- Button trigger modal -->
 <!--    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#intent_modal">-->
 <!--        Launch demo modal-->
@@ -445,8 +451,15 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                     <?php
                     echo $intentionsPanel['intentionshtml'];
                     ?>
+
+                    <center><h3 id="mark_querysegment_confirmation" class="alert alert-success"></h3></center>
                 </div>
+
+
                 <div class="modal-footer">
+
+
+
                     <center>
                         <input type="hidden" name="userID" <?php echo "value='$userID'";?>/>
                         <input type="hidden" name="startTimestamp" <?php echo "value='$selectedStartTimeSeconds'";?>/>
@@ -455,11 +468,18 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 
                     </center>
+
                 </div>
                 </form>
             </div>
         </div>
+
+
     </div>
+
+
+
+
 
 
 <!--    <div class="container">-->
