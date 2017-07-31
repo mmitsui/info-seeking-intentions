@@ -100,6 +100,14 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
             /*float: left;*/
             /*border-bottom-width: 0;*/
             /*}*/
+            .alert{
+                position:fixed;
+                top:0;
+                align:center;
+                width:100%;
+                display:none;
+                margin: 0 auto;
+            }
         </style>
 
         <script>
@@ -381,7 +389,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                             <button type="button" name="intent_modal_button" value="intent_modal_button" class="btn btn-success" data-toggle="modal" data-target="#intent_modal">Mark Intentions</button>
 <!--                            <button type="button" name="mark_querysegment_button" value="mark_querysegment_button" class="btn btn-success">Mark Query Segment</button>-->
                         </center>
-                        <center><h3 id="mark_querysegment_confirmation" class="bg-success"></h3></center>
+                        <center><h3 id="mark_querysegment_confirmation" class="alert alert-success"></h3></center>
                         </div>
                     </form>
 

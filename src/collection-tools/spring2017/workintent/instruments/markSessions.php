@@ -102,6 +102,14 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
             /*float: left;*/
             /*border-bottom-width: 0;*/
             /*}*/
+            .alert{
+                position:fixed;
+                top:0;
+                align:center;
+                width:100%;
+                display:none;
+                margin: 0 auto;
+            }
         </style>
 
         <script>
@@ -351,7 +359,7 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
                             <input type="hidden" name="endTimestamp" <?php echo "value='$selectedEndTimeSeconds'"?>/>
                             <button type="button" name="mark_session_button" value="mark_session_button" class="btn btn-success">Mark Session</button>
                         </center>
-                        <center><h3 id="mark_session_confirmation" class="bg-success"></h3></center>
+                        <center><h3 id="mark_session_confirmation" class="alert alert-success"></h3></center>
                         </div>
                     </form>
 

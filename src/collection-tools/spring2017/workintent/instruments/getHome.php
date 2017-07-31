@@ -96,6 +96,15 @@
                 /*float: left;*/
                 /*border-bottom-width: 0;*/
             /*}*/
+
+            .alert{
+                position:fixed;
+                top:0;
+                align:center;
+                width:100%;
+                display:none;
+                margin: 0 auto;
+            }
         </style>
 
         <script>
@@ -280,7 +289,7 @@
                         <input type="hidden" name="endTimestamp" <?php echo "value='$selectedEndTimeSeconds'"?>/>
                         <input type="submit" class="btn btn-warning" value="Send to Trash">
                     </center>
-                        <center><h3 id="log_confirmation" class="bg-success"></h3></center>
+                        <center><h3 id="log_confirmation" class="alert alert-success"></h3></center>
                         </div>
                     </form>
 
@@ -363,7 +372,7 @@
                             <button type="button" value="restore_button" class="btn btn-success">Undo Delete</button>
                             <button type="button" value="permanently_delete_button" class="btn btn-danger">Permanently Delete</button>
                         </center>
-                        <center><h3 id="trash_confirmation" class="bg-success"></h3></center>
+                        <center><h3 id="trash_confirmation" class="alert alert-success"></h3></center>
                         </div>
                     </form>
 

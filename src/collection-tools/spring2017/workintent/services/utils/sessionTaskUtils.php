@@ -221,7 +221,7 @@ function getTasksPanel($userID,$startTimestamp,$endTimestamp){
     $tasks_html .= "<input type=\"hidden\" name=\"endTimestamp\" value=\"$endTimestamp\"/>";
     $tasks_html .= "</div>";
     $tasks_html .= "</div>";
-    $tasks_html .= "<center><h3 id=\"addtask_confirmation\" class=\"bg-success\"></h3></center>";
+    $tasks_html .= "<center><h3 id=\"addtask_confirmation\" class=\"alert alert-success\"></h3></center>";
     $tasks_html .= "</form>";
     $tasks_html .= "</center>";
 

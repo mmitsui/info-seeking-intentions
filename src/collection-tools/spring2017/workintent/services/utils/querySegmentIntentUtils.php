@@ -346,7 +346,7 @@ function getIntentionsPanel($userID,$startTimestamp,$endTimestamp){
 
 //    $intentions_html .= "<p><button type=\"button\" value=\"markintentions_button\" class=\"btn btn-success btn-block\">+ Mark Intentions</button></p>";
     $intentions_html .="</center>";
-    $intentions_html .= "<center><h3 id=\"addintentions_confirmation\" class=\"bg-success\"></h3></center>";
+    $intentions_html .= "<center><h3 id=\"addintentions_confirmation\" class=\"alert alert-success\"></h3></center>";
 
     $intentions_html .= "</div>";
     $intentions_html .=  "</div>";

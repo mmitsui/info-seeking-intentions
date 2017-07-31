@@ -99,6 +99,15 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
             /*float: left;*/
             /*border-bottom-width: 0;*/
             /*}*/
+
+            .alert{
+                position:fixed;
+                top:0;
+                align:center;
+                width:100%;
+                display:none;
+                margin: 0 auto;
+            }
         </style>
 
 
