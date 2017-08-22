@@ -49,7 +49,7 @@ if(isset($_GET['action'])){
 
         if(count($queryIDs) > 0){
             $queryID_list = implode(",",$queryIDs);
-            $query = "UPDATE queries SET `permanently_delete`=1 WHERE `userID`=$userID' AND `queryID` IN ($queryID_list)";
+            $query = "UPDATE queries SET `permanently_delete`=1 WHERE `userID`='$userID' AND `queryID` IN ($queryID_list)";
             $cxn->commit($query);
         }
 

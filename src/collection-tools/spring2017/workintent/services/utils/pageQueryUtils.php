@@ -223,8 +223,9 @@ function getHomePageTables($userID,$startTimestamp,$endTimestamp){
         $trash_table .= "<button type=\"button\" value=\"restore_button\" class=\"btn btn-success\">Undo Delete</button>";
         $trash_table .= "<button type=\"button\" value=\"permanently_delete_button\" class=\"btn btn-danger\">Permanently Delete</button>";
         $trash_table .= "</center>";
-        $trash_table .= "<center><h3 id=\"trash_confirmation\" class=\"alert alert-success\"></h3></center>";
+
         $trash_table .= "</div>";
+
     }
 
 

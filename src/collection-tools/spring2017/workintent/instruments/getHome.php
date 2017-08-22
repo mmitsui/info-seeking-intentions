@@ -111,6 +111,49 @@
             var trash_form_id = '#to_trash_form';
             var delete_form_id = '#permanently_delete_form';
 
+            var restore_delete_function = function(ev){
+                ev.preventDefault()// cancel form submission
+
+                var formData = $(delete_form_id).serialize();
+                if($(this).attr("value")=="restore_button"){
+                    $.ajax({
+                        type: 'POST',
+                        url: $(delete_form_id).attr('action')+"?action=restore",
+                        data: formData
+                    }).done(function(response) {
+//                            alert(response);
+                        response = JSON.parse(response);
+                        $('#log_panel').html(response.loghtml);
+                        $('#trash_panel').html(response.trashhtml);
+                        $(delete_form_id+" button").click(restore_delete_function);
+                        $('#trash_confirmation').html("Pages were restored!");
+                        $('#trash_confirmation').show();
+                        $('#trash_confirmation').fadeOut(2000);
+                    }).fail(function(data) {
+                        alert("There was a server error.  Please try again later or contact mmitsui@scarletmail.rutgers.edu if you experience further issues.");
+                    });
+                }else if($(this).attr("value")=="permanently_delete_button"){
+                    $.ajax({
+                        type: 'POST',
+                        url: $(delete_form_id).attr('action')+"?action=permanentlyDelete",
+                        data: formData
+                    }).done(function(response) {
+//                            alert(response);
+                        response = JSON.parse(response);
+                        $('#log_panel').html(response.loghtml);
+                        $('#trash_panel').html(response.trashhtml);
+                        $(delete_form_id+" button").click(restore_delete_function);
+                        $('#trash_confirmation').html("Pages were permanently deleted!");
+                        $('#trash_confirmation').show();
+                        $('#trash_confirmation').fadeOut(2000);
+                    }).fail(function(data) {
+                        alert("There was a server error.  Please try again later or contact mmitsui@scarletmail.rutgers.edu if you experience further issues.");
+                    });
+                }
+            };
+
+
+
             $(document).ready(function(){
                     $(trash_form_id).submit(function(event) {
                         // Stop the browser from submitting the form.
@@ -129,72 +172,20 @@
 
                             $('#log_panel').html(response.loghtml);
                             $('#trash_panel').html(response.trashhtml);
+                            $(delete_form_id+" button").click(restore_delete_function);
                             $('#log_confirmation').html("Sent to trash!");
                             $('#log_confirmation').show();
                             $('#log_confirmation').fadeOut(2000);
-//                // Make sure that the formMessages div has the 'success' class.
-//                $(formMessages).removeClass('error');
-//                $(formMessages).addClass('success');
-//
-//                // Set the message text.
-//                $(formMessages).text(response);
-//
-//                // Clear the form.
-//                $('#name').val('');
-//                $('#email').val('');
-//                $('#message').val('');
                         }).fail(function(data) {
-//                // Make sure that the formMessages div has the 'error' class.
-//                $(formMessages).removeClass('success');
-//                $(formMessages).addClass('error');
-//
-//                // Set the message text.
-//                if (data.responseText !== '') {
-//                    $(formMessages).text(data.responseText);
-//                } else {
-//                    $(formMessages).text('Oops! An error occured and your message could not be sent.');
-//                }
+                            alert("There was a server error.  Please try again later or contact mmitsui@scarletmail.rutgers.edu if you experience further issues.");
                         });
-                        // TODO
                     });
 
 
 
 
-                $(delete_form_id+" button").click(function(ev){
-                    ev.preventDefault()// cancel form submission
 
-                    var formData = $(delete_form_id).serialize();
-                    if($(this).attr("value")=="restore_button"){
-                        $.ajax({
-                            type: 'POST',
-                            url: $(delete_form_id).attr('action')+"?action=restore",
-                            data: formData
-                        }).done(function(response) {
-//                            alert(response);
-                            response = JSON.parse(response);
-                            $('#log_panel').html(response.loghtml);
-                            $('#trash_panel').html(response.trashhtml);
-                            $('#trash_confirmation').html("Pages were restored!");
-                            $('#trash_confirmation').show();
-                            $('#trash_confirmation').fadeOut(2000);
-                        });
-                    }else if($(this).attr("value")=="permanently_delete_button"){
-                        $.ajax({
-                            type: 'POST',
-                            url: $(delete_form_id).attr('action')+"?action=permanentlyDelete",
-                            data: formData
-                        }).done(function(response) {
-//                            alert(response);
-                            response = JSON.parse(response);
-                            $('#log_panel').html(response.loghtml);
-                            $('#trash_panel').html(response.trashhtml);
-                            $('#trash_confirmation').html("Pages were permanently deleted!");
-                            $('#trash_confirmation').show();
-                            $('#trash_confirmation').fadeOut(2000);
-                        });
-                    }
-                });
+                $(delete_form_id+" button").click(restore_delete_function);
 
                 }
             );
@@ -211,6 +202,8 @@
 
 
     <div class="container-fluid">
+
+
         <!--   Dates Tab and Review     -->
 
         <div class="row">
@@ -338,6 +331,7 @@
 
     </div>
     <center><h3 id="log_confirmation" class="alert alert-success"></h3></center>
+    <center><h3 id="trash_confirmation" class="alert alert-success"></h3></center>
 
 
     </div>

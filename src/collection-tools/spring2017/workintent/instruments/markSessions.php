@@ -248,6 +248,8 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
                         $('#mark_session_confirmation').fadeOut(2000);
 //                                mySlider = slider_init_function();
 //                                mySlider.on("slideStop",slider_slidestop_function);
+                    }).fail(function(data) {
+                        alert("There was a server error.  Please try again later or contact mmitsui@scarletmail.rutgers.edu if you experience further issues.");
                     });
                 }
             };

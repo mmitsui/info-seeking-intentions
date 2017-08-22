@@ -146,7 +146,7 @@ function getMarkIntentionsPanels($userID,$startTimestamp,$endTimestamp){
     $session_panels = array();
     $session_panels_html = "";
     if(count($querySegmentIDs)==0 or (count($querySegmentIDs)==1 and in_array(null,$querySegmentIDs))){
-        $session_panels_html = "<center><h3 class='bg-danger'>You have marked no query segment. Please go back and mark some</h3></center>";
+        $session_panels_html = "<center><h3 class='bg-danger'>You have marked no query segment. Please go back and mark some.</h3></center>";
     }
     else{
         foreach($querySegmentIDs as $querySegmentID){

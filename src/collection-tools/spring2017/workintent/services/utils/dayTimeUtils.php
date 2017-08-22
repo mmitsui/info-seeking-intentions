@@ -4,7 +4,7 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/workintent/core/Connection.class.php");
 function getFirstActivityStartTimestamp($userID){
     $cxn = Connection::getInstance();
 
-    $results = $cxn->commit("SELECT * FROM pages WHERE `userID`=$userID ORDER BY `localTimestamp` ASC LIMIT 10");
+    $results = $cxn->commit("SELECT * FROM pages WHERE `userID`='$userID' ORDER BY `localTimestamp` ASC LIMIT 10");
     if(mysql_num_rows($results)==0){
         return -1;
     }else{

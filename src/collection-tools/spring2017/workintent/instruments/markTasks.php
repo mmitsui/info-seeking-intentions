@@ -143,6 +143,8 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
                         $('#addtask_confirmation').html("Task annotated!");
                         $('#addtask_confirmation').show();
                         $('#addtask_confirmation').fadeOut(2000);
+                    }).fail(function(data) {
+                        alert("There was a server error.  Please try again later or contact mmitsui@scarletmail.rutgers.edu if you experience further issues.");
                     });
                 };
 
@@ -167,6 +169,8 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
                             $('#addtask_confirmation').html("Task added!");
                             $('#addtask_confirmation').show();
                             $('#addtask_confirmation').fadeOut(2000);
+                        }).fail(function(data) {
+                            alert("There was a server error.  Please try again later or contact mmitsui@scarletmail.rutgers.edu if you experience further issues.");
                         });
                     }
                 };
