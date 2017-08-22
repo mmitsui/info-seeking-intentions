@@ -233,13 +233,14 @@ function getTasksPanel($userID,$startTimestamp,$endTimestamp){
 
 }
 
-function makeNextSessionID($userID){
-    $query = "SELECT IFNULL(MAX(sessionID),0) as maxSessionID FROM session_labels_user WHERE userID=$userID";
+function makeNextSessionID($userID,$startTimestamp){
+    $date = date('Y-m-d', $startTimestamp);
+    $query = "SELECT IFNULL(MAX(sessionID),0) as maxSessionID FROM session_labels_user WHERE userID=$userID AND `date`='$date'";
     $cxn = Connection::getInstance();
     $result = $cxn->commit($query);
     $line = mysql_fetch_array($result,MYSQL_ASSOC);
     $sessionID = $line['maxSessionID']+1;
-    $query = "INSERT INTO session_labels_user (`userID`,`projectID`,`sessionID`,`deleted`) VALUES ('$userID','$userID','$sessionID',0)";
+    $query = "INSERT INTO session_labels_user (`userID`,`projectID`,`sessionID`,`deleted`,`date`) VALUES ('$userID','$userID','$sessionID',0,'$date')";
     $cxn->commit($query);
     return $sessionID;
 }

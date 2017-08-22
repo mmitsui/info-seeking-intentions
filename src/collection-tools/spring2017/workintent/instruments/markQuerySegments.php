@@ -224,6 +224,24 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                 }
             }
 
+            var toggle_radio_function = function(ev){
+                var intent_key = $(this).data('intent-key');
+                if($( this ).is( ":checked" )){
+                    $("input[name='"+intent_key+"_success']").prop('disabled',false);
+                }else{
+                    $("input[name='"+intent_key+"_success']").prop('disabled',true);
+                }
+            }
+
+            var toggle_text_function = function(ev){
+                var intent_key = $(this).data('intent-key');
+                if($(this).attr('value')=='1'){
+                    $("textarea[name='"+intent_key+"_failure_reason']").prop('disabled',true);
+                }else{
+                    $("textarea[name='"+intent_key+"_failure_reason']").prop('disabled',false);
+                }
+            }
+
 
             var mark_intentions_button_function = function(ev){
 
@@ -240,15 +258,21 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                         response = JSON.parse(response);
                         $('#querysegment_panel').html(response.querysegmenthtml);
                         $('#select_intentions_panel').html(response.intentionshtml);
+//                        alert(response.intentionshtml);
+//                        $('#select_intentions_footer').html(response.intentionsfooterhtml);
+//                        alert(response.intentionsfooterhtml);
                         $("button[name='mark_intentions_button']").click(mark_intentions_button_function);
                         $(querysegment_form_id+" button[name='begin_button']").click(denote_beginend_function);
                         $(querysegment_form_id+" button[name='end_button']").click(denote_beginend_function);
+                        $('input:radio').click(toggle_text_function);
+                        $("button[name='intent_modal_button']").fadeOut("slow");
                         begin_index = -1;
                         end_index = -1;
                         $('#mark_querysegment_confirmation').html("Query segment and intentions marked!");
                         $('#mark_querysegment_confirmation').show();
                         $('#mark_querysegment_confirmation').fadeOut(2000);
                         $('#intent_modal').modal("hide");
+
 //                        mySlider = slider_init_function();
 //                        mySlider.on("slideStop",slider_slidestop_function);
                     }).fail(function(data) {
@@ -272,6 +296,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                         $('#querysegment_panel').html(response.querysegmenthtml);
                         $(querysegment_form_id+" button[name='begin_button']").click(denote_beginend_function);
                         $(querysegment_form_id+" button[name='end_button']").click(denote_beginend_function);
+                        $('input:radio').click(toggle_text_function);
                         begin_index = -1;
                         end_index = -1;
                         $('#mark_querysegment_confirmation').html("Query segment marked!");
@@ -294,6 +319,8 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
 //                    $(querysegment_form_id+" button[name='mark_querysegment_button']").click(mark_querysegment_button_function);
                     $(querysegment_form_id+" button[name='begin_button']").click(denote_beginend_function);
                     $(querysegment_form_id+" button[name='end_button']").click(denote_beginend_function);
+                    $('input:radio').click(toggle_text_function);
+                    $('input[name="intentions[]"]').click(toggle_radio_function);
 
                 }
             );
@@ -325,6 +352,8 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
 
 
     <body>
+
+    <center><h3 id="mark_querysegment_confirmation" class="alert alert-success"></h3></center>
 <!--    <body style="background-color:gainsboro">-->
     <div class="container-fluid">
         <!--   Dates Tab and Review     -->
@@ -479,22 +508,11 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                 </div>
 
 
-                <div class="modal-footer">
-
-
-
-                    <center>
-                        <input type="hidden" name="userID" <?php echo "value='$userID'";?>/>
-                        <input type="hidden" name="startTimestamp" <?php echo "value='$selectedStartTimeSeconds'";?>/>
-                        <input type="hidden" name="endTimestamp" <?php echo "value='$selectedEndTimeSeconds'";?>/>
-                        <button type="button" name='mark_intentions_button' value='mark_intentions_button' class="btn btn-primary">Mark Query Segment + Intentions</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-
-
-                    </center>
-                    <center><h3 id="mark_querysegment_confirmation" class="alert alert-success"></h3></center>
-
-                </div>
+<!--                <div class="modal-footer" id="select_intentions_footer">-->
+<!--                    --><?php
+//                    echo $intentionsPanel['intentionsfooterhtml'];
+//                    ?>
+<!--                </div>-->
                 </form>
             </div>
         </div>

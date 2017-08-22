@@ -88,7 +88,7 @@ if(isset($_GET['action'])){
         $pageIDs = postInputAsArray($_POST['pages']);
         $queryIDs = postInputAsArray($_POST['queries']);
 
-        $sessionID = makeNextSessionID($userID);
+        $sessionID = makeNextSessionID($userID,$startTimestamp);
         markSessionID($userID,$sessionID,$pageIDs,$queryIDs);
 
         echo json_encode(getSessionTables($userID,$startTimestamp,$endTimestamp));
@@ -114,7 +114,7 @@ if(isset($_GET['action'])){
         $pageIDs = postInputAsArray($_POST['pages']);
         $queryIDs = postInputAsArray($_POST['queries']);
 
-        $querySegmentID = makeNextQuerySegmentID($userID);
+        $querySegmentID = makeNextQuerySegmentID($userID,$startTimestamp);
         markQuerySegmentID($userID,$querySegmentID,$pageIDs,$queryIDs);
 
         echo json_encode(getQuerySegmentTables($userID,$startTimestamp,$endTimestamp));
@@ -130,7 +130,7 @@ if(isset($_GET['action'])){
 
         $pageIDs = postInputAsArray($_POST['pages']);
         $queryIDs = postInputAsArray($_POST['queries']);
-        $querySegmentID = makeNextQuerySegmentID($userID);
+        $querySegmentID = makeNextQuerySegmentID($userID,$startTimestamp);
         markQuerySegmentID($userID,$querySegmentID,$pageIDs,$queryIDs);
 
         $checkedIntentions = $_POST['intentions'];

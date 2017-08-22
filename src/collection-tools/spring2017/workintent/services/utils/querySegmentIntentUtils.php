@@ -1,23 +1,41 @@
 <?php
 require_once($_SERVER["DOCUMENT_ROOT"]."/workintent/core/Connection.class.php");
 require_once("pageQueryUtils.php");
+require_once("sessionTaskUtils.php");
 
 function getQuerySegmentTables($userID,$startTimestamp,$endTimestamp){
 
+
+    $sessionIDs = getSessionIDs($userID,$startTimestamp,$endTimestamp);
 
     $pagesQueries = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0,-1);
     $pages =$pagesQueries;
     $table_index = 0;
     $query_segment_table = '';
     $query_segment_panel_html = '';
+    $query_segment_tablemap = array();
 
     if(count($pages)<=0){
         $query_segment_table = '<center><h3 class=\'bg-danger\'>You logged no activity. Please search and browse.</h3></center>';
         $query_segment_panel_html = '<center><h3 class=\'bg-danger\'>You logged no activity. Please search and browse.</h3></center>';
     }else{
 
-        $query_segment_table = "<table class=\"table table-bordered table-striped table-fixed\">
-                                <thead>
+        foreach($sessionIDs as $sessionID) {
+            if(!is_null($sessionID)){
+                $pq_session = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0,$sessionID);
+
+                $query_segment_tablemap[$sessionID] = "<div class=\"panel panel-primary\">\n";
+                $query_segment_tablemap[$sessionID] .= "<div class=\"panel-heading\">\n";
+                $query_segment_tablemap[$sessionID] .= "<center>\n";
+                $query_segment_tablemap[$sessionID] .= "Session $sessionID";
+                $query_segment_tablemap[$sessionID] .= "</center>\n";
+                $query_segment_tablemap[$sessionID] .= "</div>\n";
+//
+//                $session_panels[$sessionID] .= "<form id=\"task_form_$sessionID\" action=\"../services/utils/runPageQueryUtils.php?action=markTask\">\n";
+                $query_segment_tablemap[$sessionID] .= "<div class=\"panel-body\" id=\"session_panel_$sessionID\">\n";
+                $query_segment_tablemap[$sessionID] .= "<div class=\"tab-pane\">\n";
+                $query_segment_tablemap[$sessionID] .= "<table class=\"table table-bordered table-striped table-fixed\">
+                <thead>
                                 <tr>
                                     <th >Time</th>
                                     <th >Type</th>
@@ -33,41 +51,107 @@ function getQuerySegmentTables($userID,$startTimestamp,$endTimestamp){
                                 </tr>
                                 </thead>
                                 <tbody>";
+                foreach($pq_session as $page){
+                    $query_segment_tablemap[$sessionID] .= "<tr >";
+                    $query_segment_tablemap[$sessionID] .="<td name=\"time_$table_index\">".(isset($page['time'])?$page['time']:"")."</td>";
 
-        foreach($pages as $page){
-            $query_segment_table .= "<tr >";
-            $query_segment_table .="<td name=\"time_$table_index\">".(isset($page['time'])?$page['time']:"")."</td>";
+                    $name = '';
+                    $color = '';
+                    if($page['type']=='page'){
+                        $name='pages[]';
+                        $color = 'class="warning"';
+                    }else{
+                        $name='queries[]';
+                        $color = 'class="info"';
+                    }
+                    $value = $page['id'];
 
-            $name = '';
-            $color = '';
-            if($page['type']=='page'){
-                $name='pages[]';
-                $color = 'class="warning"';
-            }else{
-                $name='queries[]';
-                $color = 'class="info"';
-            }
-            $value = $page['id'];
-
-            $query_segment_table .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
-            $begin_button = "<button name=\"begin_button\" data-table-index=\"$table_index\" type=\"button\" class=\"btn btn-success\">Begin</button>";
-            $end_button = "<button name=\"end_button\" data-table-index=\"$table_index\" type=\"button\" class=\"btn btn-danger\">End</button>";
-            $query_segment_table .= "<td><input data-table-index=\"$table_index\" type=\"checkbox\" name='$name' value='$value'> $begin_button $end_button </td>";
+                    $query_segment_tablemap[$sessionID] .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
+                    $begin_button = "<button name=\"begin_button\" data-table-index=\"$table_index\" type=\"button\" class=\"btn btn-success\">Begin</button>";
+                    $end_button = "<button name=\"end_button\" data-table-index=\"$table_index\" type=\"button\" class=\"btn btn-danger\">End</button>";
+                    $query_segment_tablemap[$sessionID] .= "<td><input data-table-index=\"$table_index\" type=\"checkbox\" name='$name' value='$value'> $begin_button $end_button </td>";
 //        $query_segment_table .="<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>";
-            $query_segment_table .="<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
-            $query_segment_table .="<td>".(isset($page['querySegmentID']) ?$page['querySegmentID'] : "")."</td>";
-            $query_segment_table .= "<td name=\"title_$table_index\"><span title='".(isset($page['title'])?$page['title']:"")."'>".(isset($page['title'])?substr($page['title'],0,50)."...":"")."</span></td>";
-            $query_segment_table .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
-            $table_index += 1;
+                    $query_segment_tablemap[$sessionID] .="<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
+                    $query_segment_tablemap[$sessionID] .="<td>".(isset($page['querySegmentID']) ?$page['querySegmentID'] : "")."</td>";
+                    $query_segment_tablemap[$sessionID] .= "<td name=\"title_$table_index\"><span title='".(isset($page['title'])?$page['title']:"")."'>".(isset($page['title'])?substr($page['title'],0,50)."...":"")."</span></td>";
+                    $query_segment_tablemap[$sessionID] .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
+                    $table_index += 1;
 
 
 
 
-            $query_segment_table .= "</tr >";
+                    $query_segment_tablemap[$sessionID] .= "</tr >";
 
+                }
+                $query_segment_tablemap[$sessionID] .= "</tbody>\n";
+                $query_segment_tablemap[$sessionID] .= "</table>\n";
+                $query_segment_tablemap[$sessionID] .= "</div>\n";
+                $query_segment_tablemap[$sessionID] .= "</div>\n";
+                $query_segment_tablemap[$sessionID] .= "</div>\n";
+
+            }
         }
-        $query_segment_table .= "</tbody>
-                    </table>";
+
+
+        $query_segment_table = '';
+        foreach($sessionIDs as $sessionID){
+            if(!is_null($sessionID)) {
+                $query_segment_table .= $query_segment_tablemap[$sessionID];
+            }
+        }
+
+//        $query_segment_table = "<table class=\"table table-bordered table-striped table-fixed\">
+//                                <thead>
+//                                <tr>
+//                                    <th >Time</th>
+//                                    <th >Type</th>
+//                                    <th >Mark</th>
+//                                    <th >Session</th>
+//                                    <th >Query Segment</th>
+//                                    <th >Title/Query</th>
+//                                    <th >Domain</th>
+//
+//
+//
+//
+//                                </tr>
+//                                </thead>
+//                                <tbody>";
+//
+//        foreach($pages as $page){
+//            $query_segment_table .= "<tr >";
+//            $query_segment_table .="<td name=\"time_$table_index\">".(isset($page['time'])?$page['time']:"")."</td>";
+//
+//            $name = '';
+//            $color = '';
+//            if($page['type']=='page'){
+//                $name='pages[]';
+//                $color = 'class="warning"';
+//            }else{
+//                $name='queries[]';
+//                $color = 'class="info"';
+//            }
+//            $value = $page['id'];
+//
+//            $query_segment_table .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
+//            $begin_button = "<button name=\"begin_button\" data-table-index=\"$table_index\" type=\"button\" class=\"btn btn-success\">Begin</button>";
+//            $end_button = "<button name=\"end_button\" data-table-index=\"$table_index\" type=\"button\" class=\"btn btn-danger\">End</button>";
+//            $query_segment_table .= "<td><input data-table-index=\"$table_index\" type=\"checkbox\" name='$name' value='$value'> $begin_button $end_button </td>";
+////        $query_segment_table .="<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>";
+//            $query_segment_table .="<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
+//            $query_segment_table .="<td>".(isset($page['querySegmentID']) ?$page['querySegmentID'] : "")."</td>";
+//            $query_segment_table .= "<td name=\"title_$table_index\"><span title='".(isset($page['title'])?$page['title']:"")."'>".(isset($page['title'])?substr($page['title'],0,50)."...":"")."</span></td>";
+//            $query_segment_table .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
+//            $table_index += 1;
+//
+//
+//
+//
+//            $query_segment_table .= "</tr >";
+//
+//        }
+//        $query_segment_table .= "</tbody>
+//                    </table>";
 
 
         $slider_html = "";
@@ -109,15 +193,16 @@ function getQuerySegmentTables($userID,$startTimestamp,$endTimestamp){
     return array('querysegmenthtml'=>$query_segment_panel_html);
 }
 
-function makeNextQuerySegmentID($userID){
-    $query = "SELECT IFNULL(MAX(querySegmentID),0) as maxQuerySegmentID FROM querysegment_labels_user";
+function makeNextQuerySegmentID($userID,$startTimestamp){
+    $date = date('Y-m-d', $startTimestamp);
+    $query = "SELECT IFNULL(MAX(querySegmentID),0) as maxQuerySegmentID FROM querysegment_labels_user WHERE userID='$userID' AND `date`='$date'";
 //    $query = "SELECT IFNULL(MAX(querySegmentID),0) as maxQuerySegmentID FROM querysegment_labels_user WHERE userID=$userID";
     $cxn = Connection::getInstance();
     $result = $cxn->commit($query);
 
     $line = mysql_fetch_array($result,MYSQL_ASSOC);
     $querySegmentID = $line['maxQuerySegmentID']+1;
-    $query = "INSERT INTO querysegment_labels_user (`userID`,`projectID`,`querySegmentID`,`deleted`) VALUES ('$userID','$userID','$querySegmentID',0)";
+    $query = "INSERT INTO querysegment_labels_user (`userID`,`projectID`,`querySegmentID`,`deleted`,`date`) VALUES ('$userID','$userID','$querySegmentID',0,'$date')";
     $cxn->commit($query);
     return $querySegmentID;
 }
@@ -324,6 +409,7 @@ function getIntentionsPanel($userID,$startTimestamp,$endTimestamp){
     );
 
 
+
     $intentions_html = "<div class=\"panel-body\">";
 
 
@@ -350,7 +436,7 @@ function getIntentionsPanel($userID,$startTimestamp,$endTimestamp){
         $intentions_html .="<td>";
         $intentions_html .="<div class=\"checkbox\">";
         $intentions_html .="<label>";
-        $intentions_html .="<input type=\"checkbox\" name='intentions[]' value='$key'/> $value";
+        $intentions_html .="<input type=\"checkbox\" data-intent-key='$key' name='intentions[]' value='$key'/> $value";
 //        $intentions_html .="<input type=\"checkbox\" data-toggle=\"collapse\" data-target=\"#intention_submenu_$key\" name='intentions[]' value='$key'/> $value";
         $intentions_html .="</label>";
         $intentions_html .="</div>";
@@ -360,10 +446,10 @@ function getIntentionsPanel($userID,$startTimestamp,$endTimestamp){
         $intentions_html .="<div id='intention_submenu_$key'>";
 //        $intentions_html .="<div id='intention_submenu_$key' class='collapse'>";
         $intentions_html .= "<div class='radio'>";
-        $intentions_html .= "<label><input type='radio' name='$key"."_success' value='1'> Yes</label>";
+        $intentions_html .= "<label><input type='radio' data-intent-key='$key' name='$key"."_success' value='1' disabled> Yes</label>";
         $intentions_html .= "</div>";
         $intentions_html .= "<div class='radio'>";
-        $intentions_html .= "<label><input type='radio' name='$key"."_success' value='0'> No</label>";
+        $intentions_html .= "<label><input type='radio' data-intent-key='$key' name='$key"."_success' value='0' disabled> No</label>";
 //        $intentions_html .= "<input type='radio' name='$key"."_success' value='0' data-toggle=\"collapse\" data-target=\"#failure_submenu_$key\"> No";
         $intentions_html .= "</div>";
         $intentions_html .= "</div>";
@@ -374,7 +460,7 @@ function getIntentionsPanel($userID,$startTimestamp,$endTimestamp){
         $intentions_html .="<div id='failure_submenu_$key'>";
 //        $intentions_html .="<div id='failure_submenu_$key' class='collapse'>";
 //        $intentions_html .= "Why Not?";
-        $intentions_html .= "<textarea class=\"form-control\" rows=\"3\" cols=\"40\" name=\"$key"."_failure_reason\"></textarea>";
+        $intentions_html .= "<textarea class=\"form-control\" rows=\"3\" cols=\"40\" name=\"$key"."_failure_reason\" disabled></textarea>";
         $intentions_html .="</div>";
 
 
@@ -402,7 +488,22 @@ function getIntentionsPanel($userID,$startTimestamp,$endTimestamp){
     $intentions_html .= "</form>";
 
 
-    return array('intentionshtml'=>utf8_encode($intentions_html));
+    $intentionsfooter_html = "";
+    $intentions_html .= "<center>";
+    $intentions_html .= "<input type=\"hidden\" name=\"userID\" value='$userID'/>";
+    $intentions_html .= "<input type=\"hidden\" name=\"startTimestamp\" value='$startTimestamp'/>";
+    $intentions_html .= "<input type=\"hidden\" name=\"endTimestamp\" value='$endTimestamp'/>";
+    $intentions_html .= "<button type=\"button\" name='mark_intentions_button' value='mark_intentions_button' class=\"btn btn-primary\">Mark Query Segment + Intentions</button>";
+    $intentions_html .= "<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Cancel</button>";
+    $intentions_html .= "</center>";
+
+
+
+
+
+
+
+    return array('intentionshtml'=>utf8_encode($intentions_html),'intentionsfooterhtml'=>utf8_encode($intentionsfooter_html));
 
 }
 
