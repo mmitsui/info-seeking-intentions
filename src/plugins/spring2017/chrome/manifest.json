@@ -4,7 +4,7 @@
     "manifest_version" : 2,
     "name" : "Workplace Study Extension",
     "description" : "Companion extension for Workplace Study, 2017.",
-    "version" : "1.0.1",
+    "version" : "1.0.2",
     "content_scripts": [],
     "background" : {
         "persistent": true,

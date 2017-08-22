@@ -84,6 +84,7 @@ $(document).ready(function(){
     });
 
     $( "#login_button" ).click(function() {
+
         $.ajax({
             type: "POST",
             url: loginUrl,
@@ -103,11 +104,14 @@ $(document).ready(function(){
                 	$(loginErrorTextID).text(msg.errortext);
                 	renderLoggedIn(false);
                 }
+
             },
             error: function(msg){
                 renderLoggedIn(false);
             },
         });
+
+
     });
 
     $( "#logout_button" ).click(function() {

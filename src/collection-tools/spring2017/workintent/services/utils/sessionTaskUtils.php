@@ -21,6 +21,7 @@ function addTask($userID,$taskName){
     $taskID = $line['maxTaskID']+1;
     $query = "INSERT INTO task_labels_user (`userID`,`projectID`,`taskID`,`taskName`,`deleted`) VALUES ('$userID','$userID','$taskID','$taskName',0)";
     $cxn->commit($query);
+    return $taskID;
 }
 
 function getTasks($userID){
@@ -81,7 +82,7 @@ function getMarkTasksPanels($userID,$startTimestamp,$endTimestamp){
 
 //                $session_panels[$sessionID] .= "<div class=\"panel-body collapse\" id=\"session_panel_$sessionID\">\n";
                 $session_panels[$sessionID] .= "<div class=\"tab-pane\">\n";
-                $session_panels[$sessionID] .= "<table class=\"table table-striped table-fixed \">\n";
+                $session_panels[$sessionID] .= "<table class=\"table table-bordered table-striped table-fixed \">\n";
                 $session_panels[$sessionID] .= "<thead>\n";
                 $session_panels[$sessionID] .= "<tr>\n";
                 $session_panels[$sessionID] .= "<th >Time</th>\n";
@@ -108,7 +109,7 @@ function getMarkTasksPanels($userID,$startTimestamp,$endTimestamp){
 
                     $session_panels[$sessionID] .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
                     $session_panels[$sessionID] .= "<td >".(isset($page['taskID'])? $taskIDNameMap[$page['taskID']] :"")."</td>\n";
-                    $session_panels[$sessionID] .= "<td>".(isset($page['title'])?substr($page['title'],0,60)."...":"")."</td>";
+                    $session_panels[$sessionID] .= "<td><span title='".(isset($page['title'])?$page['title']:"")."'>".(isset($page['title'])?substr($page['title'],0,60)."...":"")."</span></td>";
                     $session_panels[$sessionID] .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
                     $session_panels[$sessionID] .= "</tr>\n";
                 }
@@ -150,7 +151,7 @@ function getMarkTasksPanels($userID,$startTimestamp,$endTimestamp){
         $null_panel .= "<center><h3 class=\"bg-danger\">Please assign these to a session</h3></center>";
         $null_panel .= "<div class=\"tab-pane\">\n";
 
-        $null_panel .= "<table class=\"table table-striped table-fixed \">\n";
+        $null_panel .= "<table class=\"table table-bordered table-striped table-fixed \">\n";
         $null_panel .= "<thead>\n";
         $null_panel .= "<tr>\n";
         $null_panel .= "<th >Time</th>\n";
@@ -175,7 +176,8 @@ function getMarkTasksPanels($userID,$startTimestamp,$endTimestamp){
 
             $null_panel .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
             $null_panel .= "<td >".(isset($page['taskID'])? $taskIDNameMap[$page['taskID']] :"")."</td>\n";
-            $null_panel .= "<td>".(isset($page['title'])?substr($page['title'],0,60)."...":"")."</td>";
+            $null_panel .= "<td><span title='".(isset($page['title'])?$page['title']:"")."'>".(isset($page['title'])?substr($page['title'],0,60)."...":"")."</span></td>";
+
             $null_panel .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
             $null_panel .= "</tr>\n";
             }
@@ -212,10 +214,12 @@ function getTasksPanel($userID,$startTimestamp,$endTimestamp){
 
 
     $tasks_html .= "<div class='well'>";
+
+
+    $tasks_html .= "<textarea class=\"form-control\" rows=\"1\" id=\"task_name_textfield\" name=\"taskName\"></textarea>";
     $tasks_html .= "<div>";
     $tasks_html .= "<p><button type=\"button\" value=\"addtask_button\" class=\"btn btn-success btn-block\">+ Add Task</button></p>";
     $tasks_html .= "</div>";
-    $tasks_html .= "<textarea class=\"form-control\" rows=\"1\" id=\"task_name_textfield\" name=\"taskName\"></textarea>";
     $tasks_html .= "<input type=\"hidden\" name=\"userID\" value=\"$userID\"/>";
     $tasks_html .= "<input type=\"hidden\" name=\"startTimestamp\" value=\"$startTimestamp\"/>";
     $tasks_html .= "<input type=\"hidden\" name=\"endTimestamp\" value=\"$endTimestamp\"/>";

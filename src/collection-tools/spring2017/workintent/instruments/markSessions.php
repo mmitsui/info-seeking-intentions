@@ -151,21 +151,43 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
 //            };
             var denote_beginend_function = function(ev){
                 if($(this).attr("name")=='begin_button'){
-                    $("button[name='begin_button']").removeClass('active');
-                    if(end_index != -1){
-                        $(this).addClass('active');
+
+                    if($(this).hasClass('active')){
+                        $("button[name='begin_button']").removeClass('active');
+                        $("button[name='begin_button']").show();
                     }else{
-                        $(this).toggleClass('active');
+                        $("button[name='begin_button']").removeClass('active');
+                        $("button[name='begin_button']").hide();
+                        $(this).addClass('active');
+                        $(this).show();
+
                     }
+//                    if(end_index != -1){
+//                        $(this).addClass('active');
+//                    }else{
+//                        $(this).toggleClass('active');
+//                    }
 
                     begin_index = $(this).data('table-index');
                 }else if($(this).attr("name")=='end_button'){
-                    $("button[name='end_button']").removeClass('active');
-                    if(begin_index != -1){
-                        $(this).addClass('active');
+
+
+
+                    if($(this).hasClass('active')){
+                        $("button[name='end_button']").removeClass('active');
+                        $("button[name='end_button']").show();
                     }else{
-                        $(this).toggleClass('active');
+                        $("button[name='end_button']").removeClass('active');
+                        $("button[name='end_button']").hide();
+                        $(this).addClass('active');
+                        $(this).show();
+
                     }
+//                    if(begin_index != -1){
+//                        $(this).addClass('active');
+//                    }else{
+//                        $(this).toggleClass('active');
+//                    }
                     end_index = $(this).data('table-index');
                 }
 
@@ -380,7 +402,7 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
                             $actionUrls = actionUrls($selectedStartTimeSeconds);
                             echo "<a type=\"button\" class=\"btn btn-info btn-lg\" href='".$actionUrls['home']."'>&laquo; Back (Home)</a>";
                             echo "&nbsp;&nbsp;&nbsp;&nbsp;";
-                            echo "<a type=\"button\" class=\"btn btn-info btn-lg\" href='".$actionUrls['tasks']."'>Next (Tasks) &raquo;</a>";
+                            echo "<a type=\"button\" class=\"btn btn-info btn-lg\" href='".$actionUrls['tasks']."'>Next (Assign Tasks to Sessions) &raquo;</a>";
                             ?>
                         </center>
                     </div>

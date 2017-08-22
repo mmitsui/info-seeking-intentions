@@ -3,7 +3,7 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/workintent/core/Connection.class.php");
 require_once("pageQueryUtils.php");
 
 function getQuerySegmentTables($userID,$startTimestamp,$endTimestamp){
-    $query_segment_table = "<table class=\"table table-striped table-fixed\">
+    $query_segment_table = "<table class=\"table table-bordered table-striped table-fixed\">
                                 <thead>
                                 <tr>
                                     <th >Time</th>
@@ -50,7 +50,7 @@ function getQuerySegmentTables($userID,$startTimestamp,$endTimestamp){
 //        $query_segment_table .="<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>";
         $query_segment_table .="<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
         $query_segment_table .="<td>".(isset($page['querySegmentID']) ?$page['querySegmentID'] : "")."</td>";
-        $query_segment_table .= "<td name=\"title_$table_index\">".(isset($page['title'])?substr($page['title'],0,60)."...":"")."</td>";
+        $query_segment_table .= "<td name=\"title_$table_index\"><span title='".(isset($page['title'])?$page['title']:"")."'>".(isset($page['title'])?substr($page['title'],0,50)."...":"")."</span></td>";
         $query_segment_table .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
         $table_index += 1;
 
@@ -63,22 +63,22 @@ function getQuerySegmentTables($userID,$startTimestamp,$endTimestamp){
     $query_segment_table .= "</tbody>
                     </table>";
 
-    $slider_html = "<div class=\"col-md-1 border\">
-<table>
-<thead>
-<th>Drag to Select</th>
-</thead>
-
-<tbody>
-<tr><td>
-            
-                        <p><input id=\"querysegment_slider\" type=\"text\" height=\"100%\" data-slider-min=\"0\" data-slider-max=\"$table_index\" data-slider-step=\"1\" data-slider-value=\"[0,$table_index]\" data-slider-orientation=\"vertical\"/></p>
-                    
-                    </td>
-                    </tr>
-                    </tbody>
-                    </table>
-                    </div>";
+//    $slider_html = "<div class=\"col-md-1 border\">
+//<table>
+//<thead>
+//<th>Drag to Select</th>
+//</thead>
+//
+//<tbody>
+//<tr><td>
+//
+//                        <p><input id=\"querysegment_slider\" type=\"text\" height=\"100%\" data-slider-min=\"0\" data-slider-max=\"$table_index\" data-slider-step=\"1\" data-slider-value=\"[0,$table_index]\" data-slider-orientation=\"vertical\"/></p>
+//
+//                    </td>
+//                    </tr>
+//                    </tbody>
+//                    </table>
+//                    </div>";
 
     $slider_html = "";
 
@@ -161,7 +161,7 @@ function getMarkIntentionsPanels($userID,$startTimestamp,$endTimestamp){
                 $session_panels[$querySegmentID] .= "<form id=\"intentions_form_$querySegmentID\" action=\"../services/utils/runPageQueryUtils.php?action=markIntentions\">\n";
                 $session_panels[$querySegmentID] .= "<div class=\"panel-body collapse\" id=\"intentions_panel_$querySegmentID\">\n";
                 $session_panels[$querySegmentID] .= "<div class=\"tab-pane\">\n";
-                $session_panels[$querySegmentID] .= "<table class=\"table table-striped table-fixed \">\n";
+                $session_panels[$querySegmentID] .= "<table class=\"table table-bordered table-striped table-fixed \">\n";
                 $session_panels[$querySegmentID] .= "<thead>\n";
                 $session_panels[$querySegmentID] .= "<tr>\n";
                 $session_panels[$querySegmentID] .= "<th >Time</th>\n";
@@ -190,7 +190,7 @@ function getMarkIntentionsPanels($userID,$startTimestamp,$endTimestamp){
 
                     $session_panels[$querySegmentID] .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
                     $session_panels[$querySegmentID] .= "<td >".(isset($page['taskID'])? $taskIDNameMap[$page['taskID']] :"")."</td>\n";
-                    $session_panels[$querySegmentID] .= "<td>".(isset($page['title'])?substr($page['title'],0,60)."...":"")."</td>";
+                    $session_panels[$querySegmentID].= "<td><span title='".(isset($page['title'])?$page['title']:"")."'>".(isset($page['title'])?substr($page['title'],0,60)."...":"")."</span></td>";
                     $session_panels[$querySegmentID] .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
                     $session_panels[$querySegmentID] .= "</tr>\n";
                 }
@@ -232,7 +232,7 @@ function getMarkIntentionsPanels($userID,$startTimestamp,$endTimestamp){
         $null_panel .= "<center><h3 class=\"bg-danger\">Please assign these to a query segment</h3></center>";
         $null_panel .= "<div class=\"tab-pane\">\n";
 
-        $null_panel .= "<table class=\"table table-striped table-fixed \">\n";
+        $null_panel .= "<table class=\"table table-bordered table-striped table-fixed \">\n";
         $null_panel .= "<thead>\n";
         $null_panel .= "<tr>\n";
         $null_panel .= "<th >Time</th>\n";
@@ -257,7 +257,7 @@ function getMarkIntentionsPanels($userID,$startTimestamp,$endTimestamp){
 
             $null_panel .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
             $null_panel .= "<td >".(isset($page['taskID'])? $taskIDNameMap[$page['taskID']] :"")."</td>\n";
-            $null_panel .= "<td>".(isset($page['title'])?substr($page['title'],0,60)."...":"")."</td>";
+            $null_panel.= "<td><span title='".(isset($page['title'])?$page['title']:"")."'>".(isset($page['title'])?substr($page['title'],0,60)."...":"")."</span></td>";
             $null_panel .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
             $null_panel .= "</tr>\n";
             }
@@ -278,66 +278,99 @@ function getMarkIntentionsPanels($userID,$startTimestamp,$endTimestamp){
 
 function getIntentionsPanel($userID,$startTimestamp,$endTimestamp){
 
-    $intentions_html =  "<center>";
-    $intentions_html .= "<div id='task_buttons'>";
-    $tasks = getTasks($userID);
 
     $intentions = array(
         'id_start'=>'Identify something to get started',
-        'id_more'=>'id_more',
-        'learn_feature'=>'learn_feature',
-        'learn_structure'=>'learn_structure',
-        'learn_domain'=>'learn_domain',
-        'learn_database'=>'learn_database',
-        'find_known'=>'find_known',
-        'find_specific'=>'find_specific',
-        'find_common'=>'find_common',
-        'find_without'=>'find_without',
-        'locate_specific'=>'locate_specific',
-        'locate_common'=>'locate_common',
-        'locate_area'=>'locate_area',
-        'keep_bibliographical'=>'keep_bibliographical',
-        'keep_link'=>'keep_link',
-        'keep_item'=>'keep_item',
-        'access_item'=>'access_item',
-        'access_common'=>'access_common',
-        'access_area'=>'access_area',
-        'evaluate_correctness'=>'evaluate_correctness',
-        'evaluate_specificity'=>'evaluate_specificity',
+        'id_more'=>'Identify more to search',
+        'learn_feature'=>'Learn system feature',
+        'learn_structure'=>'Learn system structure',
+        'learn_domain'=>'Learn domain knowledge',
+        'learn_database'=>'Learn database content',
+        'find_known'=>'Find a known item',
+        'find_specific'=>'Find specific information',
+        'find_common'=>'Find items sharing a named characteristic',
+        'find_without'=>'Find items without predefined criteria',
+        'locate_specific'=>'Locate a specific item',
+        'locate_common'=>'Locate items with common characteristics',
+        'locate_area'=>'Locate an area/location',
+        'keep_bibliographical'=>'Keep record of bibliographical information',
+        'keep_link'=>'Keep record of link',
+        'keep_item'=>'Note item for return',
+        'access_item'=>'Access a specific item',
+        'access_common'=>'Access items with common characteristics',
+        'access_area'=>'Access a web site/home page or similar',
+        'evaluate_correctness'=>'Evaluate correctness of an item',
+        'evaluate_specificity'=>'Evaluate specificity of an item',
+        'evaluate_usefulness'=>'Evaluate usefulness of an item',
+        'evaluate_best'=>'Pick best item(s) from all the useful ones',
+        'evaluate_duplication'=>'Evaluate duplication of an item',
+        'obtain_specific'=>'Obtain specific information',
+        'obtain_part'=>'Obtain part of the item',
+        'obtain_whole'=>'Obtain a whole item(s)',
+        'other'=>'Other'
+
     );
 
+
     $intentions_html = "<div class=\"panel-body\">";
+
+
+
+
     $intentions_html .= "<form id=\"mark_intentions_form\" action=\"../services/utils/runPageQueryUtils.php?action=markIntentions\">";
 
     $intentions_html .="<center>";
 
-    $intentions_html .="";
-    $intentions_html .="";
+
+    $intentions_html .= "<table class='table table-bordered table-striped table-fixed'>";
+    $intentions_html .= "<tr>";
+    $intentions_html .= "<th>Intention</th>";
+    $intentions_html .= "<th>Satisfied?</th>";
+    $intentions_html .= "<th>If not, why not?</th>";
+    $intentions_html .= "</tr>";
 
 
+
+    $intentions_html .="<tbody>";
     foreach($intentions as $key=>$value){
+
+        $intentions_html .="<tr>";
+        $intentions_html .="<td>";
         $intentions_html .="<div class=\"checkbox\">";
         $intentions_html .="<label>";
-        $intentions_html .="<input type=\"checkbox\" data-toggle=\"collapse\" data-target=\"#intention_submenu_$key\" name='intentions[]' value='$key'/> $value";
+        $intentions_html .="<input type=\"checkbox\" name='intentions[]' value='$key'/> $value";
+//        $intentions_html .="<input type=\"checkbox\" data-toggle=\"collapse\" data-target=\"#intention_submenu_$key\" name='intentions[]' value='$key'/> $value";
         $intentions_html .="</label>";
         $intentions_html .="</div>";
+        $intentions_html .="</td>";
 
-        $intentions_html .="<div id='intention_submenu_$key' class='collapse'>";
-        $intentions_html .= "<input type='radio' name='$key"."_success' value='1'> Yes";
-        $intentions_html .= "<input type='radio' name='$key"."_success' value='0' data-toggle=\"collapse\" data-target=\"#failure_submenu_$key\"> No";
+        $intentions_html .="<td>";
+        $intentions_html .="<div id='intention_submenu_$key'>";
+//        $intentions_html .="<div id='intention_submenu_$key' class='collapse'>";
+        $intentions_html .= "<div class='radio'>";
+        $intentions_html .= "<label><input type='radio' name='$key"."_success' value='1'> Yes</label>";
+        $intentions_html .= "</div>";
+        $intentions_html .= "<div class='radio'>";
+        $intentions_html .= "<label><input type='radio' name='$key"."_success' value='0'> No</label>";
+//        $intentions_html .= "<input type='radio' name='$key"."_success' value='0' data-toggle=\"collapse\" data-target=\"#failure_submenu_$key\"> No";
+        $intentions_html .= "</div>";
+        $intentions_html .= "</div>";
+        $intentions_html .="</td>";
 
 
-        $intentions_html .="<div id='failure_submenu_$key' class='collapse'>";
-        $intentions_html .= "Why Not?";
-        $intentions_html .= "<textarea class=\"form-control\" rows=\"3\" name=\"$key"."_failure_reason\"></textarea>";
+        $intentions_html .="<td>";
+        $intentions_html .="<div id='failure_submenu_$key'>";
+//        $intentions_html .="<div id='failure_submenu_$key' class='collapse'>";
+//        $intentions_html .= "Why Not?";
+        $intentions_html .= "<textarea class=\"form-control\" rows=\"3\" cols=\"40\" name=\"$key"."_failure_reason\"></textarea>";
         $intentions_html .="</div>";
 
+
         $intentions_html .="</div>";
-
-
-
-        
+        $intentions_html .="</td>";
+        $intentions_html .="</tr>";
     }
+    $intentions_html .="</tbody>";
 
 
     $intentions_html .= "<input type=\"hidden\" name=\"userID\" value=\"$userID\"/>";
@@ -351,8 +384,11 @@ function getIntentionsPanel($userID,$startTimestamp,$endTimestamp){
     $intentions_html .= "</div>";
     $intentions_html .=  "</div>";
 
+    $intentions_html .= "</table>";
     $intentions_html .= "</center>";
+
     $intentions_html .= "</form>";
+
 
     return array('intentionshtml'=>utf8_encode($intentions_html));
 
@@ -383,6 +419,13 @@ function markIntentions($userID,$querySegmentID,$checkedIntentions){
         'access_area'=>0,
         'evaluate_correctness'=>0,
         'evaluate_specificity'=>0,
+        'evaluate_usefulness'=>0,
+        'evaluate_best'=>0,
+        'evaluate_duplication'=>0,
+        'obtain_specific'=>0,
+        'obtain_part'=>0,
+        'obtain_whole'=>0,
+        'other'=>'Other'
     );
     foreach($checkedIntentions as $intention){
         $intentions[$intention] = 1;
@@ -390,6 +433,7 @@ function markIntentions($userID,$querySegmentID,$checkedIntentions){
 
     $cxn = Connection::getInstance();
     $query="INSERT INTO intent_assignments (`userID`,`querySegmentID`,
+        
 `id_start`,
         `id_more`,
         `learn_feature`,
@@ -410,7 +454,16 @@ function markIntentions($userID,$querySegmentID,$checkedIntentions){
         `access_common`,
         `access_area`,
         `evaluate_correctness`,
-        `evaluate_specificity`
+        `evaluate_specificity`,
+        `evaluate_usefulness`,
+        `evaluate_best`,
+        `evaluate_duplication`,
+        `obtain_specific`,
+        `obtain_part`,
+        `obtain_whole`,
+        `other`
+        
+        
 ) VALUES ('$userID','$querySegmentID'
 ,".$intentions['id_start']."
 ,".$intentions['id_more']."
@@ -433,6 +486,14 @@ function markIntentions($userID,$querySegmentID,$checkedIntentions){
 ,".$intentions['access_area']."
 ,".$intentions['evaluate_correctness']."
 ,".$intentions['evaluate_specificity']."
+,".$intentions['evaluate_usefulness']."
+,".$intentions['evaluate_duplication']."
+,".$intentions['evaluate_best']."
+,".$intentions['obtain_specific']."
+,".$intentions['obtain_part']."
+,".$intentions['obtain_whole']."
+,".$intentions['other']."
+
           )";
         $result = $cxn->commit($query);
 

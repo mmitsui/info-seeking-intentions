@@ -105,7 +105,12 @@ function getHomePageTables($userID,$startTimestamp,$endTimestamp){
     $day_log = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0,-1);
     $trash = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,1,-1);
 
-    $day_table = "<table class=\"table table-striped table-fixed\">
+    $day_table = '';
+    $trash_table = '';
+    if(count($day_log)<=0){
+        $day_table = '<center><h3 class=\'bg-danger\'>You not done anything today.  Please log some activity.</h3></center>';
+    }else{
+        $day_table = "<table class=\"table table-bordered table-striped table-fixed\">
                                 <thead>
                                 <tr>
                                     <th >Time</th>
@@ -117,42 +122,56 @@ function getHomePageTables($userID,$startTimestamp,$endTimestamp){
                                 </thead>
                                 <tbody>";
 
-    foreach($day_log as $page){
-        $day_table .= "<tr>";
-        $day_table .= "<td>".(isset($page['time'])?$page['time']:"")."</td>";
+        foreach($day_log as $page){
+            $day_table .= "<tr>";
+            $day_table .= "<td>".(isset($page['time'])?$page['time']:"")."</td>";
 
-        $name = '';
-        $color = '';
-        if($page['type']=='page'){
-            $name='pages[]';
-            $color = 'class="warning"';
-        }else{
-            $name='queries[]';
-            $color = 'class="info"';
-        }
+            $name = '';
+            $color = '';
+            if($page['type']=='page'){
+                $name='pages[]';
+                $color = 'class="warning"';
+            }else{
+                $name='queries[]';
+                $color = 'class="info"';
+            }
 
-        $day_table .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
+            $day_table .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
 
 
 
-        $value = $page['id'];
+            $value = $page['id'];
 
-        $day_table .= "<td>"."<input type=\"checkbox\" name='$name' value='$value'>"."</td>";
+            $day_table .= "<td>"."<input type=\"checkbox\" name='$name' value='$value'>"."</td>";
 
 //        $day_table .= "<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>"; //TODO: FIX
 //        $day_table .= "<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
-        $day_table .= "<td>".(isset($page['title'])?htmlentities(substr($page['title'],0,60))."...":"")."</td>";
-        $day_table .= "<td><span title='".(isset($page['host'])?htmlentities($page['host']):"")."'>".(isset($page['host'])?htmlentities($page['host']):"")."</span></td>";
+            $day_table .= "<td><span title='".(isset($page['title'])?htmlentities($page['title']):"")."'>".(isset($page['title'])?htmlentities(substr($page['title'],0,60))."...":"")."</span></td>";
+            $day_table .= "<td><span title='".(isset($page['host'])?htmlentities($page['host']):"")."'>".(isset($page['host'])?htmlentities($page['host']):"")."</span></td>";
 
-        $day_table .= "</tr>";
+            $day_table .= "</tr>";
 
-    }
-    $day_table .= "</tbody>
+        }
+        $day_table .= "</tbody>
                     </table>";
 
 
+        $day_table .= "<div class=\"container\">";
+        $day_table .= "<center>";
+        $day_table .= "<input type=\"hidden\" name=\"userID\" value='$userID'/>";
+        $day_table .= "<input type=\"hidden\" name=\"startTimestamp\" value='$startTimestamp'/>";
+        $day_table .= "<input type=\"hidden\" name=\"endTimestamp\" value='$endTimestamp'/>";
+        $day_table .= "<input type=\"submit\" id='send_trash_button' class=\"btn btn-warning\" value=\"Send to Trash\">";
+        $day_table .= "</center>";
 
-    $trash_table = "<table class=\"table table-striped table-fixed\">
+        $day_table .= "</div>";
+    }
+
+
+    if(count($trash)<=0){
+        $trash_table = '<center><h3 class=\'bg-danger\'>Your trash is empty.</h3></center>';
+    }else{
+        $trash_table = "<table class=\"table table-bordered table-striped table-fixed\">
                                 <thead>
                                 <tr>
                                     <th >Time</th>
@@ -165,36 +184,50 @@ function getHomePageTables($userID,$startTimestamp,$endTimestamp){
                                 </thead>
                                 <tbody>";
 
-    foreach($trash as $page){
-        $trash_table .= "<tr>";
-        $trash_table .= "<td>".(isset($page['time'])?$page['time']:"")."</td>";
+        foreach($trash as $page){
+            $trash_table .= "<tr>";
+            $trash_table .= "<td>".(isset($page['time'])?$page['time']:"")."</td>";
 
-        $name = '';
-        $color = '';
-        if($page['type']=='page'){
-            $name='pages[]';
-            $color = 'class="warning"';
-        }else{
-            $name='queries[]';
-            $color = 'class="info"';
-        }
-        $trash_table .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
+            $name = '';
+            $color = '';
+            if($page['type']=='page'){
+                $name='pages[]';
+                $color = 'class="warning"';
+            }else{
+                $name='queries[]';
+                $color = 'class="info"';
+            }
+            $trash_table .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
 
-        $value = $page['id'];
+            $value = $page['id'];
 
 
-        $trash_table .= "<td>"."<input type=\"checkbox\" name='$name' value='$value'>"."</td>";
+            $trash_table .= "<td>"."<input type=\"checkbox\" name='$name' value='$value'>"."</td>";
 
 //        $trash_table .= "<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>"; //TODO: FIX
 //        $trash_table .= "<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
-        $trash_table .= "<td>".(isset($page['title'])?htmlentities(substr($page['title'],0,60))."...":"")."</td>";
-        $trash_table .= "<td><span title='".(isset($page['host'])?htmlentities($page['host']):"")."'>".(isset($page['host'])?htmlentities($page['host']):"")."</span></td>";
-        $trash_table .= "</tr>";
+            $trash_table .= "<td><span title='".(isset($page['title'])?htmlentities($page['title']):"")."'>".(isset($page['title'])?htmlentities(substr($page['title'],0,60))."...":"")."</span></td>";
+            $trash_table .= "<td><span title='".(isset($page['host'])?htmlentities($page['host']):"")."'>".(isset($page['host'])?htmlentities($page['host']):"")."</span></td>";
+            $trash_table .= "</tr>";
 
+        }
+
+        $trash_table .= "</tbody>
+                       </table>";
+
+        $trash_table .= "<div class=\"container\">";
+        $trash_table .= "<center>";
+        $trash_table .= "<input type=\"hidden\" name=\"userID\" value='$userID'/>";
+        $trash_table .= "<input type=\"hidden\" name=\"startTimestamp\" value='$startTimestamp'/>";
+        $trash_table .= "<input type=\"hidden\" name=\"endTimestamp\" value='$endTimestamp'/>";
+        $trash_table .= "<button type=\"button\" value=\"restore_button\" class=\"btn btn-success\">Undo Delete</button>";
+        $trash_table .= "<button type=\"button\" value=\"permanently_delete_button\" class=\"btn btn-danger\">Permanently Delete</button>";
+        $trash_table .= "</center>";
+        $trash_table .= "<center><h3 id=\"trash_confirmation\" class=\"alert alert-success\"></h3></center>";
+        $trash_table .= "</div>";
     }
 
-    $trash_table .= "</tbody>
-                       </table>";
+
 
 
 //    echo $day_table;
@@ -253,7 +286,8 @@ function getSessionTables($userID,$startTimestamp,$endTimestamp){
 //        $session_table .="<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>";
 
         $session_table .="<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
-        $session_table .= "<td name=\"title_$table_index\">".(isset($page['title'])?substr($page['title'],0,30)."...":"")."</td>";
+
+        $session_table .= "<td name=\"title_$table_index\"><span title='".(isset($page['title'])?htmlentities($page['title']):"")."'>".(isset($page['title'])?substr($page['title'],0,60)."...":"")."</span></td>";
         $session_table .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
         $session_table .= "</tr >";
 

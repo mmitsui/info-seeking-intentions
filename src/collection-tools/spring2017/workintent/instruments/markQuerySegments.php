@@ -156,24 +156,37 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
             var denote_beginend_function = function(ev){
                 if($(this).attr("name")=='begin_button'){
                     $("button[name='begin_button']").removeClass('active');
-                    if(end_index != -1){
-                        $(this).addClass('active');
+                    if($(this).hasClass('active')){
+                        $("button[name='begin_button']").removeClass('active');
+                        $("button[name='begin_button']").show();
                     }else{
-                        $(this).toggleClass('active');
+                        $("button[name='begin_button']").removeClass('active');
+                        $("button[name='begin_button']").hide();
+                        $(this).addClass('active');
+                        $(this).show();
+
                     }
 
                     begin_index = $(this).data('table-index');
                 }else if($(this).attr("name")=='end_button'){
                     $("button[name='end_button']").removeClass('active');
-                    if(begin_index != -1){
-                        $(this).addClass('active');
+
+                    if($(this).hasClass('active')){
+                        $("button[name='end_button']").removeClass('active');
+                        $("button[name='end_button']").show();
                     }else{
-                        $(this).toggleClass('active');
+                        $("button[name='end_button']").removeClass('active');
+                        $("button[name='end_button']").hide();
+                        $(this).addClass('active');
+                        $(this).show();
+
                     }
+
                     end_index = $(this).data('table-index');
                 }
 
                 if(begin_index != -1 && end_index != -1){
+                    $("button[name='intent_modal_button']").fadeIn("slow");
                     $(querysegment_form_id+" input[type='checkbox']").filter(function() {
                         return ($(this).data('table-index') >= begin_index && $(this).data('table-index') <= end_index);
                     }).prop( "checked", true );
@@ -183,6 +196,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                     }).prop( "checked", false );
 
                 }else{
+                    $("button[name='intent_modal_button']").fadeOut("slow");
                     if(begin_index != -1){
                         $(querysegment_form_id+" input[type='checkbox']").filter(function() {
                             return ($(this).data('table-index') == begin_index);
@@ -234,6 +248,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                         $('#mark_querysegment_confirmation').html("Query segment and intentions marked!");
                         $('#mark_querysegment_confirmation').show();
                         $('#mark_querysegment_confirmation').fadeOut(2000);
+                        $('#intent_modal').modal("hide");
 //                        mySlider = slider_init_function();
 //                        mySlider.on("slideStop",slider_slidestop_function);
                     });
@@ -305,7 +320,8 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
 
 
 
-    <body style="background-color:gainsboro">
+    <body>
+<!--    <body style="background-color:gainsboro">-->
     <div class="container-fluid">
         <!--   Dates Tab and Review     -->
         <div class="row">
@@ -389,7 +405,10 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                             <input type="hidden" name="userID" <?php echo "value='$userID'"?>/>
                             <input type="hidden" name="startTimestamp" <?php echo "value='$selectedStartTimeSeconds'"?>/>
                             <input type="hidden" name="endTimestamp" <?php echo "value='$selectedEndTimeSeconds'"?>/>
-                            <button type="button" name="intent_modal_button" value="intent_modal_button" class="btn btn-success" data-toggle="modal" data-target="#intent_modal">Mark Intentions</button>
+                            <div>
+                                <button type="button" name="intent_modal_button" value="intent_modal_button" class="btn btn-lg btn-success" data-toggle="modal" data-target="#intent_modal" style="position: fixed; bottom: 20px; right: 20px; display:none; z-index:100;">Mark Intentions</button>
+                            </div>
+<!--                            <button type="button" name="intent_modal_button" value="intent_modal_button" class="btn btn-success" data-toggle="modal" data-target="#intent_modal">Mark Intentions</button>-->
 <!--                            <button type="button" name="mark_querysegment_button" value="mark_querysegment_button" class="btn btn-success">Mark Query Segment</button>-->
                         </center>
 
@@ -409,7 +428,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                         <center>
                             <?php
                             $actionUrls = actionUrls($selectedStartTimeSeconds);
-                            echo "<a type=\"button\" class=\"btn btn-info btn-lg\" href='".$actionUrls['home']."'>&laquo; Back (Home)</a>";
+                            echo "<a type=\"button\" class=\"btn btn-info btn-lg\" href='".$actionUrls['tasks']."'>&laquo; Back (Assign Tasks to Sessions)</a>";
                             //                            echo "&nbsp;&nbsp;&nbsp;&nbsp;";
                             //                            echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['intentions']."'>Next (Intentions) &raquo;</a>";
                             ?>
@@ -434,12 +453,12 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
 <!--    </button>-->
 
     <!-- Modal -->
-    <div class="modal fade" id="intent_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade" id="intent_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="left:50%">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Intentions</h4>
+                    <h4 class="modal-title" id="myModalLabel">What were your intentions for this query segment? Were they successful?</h4>
                 </div>
 
 
@@ -452,7 +471,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                     echo $intentionsPanel['intentionshtml'];
                     ?>
 
-                    <center><h3 id="mark_querysegment_confirmation" class="alert alert-success"></h3></center>
+
                 </div>
 
 
@@ -467,7 +486,9 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                         <button type="button" name='mark_intentions_button' value='mark_intentions_button' class="btn btn-primary">Mark Query Segment + Intentions</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 
+
                     </center>
+                    <center><h3 id="mark_querysegment_confirmation" class="alert alert-success"></h3></center>
 
                 </div>
                 </form>
@@ -476,6 +497,8 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
 
 
     </div>
+
+
 
 
 

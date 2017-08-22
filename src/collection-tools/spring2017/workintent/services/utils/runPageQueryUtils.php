@@ -102,8 +102,13 @@ if(isset($_GET['action'])){
         exit();
     }else if($action=='addTask'){
         $taskName = $_POST['taskName'];
-        addTask($userID,$taskName);
+        $taskID = addTask($userID,$taskName);
+        $sessionIDs = postInputAsArray($_POST['sessionIDs']);
+//        if(count($sessionIDs) >= 1){
+//            markTaskID($userID,$sessionIDs,$taskID);
+//        }
         echo json_encode(getTasksPanel($userID));
+//        echo json_encode(array_merge(getTasksPanel($userID),getMarkTasksPanels($userID,$startTimestamp,$endTimestamp)));
         exit();
     }else if($action=='markQuerySegment'){
         $pageIDs = postInputAsArray($_POST['pages']);

@@ -121,7 +121,8 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
 
 
             $(document).ready(function(){
-                $(task_button_panel_id+" button").click(function(ev) {
+
+                var annotation_function = function(ev) {
                     ev.preventDefault();
                     var taskID = $(this).data('task-id');
 //                    alert(taskID);
@@ -134,19 +135,23 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
                         url: $(mark_task_form_id).attr('action'),
                         data: formData
                     }).done(function(response) {
-                        alert(response);
+//                        alert(response);
                         response = JSON.parse(response);
                         $(tasks_panel_id).html(response.taskpanels_html);
+                        $(add_task_form_id+" button").click(add_task_function);
+                        $(task_button_panel_id+" button").click(annotation_function);
                         $('#addtask_confirmation').html("Task annotated!");
                         $('#addtask_confirmation').show();
                         $('#addtask_confirmation').fadeOut(2000);
                     });
-                });
+                };
 
-                $(add_task_form_id+" button").click(function(ev){
+                $(task_button_panel_id+" button").click(annotation_function);
+
+                var add_task_function = function(ev){
                     ev.preventDefault()// cancel form submission
-                    var formData = $(add_task_form_id).serialize();
-                    alert(formData);
+                    var formData = $(add_task_form_id).serialize() + "&"+$(mark_task_form_id).serialize();
+//                    alert(formData);
                     if($(this).attr("value")=="addtask_button"){
                         $.ajax({
                             type: 'POST',
@@ -156,12 +161,17 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
 //                            alert(response);
                             response = JSON.parse(response);
                             $('#addtask_panel').html(response.taskshtml);
+//                            $(tasks_panel_id).html(response.taskpanels_html);
+                            $(add_task_form_id+" button").click(add_task_function);
+                            $(task_button_panel_id+" button").click(annotation_function);
                             $('#addtask_confirmation').html("Task added!");
                             $('#addtask_confirmation').show();
                             $('#addtask_confirmation').fadeOut(2000);
                         });
                     }
-                });
+                };
+
+                $(add_task_form_id+" button").click(add_task_function);
 //                $("form input[type=submit]").click(function() {
 //                    $("input[type=submit]", $(this).parents("form")).removeAttr("clicked");
 //                    $(this).attr("clicked", "true");
@@ -293,7 +303,7 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
                             $actionUrls = actionUrls($selectedStartTimeSeconds);
                             echo "<a type=\"button\" class=\"btn btn-info btn-lg\" href='".$actionUrls['sessions']."'>&laquo; Back (Sessions)</a>";
                             echo "&nbsp;&nbsp;&nbsp;&nbsp;";
-                            echo "<a type=\"button\" class=\"btn btn-info btn-lg\" href='".$actionUrls['query segments']."'>Next (Query Segments + Intentions) &raquo;</a>";
+                            echo "<a type=\"button\" class=\"btn btn-info btn-lg\" href='".$actionUrls['query segments']."'>Next (Mark Query Segments + Intentions) &raquo;</a>";
                             ?>
                         </center>
                     </div>

@@ -139,16 +139,16 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                     ev.preventDefault()// cancel form submission
                     var querySegmentID = $("input[name='querySegmentID']:checked").val();
                     var formData = $(add_intentions_form_id).serialize()+"&querySegmentID="+querySegmentID;
-                    alert(formData);
+//                    alert(formData);
 
                     if($(this).attr("value")=="markintentions_button"){
-                        alert("clicked!");
+//                        alert("clicked!");
                         $.ajax({
                             type: 'POST',
                             url: $(add_intentions_form_id).attr('action'),
                             data: formData
                         }).done(function(response) {
-                            alert(response);
+//                            alert(response);
                             response = JSON.parse(response);
                             $('#select_querysegments_panel').html(response.intentionspanels_html);
                             $('#addintentions_confirmation').html("Task added!");
