@@ -241,7 +241,16 @@ function getHomePageTables($userID,$startTimestamp,$endTimestamp){
 function getSessionTables($userID,$startTimestamp,$endTimestamp){
 
 
-    $session_table = "<table class=\"table table-striped table-fixed\">
+    $pagesQueries = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0,-1);
+    $pages =$pagesQueries;
+    $session_table = '';
+    $session_panel_html = '';
+
+    if(count($pages)<=0){
+        $session_table = '<center><h3 class=\'bg-danger\'>You not done anything today.  Please log some activity.</h3></center>';
+        $session_panel_html = '<center><h3 class=\'bg-danger\'>You not done anything today.  Please log some activity.</h3></center>';
+    }else{
+        $session_table = "<table class=\"table table-striped table-fixed\">
                                 <thead>
                                 <tr>
                                     <th >Time</th>
@@ -258,75 +267,68 @@ function getSessionTables($userID,$startTimestamp,$endTimestamp){
                                 </thead>
                                 <tbody>";
 
-    $pagesQueries = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0,-1);
-    $pages =$pagesQueries;
-    $table_index = 0;
+
+        $table_index = 0;
 
 
 
 
-    foreach($pages as $page){
-        $session_table .= "<tr >";
-        $session_table .="<td name=\"time_$table_index\">".(isset($page['time'])?$page['time']:"")."</td>";
+        foreach($pages as $page){
+            $session_table .= "<tr >";
+            $session_table .="<td name=\"time_$table_index\">".(isset($page['time'])?$page['time']:"")."</td>";
 
-        $name = '';
-        $color = '';
-        if($page['type']=='page'){
-            $name='pages[]';
-            $color = 'class="warning"';
-        }else{
-            $name='queries[]';
-            $color = 'class="info"';
-        }
-        $value = $page['id'];
+            $name = '';
+            $color = '';
+            if($page['type']=='page'){
+                $name='pages[]';
+                $color = 'class="warning"';
+            }else{
+                $name='queries[]';
+                $color = 'class="info"';
+            }
+            $value = $page['id'];
 
-        $session_table .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
-        $begin_button = "<button name=\"begin_button\" data-table-index=\"$table_index\" type=\"button\" class=\"btn btn-success\">Begin</button>";
-        $end_button = "<button name=\"end_button\" data-table-index=\"$table_index\" type=\"button\" class=\"btn btn-danger\">End</button>";
-        $session_table .= "<td><input data-table-index=\"$table_index\" type=\"checkbox\" name='$name' value='$value'> $begin_button $end_button </td>";
+            $session_table .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
+            $begin_button = "<button name=\"begin_button\" data-table-index=\"$table_index\" type=\"button\" class=\"btn btn-success\">Begin</button>";
+            $end_button = "<button name=\"end_button\" data-table-index=\"$table_index\" type=\"button\" class=\"btn btn-danger\">End</button>";
+            $session_table .= "<td><input data-table-index=\"$table_index\" type=\"checkbox\" name='$name' value='$value'> $begin_button $end_button </td>";
 //        $session_table .="<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>";
 
-        $session_table .="<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
+            $session_table .="<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
 
-        $session_table .= "<td name=\"title_$table_index\"><span title='".(isset($page['title'])?htmlentities($page['title']):"")."'>".(isset($page['title'])?substr($page['title'],0,60)."...":"")."</span></td>";
-        $session_table .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
-        $session_table .= "</tr >";
+            $session_table .= "<td name=\"title_$table_index\"><span title='".(isset($page['title'])?htmlentities($page['title']):"")."'>".(isset($page['title'])?substr($page['title'],0,60)."...":"")."</span></td>";
+            $session_table .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
+            $session_table .= "</tr >";
 
-        $table_index += 1;
+            $table_index += 1;
 
-    }
-    $session_table .= "</tbody>
+        }
+        $session_table .= "</tbody>
                     </table>";
-
-//    <div id="slider-range" style="height:250px;"></div>
-
-//    <div class="col-md-1 border">
-//<table>
-//<thead>
-//<th>Drag to Select</th>
-//</thead>
-//
-//<tbody>
-//<tr><td>
-//
-
-//    </td>
-//                    </tr>
-//                    </tbody>
-//                    </table>
-//                    </div>
+        $session_table .= "<div class=\"container\">";
+        $session_table .= "<center>";
+        $session_table .= "<input type=\"hidden\" name=\"userID\" value='$userID'/>";
+        $session_table .= "<input type=\"hidden\" name=\"startTimestamp\" value='$startTimestamp'/>";
+        $session_table .= "<input type=\"hidden\" name=\"endTimestamp\" <?php echo value='$endTimestamp'/>";
+        $session_table .= "<button type=\"button\" name=\"mark_session_button\" value=\"mark_session_button\" class=\"btn btn-success\">Mark Session</button>";
+        $session_table .= "</center>";
+        $session_table .= "</div>";
 
 
 
-//    $slider_html = "<div class=\"col-md-1 border\">
-//                        <p><input id=\"session_slider\" type=\"text\" height=\"100%\" data-slider-min=\"0\" data-slider-max=\"$table_index\" data-slider-step=\"1\" data-slider-value=\"[0,$table_index]\" data-slider-orientation=\"vertical\"/></p>
-//                        </div>
-//
-//
-//                    ";
 
-    $slider_html = "";
-    $session_panel_html = "
+
+
+
+
+
+
+
+
+
+
+        $slider_html = "";
+        $session_panel_html = "
     <div class=\"row\">
         $slider_html
         <div class=\"col-md-12 border\">
@@ -335,6 +337,10 @@ function getSessionTables($userID,$startTimestamp,$endTimestamp){
         
     </div>
         ";
+
+    }
+
+
 
     return array('sessionhtml'=>utf8_encode($session_panel_html));
 }

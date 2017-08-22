@@ -239,6 +239,7 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
 //                                alert(response);
                         response = JSON.parse(response);
                         $('#session_panel').html(response.sessionhtml);
+                        $(session_form_id+" button[name='mark_session_button']").click(mark_session_button_function);
                         $(session_form_id+" button[name='begin_button']").click(denote_beginend_function);
                         $(session_form_id+" button[name='end_button']").click(denote_beginend_function);
                         begin_index = -1;
@@ -376,15 +377,7 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
 
 
                         </div>
-                        <div class="container">
-                        <center>
-                            <input type="hidden" name="userID" <?php echo "value='$userID'"?>/>
-                            <input type="hidden" name="startTimestamp" <?php echo "value='$selectedStartTimeSeconds'"?>/>
-                            <input type="hidden" name="endTimestamp" <?php echo "value='$selectedEndTimeSeconds'"?>/>
-                            <button type="button" name="mark_session_button" value="mark_session_button" class="btn btn-success">Mark Session</button>
-                        </center>
 
-                        </div>
                     </form>
 
 

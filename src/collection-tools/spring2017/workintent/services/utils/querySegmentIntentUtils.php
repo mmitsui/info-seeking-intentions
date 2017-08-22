@@ -3,7 +3,20 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/workintent/core/Connection.class.php");
 require_once("pageQueryUtils.php");
 
 function getQuerySegmentTables($userID,$startTimestamp,$endTimestamp){
-    $query_segment_table = "<table class=\"table table-bordered table-striped table-fixed\">
+
+
+    $pagesQueries = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0,-1);
+    $pages =$pagesQueries;
+    $table_index = 0;
+    $query_segment_table = '';
+    $query_segment_panel_html = '';
+
+    if(count($pages)<=0){
+        $query_segment_table = '<center><h3 class=\'bg-danger\'>You logged no activity. Please search and browse.</h3></center>';
+        $query_segment_panel_html = '<center><h3 class=\'bg-danger\'>You logged no activity. Please search and browse.</h3></center>';
+    }else{
+
+        $query_segment_table = "<table class=\"table table-bordered table-striped table-fixed\">
                                 <thead>
                                 <tr>
                                     <th >Time</th>
@@ -21,47 +34,56 @@ function getQuerySegmentTables($userID,$startTimestamp,$endTimestamp){
                                 </thead>
                                 <tbody>";
 
-    $pagesQueries = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0,-1);
-    $pages =$pagesQueries;
-    $table_index = 0;
+        foreach($pages as $page){
+            $query_segment_table .= "<tr >";
+            $query_segment_table .="<td name=\"time_$table_index\">".(isset($page['time'])?$page['time']:"")."</td>";
 
+            $name = '';
+            $color = '';
+            if($page['type']=='page'){
+                $name='pages[]';
+                $color = 'class="warning"';
+            }else{
+                $name='queries[]';
+                $color = 'class="info"';
+            }
+            $value = $page['id'];
 
-
-
-    foreach($pages as $page){
-        $query_segment_table .= "<tr >";
-        $query_segment_table .="<td name=\"time_$table_index\">".(isset($page['time'])?$page['time']:"")."</td>";
-
-        $name = '';
-        $color = '';
-        if($page['type']=='page'){
-            $name='pages[]';
-            $color = 'class="warning"';
-        }else{
-            $name='queries[]';
-            $color = 'class="info"';
-        }
-        $value = $page['id'];
-
-        $query_segment_table .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
-        $begin_button = "<button name=\"begin_button\" data-table-index=\"$table_index\" type=\"button\" class=\"btn btn-success\">Begin</button>";
-        $end_button = "<button name=\"end_button\" data-table-index=\"$table_index\" type=\"button\" class=\"btn btn-danger\">End</button>";
-        $query_segment_table .= "<td><input data-table-index=\"$table_index\" type=\"checkbox\" name='$name' value='$value'> $begin_button $end_button </td>";
+            $query_segment_table .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
+            $begin_button = "<button name=\"begin_button\" data-table-index=\"$table_index\" type=\"button\" class=\"btn btn-success\">Begin</button>";
+            $end_button = "<button name=\"end_button\" data-table-index=\"$table_index\" type=\"button\" class=\"btn btn-danger\">End</button>";
+            $query_segment_table .= "<td><input data-table-index=\"$table_index\" type=\"checkbox\" name='$name' value='$value'> $begin_button $end_button </td>";
 //        $query_segment_table .="<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>";
-        $query_segment_table .="<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
-        $query_segment_table .="<td>".(isset($page['querySegmentID']) ?$page['querySegmentID'] : "")."</td>";
-        $query_segment_table .= "<td name=\"title_$table_index\"><span title='".(isset($page['title'])?$page['title']:"")."'>".(isset($page['title'])?substr($page['title'],0,50)."...":"")."</span></td>";
-        $query_segment_table .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
-        $table_index += 1;
+            $query_segment_table .="<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
+            $query_segment_table .="<td>".(isset($page['querySegmentID']) ?$page['querySegmentID'] : "")."</td>";
+            $query_segment_table .= "<td name=\"title_$table_index\"><span title='".(isset($page['title'])?$page['title']:"")."'>".(isset($page['title'])?substr($page['title'],0,50)."...":"")."</span></td>";
+            $query_segment_table .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
+            $table_index += 1;
 
 
 
 
-        $query_segment_table .= "</tr >";
+            $query_segment_table .= "</tr >";
 
-    }
-    $query_segment_table .= "</tbody>
+        }
+        $query_segment_table .= "</tbody>
                     </table>";
+
+
+        $slider_html = "";
+
+        $query_segment_panel_html = "
+    <div class=\"row\">
+        $slider_html
+        <div class=\"col-md-12 border\">
+        $query_segment_table
+        </div>
+        
+    </div>
+        ";
+    }
+
+
 
 //    $slider_html = "<div class=\"col-md-1 border\">
 //<table>
@@ -80,17 +102,7 @@ function getQuerySegmentTables($userID,$startTimestamp,$endTimestamp){
 //                    </table>
 //                    </div>";
 
-    $slider_html = "";
 
-    $query_segment_panel_html = "
-    <div class=\"row\">
-        $slider_html
-        <div class=\"col-md-12 border\">
-        $query_segment_table
-        </div>
-        
-    </div>
-        ";
 
 //    <div class="col-md-12 border tab-pane">
 
