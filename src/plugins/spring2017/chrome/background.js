@@ -10,6 +10,11 @@ var previousTabAction = '';
 var previousWindowAction = '';
 var previousWebNavAction = '';
 var previousAction = '';
+
+var previousTabActionData = null;
+var previousWindowActionData = null;
+var previousWebNavActionData = null;
+var previousActionData = null;
 //var serp_storage_url = domain + '/saveserp';
 //var check_userid_url = domain + '/users/checkid';
 
@@ -102,20 +107,25 @@ function savePQ(url,title,active,tabId,windowId,now){
 
 function saveAction(action,value,actionJSON,now){
   if(loggedIn){
-
-    if(action.indexOf("tabs.")!==-1){
-      previousTabAction = action;
-    }else if(action.indexOf("windows.")!==-1){
-      previousWindowAction = action;
-    }else if(action.indexOf("webNavigation.")!==-1){
-      previousWebNavAction = action;
-    }
-    previousAction = action;
     var data = {
     action:action,
     value:value,
     actionJSON:JSON.stringify(actionJSON)
     }
+
+    if(action.indexOf("tabs.")!==-1){
+      previousTabAction = action;
+      previousTabActionData = data;
+    }else if(action.indexOf("windows.")!==-1){
+      previousWindowAction = action;
+      previousWindowActionData = data;
+    }else if(action.indexOf("webNavigation.")!==-1){
+      previousWebNavAction = action;
+      previousWebNavActionData = data;
+    }
+    previousAction = action;
+    previousActionData = data;
+    
     data.localDate = now.getFullYear() + "-" + ("0" + (now.getMonth() + 1)).slice(-2) + "-" + ("0" + now.getDate()).slice(-2);
     data.localTime =  ("0" + now.getHours()).slice(-2) + ":" + ("0" + now.getMinutes()).slice(-2) + ":" + ("0" + now.getSeconds()).slice(-2);
     data.localTimestamp = now.getTime();

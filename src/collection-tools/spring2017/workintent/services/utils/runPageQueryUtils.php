@@ -182,7 +182,8 @@ if(isset($_GET['action'])){
             $querySegmentID = makeNextQuerySegmentID($userID,$startTimestamp);
             markQuerySegmentID($userID,$querySegmentID,$pageIDs,$queryIDs);
             $checkedIntentions = $_POST['intentions'];
-            markIntentions($userID,$querySegmentID,$checkedIntentions);
+
+            markIntentions($userID,$querySegmentID,$checkedIntentions,$_POST);
             echo json_encode(getQuerySegmentAndMarkIntentionsPanels($userID,$startTimestamp,$endTimestamp));
         }
 

@@ -287,12 +287,22 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                 }
             }
 
+
+
             var toggle_radio_function = function(ev){
                 var intent_key = $(this).data('intent-key');
                 if($( this ).is( ":checked" )){
                     $("input[name='"+intent_key+"_success']").prop('disabled',false);
                 }else{
                     $("input[name='"+intent_key+"_success']").prop('disabled',true);
+                }
+
+                if(intent_key=='other'){
+                    if($( this ).is( ":checked" )){
+                        $("textarea[name='"+intent_key+"_description']").prop('disabled',false);
+                    }else{
+                        $("textarea[name='"+intent_key+"_description']").prop('disabled',true);
+                    }
                 }
             }
 
@@ -303,6 +313,8 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                 }else{
                     $("textarea[name='"+intent_key+"_failure_reason']").prop('disabled',false);
                 }
+
+
             }
 
 
@@ -319,6 +331,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                         data: formData
                     }).done(function(response) {
                         response = JSON.parse(response);
+
                         $('#intent_modal').modal("hide");
                         $('#querysegment_panel').html(response.querysegmenthtml);
                         $('#select_intentions_panel').html(response.intentionshtml);

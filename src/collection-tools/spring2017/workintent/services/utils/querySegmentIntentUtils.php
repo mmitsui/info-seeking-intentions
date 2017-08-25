@@ -477,6 +477,9 @@ function getIntentionsPanel($userID,$startTimestamp,$endTimestamp){
         $intentions_html .="</label>";
         $intentions_html .="</div>";
         $intentions_html .= "<i class=\"fa fa-info-circle\" data-title=\"$tooltip\" aria-hidden=\"true\" style='color:dodgerblue; cursor:pointer'></i>";
+        if($key=='other'){
+            $intentions_html .= "<br/>Description: <textarea class=\"form-control\" rows=\"3\" cols=\"40\" name=\"$key"."_description\" disabled></textarea>";
+        }
         $intentions_html .="</td>";
 
         $intentions_html .="<td>";
@@ -490,6 +493,8 @@ function getIntentionsPanel($userID,$startTimestamp,$endTimestamp){
 //        $intentions_html .= "<input type='radio' name='$key"."_success' value='0' data-toggle=\"collapse\" data-target=\"#failure_submenu_$key\"> No";
         $intentions_html .= "</div>";
         $intentions_html .= "</div>";
+
+
         $intentions_html .="</td>";
 
 
@@ -546,7 +551,7 @@ function getIntentionsPanel($userID,$startTimestamp,$endTimestamp){
 }
 
 
-function markIntentions($userID,$querySegmentID,$checkedIntentions){
+function markIntentions($userID,$querySegmentID,$checkedIntentions,$formData){
 
     $intentions = array(
         'id_start'=>0,
@@ -582,70 +587,34 @@ function markIntentions($userID,$querySegmentID,$checkedIntentions){
         $intentions[$intention] = 1;
     }
 
-    $cxn = Connection::getInstance();
-    $query="INSERT INTO intent_assignments (`userID`,`querySegmentID`,
-        
-`id_start`,
-        `id_more`,
-        `learn_feature`,
-        `learn_structure`,
-        `learn_domain`,
-        `learn_database`,
-        `find_known`,
-        `find_specific`,
-        `find_common`,
-        `find_without`,
-        `locate_specific`,
-        `locate_common`,
-        `locate_area`,
-        `keep_bibliographical`,
-        `keep_link`,
-        `keep_item`,
-        `access_item`,
-        `access_common`,
-        `access_area`,
-        `evaluate_correctness`,
-        `evaluate_specificity`,
-        `evaluate_usefulness`,
-        `evaluate_best`,
-        `evaluate_duplication`,
-        `obtain_specific`,
-        `obtain_part`,
-        `obtain_whole`,
-        `other`
-        
-        
-) VALUES ('$userID','$querySegmentID'
-,".$intentions['id_start']."
-,".$intentions['id_more']."
-,".$intentions['learn_feature']."
-,".$intentions['learn_structure']."
-,".$intentions['learn_domain']."
-,".$intentions['learn_database']."
-,".$intentions['find_known']."
-,".$intentions['find_specific']."
-,".$intentions['find_common']."
-,".$intentions['find_without']."
-,".$intentions['locate_specific']."
-,".$intentions['locate_common']."
-,".$intentions['locate_area']."
-,".$intentions['keep_bibliographical']."
-,".$intentions['keep_link']."
-,".$intentions['keep_item']."
-,".$intentions['access_item']."
-,".$intentions['access_common']."
-,".$intentions['access_area']."
-,".$intentions['evaluate_correctness']."
-,".$intentions['evaluate_specificity']."
-,".$intentions['evaluate_usefulness']."
-,".$intentions['evaluate_duplication']."
-,".$intentions['evaluate_best']."
-,".$intentions['obtain_specific']."
-,".$intentions['obtain_part']."
-,".$intentions['obtain_whole']."
-,".$intentions['other']."
+    foreach($intentions as $intention=>$isChecked){
+        if(isset($formData[$intention."_success"])){
+            $intentions[$intention."_success"] = $formData[$intention."_success"];
+        }
+        if(isset($formData[$intention."_failure_reason"])){
+            $intentions[$intention."_failure_reason"] = $formData[$intention."_failure_reason"];
+        }
 
-          )";
+
+
+    }
+
+    if(isset($formData["other_description"])){
+        $intentions["other_description"] = $formData["other_description"];
+    }
+
+    $keys = '(';
+    $values = "(";
+
+    foreach($intentions as $key=>$value){
+        $keys .= "`$key`,";
+        $values .= "'$value',";
+    }
+
+    $keys .= '`userID`,`querySegmentID`)';
+    $values .= "'$userID','$querySegmentID')";
+    $cxn = Connection::getInstance();
+    $query="INSERT INTO intent_assignments $keys VALUES $values";
         $result = $cxn->commit($query);
 
 
