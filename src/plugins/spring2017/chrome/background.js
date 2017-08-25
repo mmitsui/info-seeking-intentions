@@ -1,3 +1,4 @@
+var loggedIn = false;
 var device = "chrome";
 var domain = 'http://coagmento.org/workintent';
 var homeUrl = domain + '/index.php';
@@ -5,10 +6,18 @@ var actionSaveUrl = domain + '/services/insertAction.php';
 var savePQUrl = domain+"/services/savePQ.php";
 
 var checkLoggedInUrl = domain + "/getLoggedIn.php";
+var previousTabAction = '';
+var previousWindowAction = '';
+var previousWebNavAction = '';
+var previousAction = '';
 //var serp_storage_url = domain + '/saveserp';
 //var check_userid_url = domain + '/users/checkid';
 
 
+
+function toggleLoggedIn(logged){
+  loggedIn = logged;
+}
 
 function renderLoggedIn(loggedIn){
   var red = [255,0,0,255];
@@ -29,10 +38,11 @@ $.ajax({
   data : {},
   dataType: "text",
   success : function(msg){
+    toggleLoggedIn(JSON.parse(msg).loggedin);
     renderLoggedIn(JSON.parse(msg).loggedin);
   },
   error: function(msg){
-
+    toggleLoggedIn(false);
     renderLoggedIn(false);
   }
 });
@@ -58,56 +68,71 @@ chrome.tabs.query(query, function(tabs) {
 
 
 function savePQ(url,title,active,tabId,windowId,now){
-  var data = {
+  if(loggedIn){
+    var data = {
     url:url,
     title:title,
     active:active,
     tabId:tabId,
     windowId:windowId
     // TODO: action, and other columns
-  }
-
-  data.localDate = now.getFullYear() + "-" + ("0" + (now.getMonth() + 1)).slice(-2) + "-" + ("0" + now.getDate()).slice(-2);
-  data.localTime =  ("0" + now.getHours()).slice(-2) + ":" + ("0" + now.getMinutes()).slice(-2) + ":" + ("0" + now.getSeconds()).slice(-2);
-  data.localTimestamp = now.getTime();
-
-  $.ajax({
-    url: savePQUrl,
-    method : "post",
-    data : data,
-    dataType: "text",
-    success : function(resp){
-
-
-    },
-    error: function(resp){
-      // alert("failure");
     }
-  });
+
+    data.localDate = now.getFullYear() + "-" + ("0" + (now.getMonth() + 1)).slice(-2) + "-" + ("0" + now.getDate()).slice(-2);
+    data.localTime =  ("0" + now.getHours()).slice(-2) + ":" + ("0" + now.getMinutes()).slice(-2) + ":" + ("0" + now.getSeconds()).slice(-2);
+    data.localTimestamp = now.getTime();
+
+    
+    $.ajax({
+      url: savePQUrl,
+      method : "post",
+      data : data,
+      dataType: "text",
+      success : function(resp){
+
+
+      },
+      error: function(resp){
+        // alert("failure");
+      }
+    });
+  }
 
 }
 
 function saveAction(action,value,actionJSON,now){
-  var data = {
+  if(loggedIn){
+
+    if(action.indexOf("tabs.")!==-1){
+      previousTabAction = action;
+    }else if(action.indexOf("windows.")!==-1){
+      previousWindowAction = action;
+    }else if(action.indexOf("webNavigation.")!==-1){
+      previousWebNavAction = action;
+    }
+    previousAction = action;
+    var data = {
     action:action,
     value:value,
     actionJSON:JSON.stringify(actionJSON)
+    }
+    data.localDate = now.getFullYear() + "-" + ("0" + (now.getMonth() + 1)).slice(-2) + "-" + ("0" + now.getDate()).slice(-2);
+    data.localTime =  ("0" + now.getHours()).slice(-2) + ":" + ("0" + now.getMinutes()).slice(-2) + ":" + ("0" + now.getSeconds()).slice(-2);
+    data.localTimestamp = now.getTime();
+    $.ajax({
+     url: actionSaveUrl,
+     method : "post",
+     data : data,
+     dataType: "text",
+     success : function(resp){
+
+     },
+     error: function(resp){
+
+     }
+   });  
   }
-  data.localDate = now.getFullYear() + "-" + ("0" + (now.getMonth() + 1)).slice(-2) + "-" + ("0" + now.getDate()).slice(-2);
-  data.localTime =  ("0" + now.getHours()).slice(-2) + ":" + ("0" + now.getMinutes()).slice(-2) + ":" + ("0" + now.getSeconds()).slice(-2);
-  data.localTimestamp = now.getTime();
-  $.ajax({
-   url: actionSaveUrl,
-   method : "post",
-   data : data,
-   dataType: "text",
-   success : function(resp){
-
-   },
-   error: function(resp){
-
-   }
- });    
+      
 }
 
 
@@ -155,11 +180,13 @@ chrome.tabs.onAttached.addListener(function(tabId, attachInfo){
 });
 
 
+// IMPORTANT
 // // TODO: No PQ action here? see if another action accompanies a "open link in new tab" URL
 chrome.tabs.onCreated.addListener(function(tab){
   var now = new Date();
   saveAction("tabs.onCreated",tab.id,tab,now);
 });
+
 
 
 // TODO: No PQ action here? see if highlight also changes.
@@ -170,11 +197,12 @@ chrome.tabs.onDetached.addListener(function(tabId, detachInfo){
 });
 
 
-// TODO: SavePQ?
+
 chrome.tabs.onHighlighted.addListener(function(highlightInfo){
   var now = new Date();
   saveAction("tabs.onHighlighted",highlightInfo.tabIds.join(),highlightInfo,now);
 });
+
 
 
 // TODO: 2) When move action is executed on an inactive, is there any other action that fires? Such as onHighlighted or onActivated?
@@ -184,7 +212,7 @@ chrome.tabs.onMoved.addListener(function(tabId, moveInfo){
   saveAction("tabs.onMoved",tabId,moveInfo,now);
 });
 
-// TODO: 1) SavePQ?
+
 // TODO: Other highlighted/activated actions when an active tab is closed?
 chrome.tabs.onRemoved.addListener(function(tabId, removeInfo){
   var now = new Date();
@@ -192,6 +220,8 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo){
   saveAction("tabs.onRemoved",tabId,removeInfo,now);
 });
 
+
+// IMPORTANT
 chrome.tabs.onReplaced.addListener(function(addedTabId, removedTabId){
  var now = new Date();
  saveAction("tabs.onReplaced",addedTabId,{addedTabId:addedTabId,removedTabId:removedTabId},now);
@@ -202,24 +232,24 @@ chrome.tabs.onReplaced.addListener(function(addedTabId, removedTabId){
 // Status types: either "loading" or "complete"
 // Note: only use onCommitted
 // TODO: Use only onCommitted?  Or this too?
-// chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
-//   var now = new Date();
-//   var action = "tabs.onUpdated";
-//   var value = tabId;
-//   changeInfo.tabId = tabId;
-//   changeInfo.tab = tab;
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
+  var now = new Date();
+  var action = "tabs.onUpdated";
+  var value = tabId;
+  changeInfo.tabId = tabId;
+  changeInfo.tab = tab;
 
   
-//   chrome.tabs.get(changeInfo.tabId, function(tab){
-//     Url = (tab.hasOwnProperty('url')?tab.url:"");
-//     title = (tab.hasOwnProperty('title')?tab.title:"");
-//     active = tab.active;
-//     tabId = (tab.hasOwnProperty('id')?tab.id:-1);
-//     windowId = tab.windowId;
-//     saveAction("tabs.onUpdated",value,changeInfo,now);
-//     savePQ(Url,title,active,tabId,windowId,now);
-//   });
-// });
+  chrome.tabs.get(changeInfo.tabId, function(tab){
+    Url = (tab.hasOwnProperty('url')?tab.url:"");
+    title = (tab.hasOwnProperty('title')?tab.title:"");
+    active = tab.active;
+    tabId = (tab.hasOwnProperty('id')?tab.id:-1);
+    windowId = tab.windowId;
+    saveAction("tabs.onUpdated",value,changeInfo,now);
+    savePQ(Url,title,active,tabId,windowId,now);
+  });
+});
 
 // chrome.tabs.onZoomChange.addListener(function(ZoomChangeInfo){
 //   var now = new Date();
@@ -241,12 +271,14 @@ chrome.windows.onCreated.addListener(function(windowInfo){
 });
 
 
+
 // TODO: Any tab IDs I should record here?
 // TODO: Any highlighted/change actions in addition that are typically fired?
 chrome.windows.onRemoved.addListener(function(windowId){
  var now = new Date();
  saveAction("windows.onRemoved",windowId,{windowId:windowId},now);
 });
+
 
 
 // TODO: get currently active tab ID

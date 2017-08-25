@@ -10,6 +10,7 @@ $(document).ready(function(){
     var passwordInputID = '#password';
     var homeDir = "http://coagmento.org/workintent";
     
+    // URLs
     var registerUrl = homeDir+"/signup_intro.php";
     var checkLoggedInUrl = homeDir + "/getLoggedIn.php";
     var loginUrl = homeDir + "/login.php";
@@ -41,6 +42,9 @@ $(document).ready(function(){
     }
 
 
+    function toggleLoggedIn(logged){
+        chrome.extension.getBackgroundPage().loggedIn = logged;
+    }
 
     function renderLoggedIn(loggedIn){
     	var red = [255,0,0,255];
@@ -55,40 +59,25 @@ $(document).ready(function(){
     	}
     }
 
+    // TODO: Is AJAX call here okay? set logged in background variable
     function handleLoggedIn(msg){
         msg = JSON.parse(msg);
         if(msg.loggedin){
+            toggleLoggedIn(msg.loggedin)
             renderLoggedIn(msg.loggedin);
             $(signedinYesID).show();
             $(signedinNoID).hide();
             $(firstNameID).text(msg.firstName);
             $(lastNameID).text(msg.lastName);
         }else{
-            renderLoggedIn(false);
-            $(signedinNoID).show();
-            $(signedinYesID).hide();
-        }
-    }
+            $(signedinYesID).show();
+            $(signedinNoID).hide();
+            
 
-    $.ajax({
-        type: "POST",
-        url: checkLoggedInUrl,
-        data : {},
-        dataType: "text",
-        success: handleLoggedIn,
-        error: function(msg){
-            $(signedinNoID).show();
-            $(signedinYesID).hide();
-            renderLoggedIn(false);
-        }
-    });
-
-    $( "#login_button" ).click(function() {
-
-        $.ajax({
+            $.ajax({
             type: "POST",
             url: loginUrl,
-            data:{username:$(usernameInputID).val(),password:$(passwordInputID).val(),browser:"chrome"},
+            data:{username:$(usernameInputID).val(),password:$(passwordInputID).val(),browser:"chrome",extensionID:chrome.runtime.id},
             success: function(msg){
                 msg = JSON.parse(msg);
                 if(msg.success){
@@ -97,16 +86,71 @@ $(document).ready(function(){
                     $(signedinNoID).hide();
                     $(signedinYesID).show();
                     $(loginErrorTextID).text('');
+                    toggleLoggedIn(true);
+                    renderLoggedIn(true);
+                }else{
+                    $(signedinNoID).show();
+                    $(signedinYesID).hide();
+                    $(loginErrorTextID).text(msg.errortext);
+                    toggleLoggedIn(false);
+                    renderLoggedIn(false);
+                }
+
+            },
+            error: function(msg){
+                toggleLoggedIn(false);
+                renderLoggedIn(false);
+            },
+            });
+            
+        }
+    }
+
+
+    // TODO: set logged in background variable
+    $.ajax({
+        type: "POST",
+        url: checkLoggedInUrl,
+        data : {extensionID:chrome.runtime.id},
+        dataType: "text",
+        success: handleLoggedIn,
+        error: function(msg){
+            $(signedinNoID).show();
+            $(signedinYesID).hide();
+            toggleLoggedIn(false);
+            renderLoggedIn(false);
+        }
+    });
+
+    // TODO: set logged in background variable
+    $( "#login_button" ).click(function() {
+
+
+        $.ajax({
+            type: "POST",
+            url: loginUrl,
+            data:{username:$(usernameInputID).val(),password:$(passwordInputID).val(),browser:"chrome",extensionID:chrome.runtime.id},
+            success: function(msg){
+                msg = JSON.parse(msg);
+                if(msg.success){
+                    $(firstNameID).text(msg.firstName);
+                    $(lastNameID).text(msg.lastName);
+                    $(signedinNoID).hide();
+                    $(signedinYesID).show();
+                    $(loginErrorTextID).text('');
+                    toggleLoggedIn(true);
                     renderLoggedIn(true);
                 }else{
                 	$(signedinNoID).show();
                     $(signedinYesID).hide();
                 	$(loginErrorTextID).text(msg.errortext);
+                    toggleLoggedIn(false);
                 	renderLoggedIn(false);
                 }
 
             },
             error: function(msg){
+                toggleLoggedIn(false);
                 renderLoggedIn(false);
             },
         });
@@ -114,6 +158,8 @@ $(document).ready(function(){
 
     });
 
+
+    // TODO: set logged in background variable
     $( "#logout_button" ).click(function() {
         $.ajax({
             type: "POST",
@@ -126,7 +172,7 @@ $(document).ready(function(){
                     $(passwordInputID).val('');
                     $(signedinNoID).show();
                     $(signedinYesID).hide();
-                    
+                    toggleLoggedIn(false);
                     renderLoggedIn(false);
                 }
 

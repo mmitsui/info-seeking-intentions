@@ -123,12 +123,22 @@
                     }).done(function(response) {
 //                            alert(response);
                         response = JSON.parse(response);
-                        $('#log_panel').html(response.loghtml);
-                        $('#trash_panel').html(response.trashhtml);
-                        $(delete_form_id+" button").click(restore_delete_function);
-                        $('#trash_confirmation').html("Pages were restored!");
-                        $('#trash_confirmation').show();
-                        $('#trash_confirmation').fadeOut(2000);
+                        if(response.hasOwnProperty('error')){
+                            $('#trash_confirmation').removeClass('alert-success');
+                            $('#trash_confirmation').addClass('alert-danger');
+                            $('#trash_confirmation').html(response.message);
+                            $('#trash_confirmation').show();
+                            $('#trash_confirmation').fadeOut(3000);
+                        }else {
+                            $('#log_panel').html(response.loghtml);
+                            $('#trash_panel').html(response.trashhtml);
+                            $(delete_form_id + " button").click(restore_delete_function);
+                            $('#trash_confirmation').removeClass('alert-danger');
+                            $('#trash_confirmation').addClass('alert-success');
+                            $('#trash_confirmation').html("Pages were restored!");
+                            $('#trash_confirmation').show();
+                            $('#trash_confirmation').fadeOut(3000);
+                        }
                     }).fail(function(data) {
                         alert("There was a server error.  Please try again later or contact mmitsui@scarletmail.rutgers.edu if you experience further issues.");
                     });
@@ -138,14 +148,26 @@
                         url: $(delete_form_id).attr('action')+"?action=permanentlyDelete",
                         data: formData
                     }).done(function(response) {
-//                            alert(response);
+
                         response = JSON.parse(response);
-                        $('#log_panel').html(response.loghtml);
-                        $('#trash_panel').html(response.trashhtml);
-                        $(delete_form_id+" button").click(restore_delete_function);
-                        $('#trash_confirmation').html("Pages were permanently deleted!");
-                        $('#trash_confirmation').show();
-                        $('#trash_confirmation').fadeOut(2000);
+                        if(response.hasOwnProperty('error')){
+                            $('#trash_confirmation').removeClass('alert-success');
+                            $('#trash_confirmation').addClass('alert-danger');
+                            $('#trash_confirmation').html(response.message);
+                            $('#trash_confirmation').show();
+                            $('#trash_confirmation').fadeOut(3000);
+                        }else{
+                            $('#log_panel').html(response.loghtml);
+                            $('#trash_panel').html(response.trashhtml);
+                            $('#trash_confirmation').addClass('alert-success');
+                            $('#trash_confirmation').removeClass('alert-danger');
+                            $(delete_form_id+" button").click(restore_delete_function);
+                            $('#trash_confirmation').html("Pages were permanently deleted!");
+                            $('#trash_confirmation').show();
+                            $('#trash_confirmation').fadeOut(3000);
+                        }
+
+
                     }).fail(function(data) {
                         alert("There was a server error.  Please try again later or contact mmitsui@scarletmail.rutgers.edu if you experience further issues.");
                     });
@@ -167,15 +189,27 @@
                             url: $(trash_form_id).attr('action'),
                             data: formData
                         }).done(function(response) {
-//                            alert(response);
                             response = JSON.parse(response);
+                            if(response.hasOwnProperty('error')){
+                                $('#log_confirmation').removeClass('alert-success');
+                                $('#log_confirmation').addClass('alert-danger');
+                                $('#log_confirmation').html(response.message);
+                                $('#log_confirmation').show();
+                                $('#log_confirmation').fadeOut(3000);
+                            }else{
+                                $('#log_panel').html(response.loghtml);
+                                $('#trash_panel').html(response.trashhtml);
+                                $(delete_form_id+" button").click(restore_delete_function);
+                                $('#log_confirmation').removeClass('alert-danger');
+                                $('#log_confirmation').addClass('alert-success');
+                                $('#log_confirmation').html("Sent to trash!");
+                                $('#log_confirmation').show();
+                                $('#log_confirmation').fadeOut(3000);
+                            }
 
-                            $('#log_panel').html(response.loghtml);
-                            $('#trash_panel').html(response.trashhtml);
-                            $(delete_form_id+" button").click(restore_delete_function);
-                            $('#log_confirmation').html("Sent to trash!");
-                            $('#log_confirmation').show();
-                            $('#log_confirmation').fadeOut(2000);
+
+
+
                         }).fail(function(data) {
                             alert("There was a server error.  Please try again later or contact mmitsui@scarletmail.rutgers.edu if you experience further issues.");
                         });
@@ -245,7 +279,7 @@
                         <center><h4>Tutorial</h4></center>
                     </div>
                     <div class="panel-body">
-                        <center><button type="button" class="btn btn-primary">Review Tutorial</button></center>
+                        <center><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tutorial_modal">Review Tutorial</button></center>
                     </div>
 
 
@@ -330,6 +364,11 @@
 
 
     </div>
+
+<?php
+    printTutorialModal();
+?>
+
     <center><h3 id="log_confirmation" class="alert alert-success"></h3></center>
     <center><h3 id="trash_confirmation" class="alert alert-success"></h3></center>
 

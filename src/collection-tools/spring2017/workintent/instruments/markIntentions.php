@@ -153,7 +153,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                             $('#select_querysegments_panel').html(response.intentionspanels_html);
                             $('#addintentions_confirmation').html("Task added!");
                             $('#addintentions_confirmation').show();
-                            $('#addintentions_confirmation').fadeOut(2000);
+                            $('#addintentions_confirmation').fadeOut(3000);
                         });
                     }
                 });

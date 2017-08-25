@@ -42,12 +42,28 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.1/bootstrap-slider.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 
         <style>
             .tab-pane{
                 height:300px;
                 overflow-y:scroll;
                 width:90%;
+            }
+
+
+
+            .tooltip
+            {
+                position:absolute;
+                background-color:#eeeefe;
+                border: 1px solid #aaaaca;
+                font-size: smaller;
+                padding:4px;
+                width: 160px;
+                box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+                -moz-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+                -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
             }
 
             /*table {*/
@@ -153,6 +169,53 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
 //            };
 
 
+            var mouseover_tooltip_function = function() {
+
+                // first remove all existing abbreviation tooltips
+                $('abbr').next('.tooltip').remove();
+
+                // create the tooltip
+                $(this).after('<span class="tooltip">' + $(this).data('title') + '</span>');
+
+                // position the tooltip 4 pixels above and 4 pixels to the left of the abbreviation
+                var left = $(this).position().left + $(this).width() + 4;
+                var top = $(this).position().top - 4;
+                $(this).next().css('left',left);
+                $(this).next().css('top',top);
+
+            }
+
+            var click_tooltip_function = function(){
+
+                $(this).mouseover();
+
+                // after a slight 2 second fade, fade out the tooltip for 1 second
+                $(this).next().animate({opacity: 0.9},{duration: 200, complete: function(){
+//                    $(this).fadeOut(1000);
+                }});
+
+            }
+
+            var mouseout_tooltip_function = function(){
+
+                $(this).next('.tooltip').remove();
+
+            }
+
+
+//            $('abbr').mouseover();
+
+            /**
+             * when abbreviations are clicked trigger their mouseover event then fade the tooltip
+             * (this is friendly to touch interfaces)
+             */
+//            $('abbr').click();
+
+            /**
+             * Remove the tooltip on abbreviation mouseout
+             */
+//            $('abbr').mouseout();
+
             var denote_beginend_function = function(ev){
                 if($(this).attr("name")=='begin_button'){
                     $("button[name='begin_button']").removeClass('active');
@@ -256,6 +319,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                         data: formData
                     }).done(function(response) {
                         response = JSON.parse(response);
+                        $('#intent_modal').modal("hide");
                         $('#querysegment_panel').html(response.querysegmenthtml);
                         $('#select_intentions_panel').html(response.intentionshtml);
 //                        alert(response.intentionshtml);
@@ -264,14 +328,18 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                         $("button[name='mark_intentions_button']").click(mark_intentions_button_function);
                         $(querysegment_form_id+" button[name='begin_button']").click(denote_beginend_function);
                         $(querysegment_form_id+" button[name='end_button']").click(denote_beginend_function);
+                        $('input[name="intentions[]"]').click(toggle_radio_function);
+                        $('.fa-info-circle').mouseover(mouseover_tooltip_function);
+                        $('.fa-info-circle').click(click_tooltip_function);
+                        $('.fa-info-circle').mouseout(mouseout_tooltip_function);
                         $('input:radio').click(toggle_text_function);
                         $("button[name='intent_modal_button']").fadeOut("slow");
                         begin_index = -1;
                         end_index = -1;
                         $('#mark_querysegment_confirmation').html("Query segment and intentions marked!");
                         $('#mark_querysegment_confirmation').show();
-                        $('#mark_querysegment_confirmation').fadeOut(2000);
-                        $('#intent_modal').modal("hide");
+                        $('#mark_querysegment_confirmation').fadeOut(3000);
+
 
 //                        mySlider = slider_init_function();
 //                        mySlider.on("slideStop",slider_slidestop_function);
@@ -296,12 +364,16 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                         $('#querysegment_panel').html(response.querysegmenthtml);
                         $(querysegment_form_id+" button[name='begin_button']").click(denote_beginend_function);
                         $(querysegment_form_id+" button[name='end_button']").click(denote_beginend_function);
+                        $('input[name="intentions[]"]').click(toggle_radio_function);
+                        $('.fa-info-circle').mouseover(mouseover_tooltip_function);
+                        $('.fa-info-circle').click(click_tooltip_function);
+                        $('.fa-info-circle').mouseout(mouseout_tooltip_function);
                         $('input:radio').click(toggle_text_function);
                         begin_index = -1;
                         end_index = -1;
                         $('#mark_querysegment_confirmation').html("Query segment marked!");
                         $('#mark_querysegment_confirmation').show();
-                        $('#mark_querysegment_confirmation').fadeOut(2000);
+                        $('#mark_querysegment_confirmation').fadeOut(3000);
 //                        mySlider = slider_init_function();
 //                        mySlider.on("slideStop",slider_slidestop_function);
                     }).fail(function(data) {
@@ -321,6 +393,9 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                     $(querysegment_form_id+" button[name='end_button']").click(denote_beginend_function);
                     $('input:radio').click(toggle_text_function);
                     $('input[name="intentions[]"]').click(toggle_radio_function);
+                    $('.fa-info-circle').mouseover(mouseover_tooltip_function);
+                    $('.fa-info-circle').click(click_tooltip_function);
+                    $('.fa-info-circle').mouseout(mouseout_tooltip_function);
 
                 }
             );
@@ -394,7 +469,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                         <center><h4>Tutorial</h4></center>
                     </div>
                     <div class="panel-body">
-                        <center><button type="button" class="btn btn-primary">Review Tutorial</button></center>
+                        <center><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tutorial_modal">Review Tutorial</button></center>
                     </div>
 
 
@@ -506,14 +581,97 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
 
 
                 </div>
+            </div>
+        </div>
 
 
-<!--                <div class="modal-footer" id="select_intentions_footer">-->
-<!--                    --><?php
-//                    echo $intentionsPanel['intentionsfooterhtml'];
-//                    ?>
-<!--                </div>-->
-                </form>
+    </div>
+
+    <?php
+//    printTutorialModal();
+    ?>
+
+    <div class="modal fade" id="tutorial_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Tutorial</h4>
+                </div>
+
+
+
+
+
+                <div class="modal-body" id="intent_tutorial_body">
+
+
+                    <p>You will be asked to indicate what you were attempting to accomplish (your search intention) at various points during that session. This will proceed as follows.</p>
+
+                    <ul><strong><u>Search Segments</u></strong>
+                        <li>You will be asked to review your day’s search segments.</li>
+                        <li>A search segment is everything that happens from your issuing a query, to your issuing the next query, or completing your search session.</li>
+                        <li>For each search segment, you will be shown a form on the right of the screen, which lists possible search intentions (including "other")</li>
+                    </ul>
+
+                    <ul><strong><u>What You Are Asked To Do</u></strong>
+                        <li>When a search segment is finished, you will select, on the popup form, your underlying intention (what you were attempting to accomplish) for that search segment.  You will also indicate whether that intention was satisfied, and if not, you will explain why not.</li>
+                        <li>It is possible that what you intended to do during that search segment is not listed in the form. In this case, you should select "Other", and then type a brief description of your intention in the box provided.</li>
+                    </ul>
+
+                    During each search segment, you may have had more than one intention (you may have wanted to accomplish more than one goal). In this case, you should check all, but only, the intentions
+
+                    <ul><strong><u>Identify search information</u></strong>
+                        <li><strong><u>Identify something to get started</u></strong> - For instance, find good query terms.</li>
+                        <li><strong><u>Identify something more to search</u></strong> – Explore a topic more broadly.</li>
+                    </ul>
+
+                    <ul><strong><u>Learning</u></strong>
+                        <li><strong><u>Learn domain knowledge</u></strong> - Learn about the topic of a search.</li>
+                        <li><strong><u>Learn database content</u></strong> – Learn the type of information/resources available at a particular website – e.g., a government database.</li>
+                    </ul>
+
+                    <ul><strong><u>Finding</u></strong>
+                        <li><strong><u>Find a known item</u></strong> – Searching for an item that you were familiar with in advance.</li>
+                        <li><strong><u>Find specific information</u></strong> – Finding a predetermined piece of information.</li>
+                        <li><strong><u>Find items sharing a named characteristic</u></strong> – Finding items with something in common.</li>
+                        <li><strong><u>Find items without predefined criteria</u></strong> – Finding items that will be useful for a task, but which haven't been specified in advance.</li>
+                    </ul>
+
+
+                    <ul><strong><u>Keep record</u></strong>
+                        <li><strong><u>Keep record of a link</u></strong> - Saving a good item or an item to look at later</li>
+                    </ul>
+
+                    <ul><strong><u>Access an item or set of items</u></strong>
+                        <li><strong><u>Access a specific item</u></strong> – Go to some item that you already know about.</li>
+                        <li><strong><u>Access items with common characteristics</u></strong> – Go to some set of items with common characteristics.</li>
+                        <li><strong><u>Access a web site/home page or similar</u></strong> – Relocating or going to a website.</li>
+                    </ul>
+
+
+                    <ul><strong><u>Evaluate</u></strong>
+                        <li><strong><u>Evaluate correctness of an item</u></strong> - Determine whether an item is factually correct.</li>
+                        <li><strong><u>Evaluate usefulness of an item</u></strong> - Determine whether an item is useful.</li>
+                        <li><strong><u>Pick best item(s) from all the useful ones</u></strong> - Determine the best item among a set of items.</li>
+                        <li><strong><u>Evaluate specificity of an item</u></strong> – Determine whether an item is specific or general enough.</li>
+                        <li><strong><u>Evaluate duplication of an item</u></strong> – Determine whether the information in one item is the same as in another or others.</li>
+                    </ul>
+
+
+                    <ul><strong><u>Obtain</u></strong>
+                        <li><strong><u>Obtain specific information</u></strong> – Finding specific information to bookmark, highlight, or copy.</li>
+                        <li><strong><u>Obtain part of the item</u></strong> – Finding part of an item to bookmark, highlight, or copy.</li>
+                        <li><strong><u>Obtain a whole item(s)</u></strong> - Finding a whole item to bookmark, highlight, or copy.</li>
+                    </ul>
+
+                </div>
+
+
+                <div class="modal-footer" id="intent_tutorial_footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Exit</button>
+
+                </div>
             </div>
         </div>
 
@@ -526,36 +684,6 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
 
 
 
-
-<!--    <div class="container">-->
-<!--        <div class="row">-->
-<!--            <div class="col-md-12">-->
-<!--                <div class="panel panel-primary">-->
-<!--                    <div class="panel panel-heading">-->
-<!--                        <center><h4>Assign to:</h4></center>-->
-<!--                    </div>-->
-<!--                    <div>-->
-<!--                        <center>-->
-<!--                            <div>-->
-<!--                                <button type="button" class="btn btn-primary">1</button>-->
-<!--                            </div>-->
-<!---->
-<!--                            <div>-->
-<!--                                <button type="button" class="btn btn-primary">2</button>-->
-<!--                            </div>-->
-<!---->
-<!--                            <div>-->
-<!--                                <button type="button" class="btn btn-primary">3</button>-->
-<!--                            </div>-->
-<!--                            <div>-->
-<!--                                <button type="button" class="btn btn-success">+ Add Session</button>-->
-<!--                            </div>-->
-<!--                        </center>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
 
     </body>
     </html>

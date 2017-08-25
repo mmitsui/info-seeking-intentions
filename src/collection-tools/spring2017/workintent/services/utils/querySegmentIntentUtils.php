@@ -379,20 +379,20 @@ function getIntentionsPanel($userID,$startTimestamp,$endTimestamp){
     $intentions = array(
         'id_start'=>'Identify something to get started',
         'id_more'=>'Identify more to search',
-        'learn_feature'=>'Learn system feature',
-        'learn_structure'=>'Learn system structure',
+//        'learn_feature'=>'Learn system feature',
+//        'learn_structure'=>'Learn system structure',
         'learn_domain'=>'Learn domain knowledge',
         'learn_database'=>'Learn database content',
         'find_known'=>'Find a known item',
         'find_specific'=>'Find specific information',
         'find_common'=>'Find items sharing a named characteristic',
         'find_without'=>'Find items without predefined criteria',
-        'locate_specific'=>'Locate a specific item',
-        'locate_common'=>'Locate items with common characteristics',
-        'locate_area'=>'Locate an area/location',
-        'keep_bibliographical'=>'Keep record of bibliographical information',
+//        'locate_specific'=>'Locate a specific item',
+//        'locate_common'=>'Locate items with common characteristics',
+//        'locate_area'=>'Locate an area/location',
+//        'keep_bibliographical'=>'Keep record of bibliographical information',
         'keep_link'=>'Keep record of link',
-        'keep_item'=>'Note item for return',
+//        'keep_item'=>'Note item for return',
         'access_item'=>'Access a specific item',
         'access_common'=>'Access items with common characteristics',
         'access_area'=>'Access a web site/home page or similar',
@@ -407,6 +407,40 @@ function getIntentionsPanel($userID,$startTimestamp,$endTimestamp){
         'other'=>'Other'
 
     );
+
+
+    $intention_explanations = array(
+        'id_start'=>'For instance, find good query terms.',
+        'id_more'=>'Explore a topic more broadly.',
+//        'learn_feature'=>'Learn system feature',
+//        'learn_structure'=>'Learn system structure',
+        'learn_domain'=>'Learn about the topic of a search.',
+        'learn_database'=>'Learn the type of information/resources available at a particular website – e.g., a government database.',
+        'find_known'=>'Searching for an item that you were familiar with in advance.',
+        'find_specific'=>'Finding a predetermined piece of information.',
+        'find_common'=>'Finding items with something in common.',
+        'find_without'=>'Finding items that will be useful for a task, but which haven\'t been specified in advance.',
+//        'locate_specific'=>'Locate a specific item',
+//        'locate_common'=>'Locate items with common characteristics',
+//        'locate_area'=>'Locate an area/location',
+//        'keep_bibliographical'=>'Keep record of bibliographical information',
+        'keep_link'=>'Saving a good item or an item to look at later.',
+//        'keep_item'=>'Note item for return',
+        'access_item'=>'Go to some item that you already know about.',
+        'access_common'=>'Go to some set of items with common characteristics.',
+        'access_area'=>'Relocating or going to a website.',
+        'evaluate_correctness'=>'Determine whether an item is factually correct.',
+        'evaluate_specificity'=>'Determine whether an item is specific or general enough.',
+        'evaluate_usefulness'=>'Determine whether an item is useful.',
+        'evaluate_best'=>'Determine the best item among a set of items.',
+        'evaluate_duplication'=>'Determine whether the information in one item is the same as in another or others.',
+        'obtain_specific'=>'Finding specific information to bookmark, highlight, or copy.',
+        'obtain_part'=>'Finding part of an item to bookmark, highlight, or copy.',
+        'obtain_whole'=>'Finding a whole item to bookmark, highlight, or copy.',
+        'other'=>'If you have another intention, please explain here.'
+
+    );
+
 
 
 
@@ -431,15 +465,18 @@ function getIntentionsPanel($userID,$startTimestamp,$endTimestamp){
 
     $intentions_html .="<tbody>";
     foreach($intentions as $key=>$value){
+        $tooltip = $intention_explanations[$key];
 
         $intentions_html .="<tr>";
         $intentions_html .="<td>";
         $intentions_html .="<div class=\"checkbox\">";
         $intentions_html .="<label>";
-        $intentions_html .="<input type=\"checkbox\" data-intent-key='$key' name='intentions[]' value='$key'/> $value";
+        $intentions_html .="<input type=\"checkbox\" data-intent-key='$key' name='intentions[]' value='$key'/> $value ";
+
 //        $intentions_html .="<input type=\"checkbox\" data-toggle=\"collapse\" data-target=\"#intention_submenu_$key\" name='intentions[]' value='$key'/> $value";
         $intentions_html .="</label>";
         $intentions_html .="</div>";
+        $intentions_html .= "<i class=\"fa fa-info-circle\" data-title=\"$tooltip\" aria-hidden=\"true\" style='color:dodgerblue; cursor:pointer'></i>";
         $intentions_html .="</td>";
 
         $intentions_html .="<td>";
@@ -486,6 +523,7 @@ function getIntentionsPanel($userID,$startTimestamp,$endTimestamp){
     $intentions_html .= "</center>";
 
     $intentions_html .= "</form>";
+    $intentions_html .= "</div>";
 
 
     $intentionsfooter_html = "";

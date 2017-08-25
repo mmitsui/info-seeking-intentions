@@ -39,7 +39,14 @@ if(isset($_GET['action'])){
             $cxn->commit($query);
         }
 
-        echo json_encode(getHomePageTables($userID,$startTimestamp,$endTimestamp));
+        if(count($pageIDs) == 0 && count($queryIDs) == 0){
+            echo json_encode(array('error'=>true,'message'=>'No selection given.'));
+
+        }
+        else{
+            echo json_encode(getHomePageTables($userID,$startTimestamp,$endTimestamp));
+        }
+
         exit();
 
     }
@@ -60,7 +67,11 @@ if(isset($_GET['action'])){
         }
 
 
-        echo json_encode(getHomePageTables($userID,$startTimestamp,$endTimestamp));
+        if(count($pageIDs) == 0 && count($queryIDs) == 0){
+            echo json_encode(array('error'=>true,'message'=>'No selection given.'));
+        }else{
+            echo json_encode(getHomePageTables($userID,$startTimestamp,$endTimestamp));
+        }
         exit();
 
     }
@@ -80,7 +91,13 @@ if(isset($_GET['action'])){
             $cxn->commit($query);
         }
 
-        echo json_encode(getHomePageTables($userID,$startTimestamp,$endTimestamp));
+        if(count($pageIDs) == 0 && count($queryIDs) == 0){
+            echo json_encode(array('error'=>true,'message'=>'No selection given.'));
+        }else{
+            echo json_encode(getHomePageTables($userID,$startTimestamp,$endTimestamp));
+        }
+
+
         exit();
 
     }
@@ -88,36 +105,64 @@ if(isset($_GET['action'])){
         $pageIDs = postInputAsArray($_POST['pages']);
         $queryIDs = postInputAsArray($_POST['queries']);
 
-        $sessionID = makeNextSessionID($userID,$startTimestamp);
-        markSessionID($userID,$sessionID,$pageIDs,$queryIDs);
+        if(count($pageIDs) == 0 && count($queryIDs) == 0){
+            echo json_encode(array('error'=>true,'message'=>'No selection given.'));
+        }else{
+            $sessionID = makeNextSessionID($userID,$startTimestamp);
+            markSessionID($userID,$sessionID,$pageIDs,$queryIDs);
+            echo json_encode(getSessionTables($userID,$startTimestamp,$endTimestamp));
 
-        echo json_encode(getSessionTables($userID,$startTimestamp,$endTimestamp));
+        }
+
         exit();
     }
     else if($action=='markTasks'){
         $sessionIDs = postInputAsArray($_POST['sessionIDs']);
         $taskID = $_POST['taskID'];
-        markTaskID($userID,$sessionIDs,$taskID);
-        echo json_encode(getMarkTasksPanels($userID,$startTimestamp,$endTimestamp));
+
+        if(count($sessionIDs) == 0){
+            echo json_encode(array('error'=>true,'message'=>'No sessions marked for assignment.'));
+        }else{
+            markTaskID($userID,$sessionIDs,$taskID);
+            echo json_encode(getMarkTasksPanels($userID,$startTimestamp,$endTimestamp));
+        }
+
         exit();
     }else if($action=='addTask'){
         $taskName = $_POST['taskName'];
-        $taskID = addTask($userID,$taskName);
-        $sessionIDs = postInputAsArray($_POST['sessionIDs']);
+        if($taskName==''){
+            echo json_encode(array('error'=>true,'message'=>'No task name given.'));
+        }else{
+            $taskID = addTask($userID,$taskName);
+            $sessionIDs = postInputAsArray($_POST['sessionIDs']);
+            $message = '';
+            if(count($sessionIDs) > 0){
+                $message = 'Task has been added and assigned!';
+                markTaskID($userID,$sessionIDs,$taskID);
+            }else{
+                $message = 'Task has been added!';
+            }
+
+            echo json_encode(array_merge(getMarkTasksPanels($userID,$startTimestamp,$endTimestamp),getTasksPanel($userID),array('message'=>$message)));
+        }
 //        if(count($sessionIDs) >= 1){
 //            markTaskID($userID,$sessionIDs,$taskID);
 //        }
-        echo json_encode(getTasksPanel($userID));
+
 //        echo json_encode(array_merge(getTasksPanel($userID),getMarkTasksPanels($userID,$startTimestamp,$endTimestamp)));
         exit();
     }else if($action=='markQuerySegment'){
         $pageIDs = postInputAsArray($_POST['pages']);
         $queryIDs = postInputAsArray($_POST['queries']);
 
-        $querySegmentID = makeNextQuerySegmentID($userID,$startTimestamp);
-        markQuerySegmentID($userID,$querySegmentID,$pageIDs,$queryIDs);
+        if(count($pageIDs) == 0 && count($queryIDs) == 0){
+            echo json_encode(array('error'=>true,'message'=>'No selection given.'));
+        }else{
+            $querySegmentID = makeNextQuerySegmentID($userID,$startTimestamp);
+            markQuerySegmentID($userID,$querySegmentID,$pageIDs,$queryIDs);
+            echo json_encode(getQuerySegmentTables($userID,$startTimestamp,$endTimestamp));
+        }
 
-        echo json_encode(getQuerySegmentTables($userID,$startTimestamp,$endTimestamp));
         exit();
     }else if($action=='markIntentions'){
         $querySegmentID = $_POST['querySegmentID'];
@@ -130,12 +175,17 @@ if(isset($_GET['action'])){
 
         $pageIDs = postInputAsArray($_POST['pages']);
         $queryIDs = postInputAsArray($_POST['queries']);
-        $querySegmentID = makeNextQuerySegmentID($userID,$startTimestamp);
-        markQuerySegmentID($userID,$querySegmentID,$pageIDs,$queryIDs);
 
-        $checkedIntentions = $_POST['intentions'];
-        markIntentions($userID,$querySegmentID,$checkedIntentions);
-        echo json_encode(getQuerySegmentAndMarkIntentionsPanels($userID,$startTimestamp,$endTimestamp));
+        if(count($pageIDs) == 0 && count($queryIDs) == 0){
+            echo json_encode(array('error'=>true,'message'=>'No selection given.'));
+        }else{
+            $querySegmentID = makeNextQuerySegmentID($userID,$startTimestamp);
+            markQuerySegmentID($userID,$querySegmentID,$pageIDs,$queryIDs);
+            $checkedIntentions = $_POST['intentions'];
+            markIntentions($userID,$querySegmentID,$checkedIntentions);
+            echo json_encode(getQuerySegmentAndMarkIntentionsPanels($userID,$startTimestamp,$endTimestamp));
+        }
+
         exit();
     }
 
