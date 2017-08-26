@@ -72,7 +72,7 @@ chrome.tabs.query(query, function(tabs) {
 }
 
 
-function savePQ(url,title,active,tabId,windowId,now){
+function savePQ(url,title,active,tabId,windowId,now,details){
   if(loggedIn){
 
     var data = {
@@ -89,6 +89,7 @@ function savePQ(url,title,active,tabId,windowId,now){
     data.localDate = now.getFullYear() + "-" + ("0" + (now.getMonth() + 1)).slice(-2) + "-" + ("0" + now.getDate()).slice(-2);
     data.localTime =  ("0" + now.getHours()).slice(-2) + ":" + ("0" + now.getMinutes()).slice(-2) + ":" + ("0" + now.getSeconds()).slice(-2);
     data.localTimestamp = now.getTime();
+    data.details = JSON.stringify(details);
 
     
 
@@ -188,7 +189,7 @@ chrome.tabs.onActivated.addListener(function(activeInfo){
           activeInfo.referrerInfo = result;
 
           saveAction("tabs.onActivated",activeInfo.tabId,activeInfo,now);
-          savePQ(Url,title,active,tabId,windowId,now);
+          savePQ(Url,title,active,tabId,windowId,now,activeInfo);
         }
       );
 
@@ -390,7 +391,7 @@ chrome.webNavigation.onCommitted.addListener(function(details){
         function(result) {
           details.referrerInfo = result;
           saveAction("webNavigation.onCommitted",details.tabId,details,now);
-          savePQ(Url,title,active,tabId,windowId,now);
+          savePQ(Url,title,active,tabId,windowId,now,details);
         }
       );
     
