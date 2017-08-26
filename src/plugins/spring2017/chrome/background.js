@@ -74,6 +74,7 @@ chrome.tabs.query(query, function(tabs) {
 
 function savePQ(url,title,active,tabId,windowId,now){
   if(loggedIn){
+
     var data = {
     url:url,
     title:title,
@@ -83,11 +84,14 @@ function savePQ(url,title,active,tabId,windowId,now){
     // TODO: action, and other columns
     }
 
+    
+
     data.localDate = now.getFullYear() + "-" + ("0" + (now.getMonth() + 1)).slice(-2) + "-" + ("0" + now.getDate()).slice(-2);
     data.localTime =  ("0" + now.getHours()).slice(-2) + ":" + ("0" + now.getMinutes()).slice(-2) + ":" + ("0" + now.getSeconds()).slice(-2);
     data.localTimestamp = now.getTime();
 
     
+
     $.ajax({
       url: savePQUrl,
       method : "post",
@@ -96,9 +100,10 @@ function savePQ(url,title,active,tabId,windowId,now){
       success : function(resp){
 
 
+
       },
       error: function(resp){
-        // alert("failure");
+
       }
     });
   }
@@ -174,8 +179,20 @@ chrome.tabs.onActivated.addListener(function(activeInfo){
     active = tab.active;
     tabId = (tab.hasOwnProperty('id')?tab.id:-1);
     windowId = tab.windowId;
-    saveAction("tabs.onActivated",activeInfo.tabId,activeInfo,now);
-    savePQ(Url,title,active,tabId,windowId,now);
+    activeInfo.tab = tab;
+
+    chrome.tabs.executeScript(
+        tabId,
+        { code: "document.referrer;" },
+        function(result) {
+          activeInfo.referrerInfo = result;
+
+          saveAction("tabs.onActivated",activeInfo.tabId,activeInfo,now);
+          savePQ(Url,title,active,tabId,windowId,now);
+        }
+      );
+
+    
   });
 
 
@@ -194,7 +211,35 @@ chrome.tabs.onAttached.addListener(function(tabId, attachInfo){
 // // TODO: No PQ action here? see if another action accompanies a "open link in new tab" URL
 chrome.tabs.onCreated.addListener(function(tab){
   var now = new Date();
-  saveAction("tabs.onCreated",tab.id,tab,now);
+  var tabId = tab.id;
+
+  var currentTab = null;
+
+  chrome.tabs.query({active: true, currentWindow: true}, function(arrayOfTabs) {
+
+    currentTab = arrayOfTabs;
+  
+  
+
+    chrome.tabs.executeScript(
+        tabId,
+        { code: "document.referrer;" },
+        function(result) {
+          tab.referrerInfo = result;
+
+
+          saveAction("tabs.onCreated",tab.id,{currentTab:currentTab,newTab:tab},now);
+        }
+      );
+
+  });
+
+  chrome.tabs.getCurrent(function (result){
+    
+  })
+  
+  
+
 });
 
 
@@ -234,7 +279,16 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo){
 // IMPORTANT
 chrome.tabs.onReplaced.addListener(function(addedTabId, removedTabId){
  var now = new Date();
- saveAction("tabs.onReplaced",addedTabId,{addedTabId:addedTabId,removedTabId:removedTabId},now);
+ var tabId = addedTabId;
+
+ chrome.tabs.executeScript(
+        tabId,
+        { code: "document.referrer;" },
+        function(result) {
+          saveAction("tabs.onReplaced",addedTabId,{addedTabId:addedTabId,removedTabId:removedTabId,referrerInfo:result},now);
+        }
+      );
+ 
 });
 
 
@@ -249,16 +303,34 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
   changeInfo.tabId = tabId;
   changeInfo.tab = tab;
 
+  // 
+  if(('status' in changeInfo && changeInfo.status == 'complete')&& !('url' in changeInfo)){
+
+    chrome.tabs.get(changeInfo.tabId, function(tab){
+      Url = (tab.hasOwnProperty('url')?tab.url:"");
+      title = (tab.hasOwnProperty('title')?tab.title:"");
+      active = tab.active;
+      tabId = (tab.hasOwnProperty('id')?tab.id:-1);
+      windowId = tab.windowId;
+
+      chrome.tabs.executeScript(
+        tabId,
+        { code: "document.referrer;" },
+        function(result) {
+          changeInfo.referrerInfo = result;
+
+          saveAction("tabs.onUpdated",value,changeInfo,now);
+          // savePQ(Url,title,active,tabId,windowId,now);
+        }
+      );
+
+      
+    });
+
+  }
+
   
-  chrome.tabs.get(changeInfo.tabId, function(tab){
-    Url = (tab.hasOwnProperty('url')?tab.url:"");
-    title = (tab.hasOwnProperty('title')?tab.title:"");
-    active = tab.active;
-    tabId = (tab.hasOwnProperty('id')?tab.id:-1);
-    windowId = tab.windowId;
-    saveAction("tabs.onUpdated",value,changeInfo,now);
-    savePQ(Url,title,active,tabId,windowId,now);
-  });
+  
 });
 
 // chrome.tabs.onZoomChange.addListener(function(ZoomChangeInfo){
@@ -303,15 +375,28 @@ chrome.windows.onFocusChanged.addListener(function(windowId){
 // TODO: Multiple calls per page sometimes?
 chrome.webNavigation.onCommitted.addListener(function(details){
   var now = new Date();
-  chrome.tabs.get(details.tabId, function(tab){
+  if (details.transitionType.indexOf('auto') == -1){
+    chrome.tabs.get(details.tabId, function(tab){
     Url = (tab.hasOwnProperty('url')?tab.url:"");
     title = (tab.hasOwnProperty('title')?tab.title:"");
     active = tab.active;
     tabId = (tab.hasOwnProperty('id')?tab.id:-1);
     windowId = tab.windowId;
-    saveAction("webNavigation.onCommitted",details.tabId,details,now);
-    savePQ(Url,title,active,tabId,windowId,now);
+    details.tab = tab;
+
+    chrome.tabs.executeScript(
+        tabId,
+        { code: "document.referrer;" },
+        function(result) {
+          details.referrerInfo = result;
+          saveAction("webNavigation.onCommitted",details.tabId,details,now);
+          savePQ(Url,title,active,tabId,windowId,now);
+        }
+      );
+    
   });
+  }
+  
 });
 
 // TODO: Can't use?
