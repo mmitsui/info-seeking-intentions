@@ -173,14 +173,15 @@ if(isset($_GET['action'])){
         exit();
     }else if($action=='markQuerySegmentsAndIntentions'){
 
+        $querySegmentID = $_POST['querySegmentID'];
         $pageIDs = postInputAsArray($_POST['pages']);
         $queryIDs = postInputAsArray($_POST['queries']);
 
         if(count($pageIDs) == 0 && count($queryIDs) == 0){
             echo json_encode(array('error'=>true,'message'=>'No selection given.'));
         }else{
-            $querySegmentID = makeNextQuerySegmentID($userID,$startTimestamp);
-            markQuerySegmentID($userID,$querySegmentID,$pageIDs,$queryIDs);
+//            $querySegmentID = makeNextQuerySegmentID($userID,$startTimestamp);
+//            markQuerySegmentID($userID,$querySegmentID,$pageIDs,$queryIDs);
             $checkedIntentions = $_POST['intentions'];
 
             markIntentions($userID,$querySegmentID,$checkedIntentions,$_POST);

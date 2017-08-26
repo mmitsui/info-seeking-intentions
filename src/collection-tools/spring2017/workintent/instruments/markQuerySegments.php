@@ -134,6 +134,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
             var intents_form_id= '#intentions_form';
             var begin_index = -1;
             var end_index = -1;
+            var query_segment_id = -1;
 //            var slider_id = '#querysegment_slider';
 //            var slider_params = {
 //                reversed : false,
@@ -221,16 +222,17 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                     $("button[name='begin_button']").removeClass('active');
                     if($(this).hasClass('active')){
                         $("button[name='begin_button']").removeClass('active');
-                        $("button[name='begin_button']").show();
+//                        $("button[name='begin_button']").show();
                     }else{
                         $("button[name='begin_button']").removeClass('active');
-                        $("button[name='begin_button']").hide();
+//                        $("button[name='begin_button']").hide();
                         $(this).addClass('active');
                         $(this).show();
 
                     }
 
                     begin_index = $(this).data('table-index');
+                    query_segment_id = $(this).data('query-segment-id');
                 }else if($(this).attr("name")=='end_button'){
                     $("button[name='end_button']").removeClass('active');
 
@@ -246,45 +248,80 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                     }
 
                     end_index = $(this).data('table-index');
+
                 }
 
-                if(begin_index != -1 && end_index != -1){
+                console.log(query_segment_id);
+                if(query_segment_id != -1){
                     $("button[name='intent_modal_button']").fadeIn("slow");
                     $(querysegment_form_id+" input[type='checkbox']").filter(function() {
-                        return ($(this).data('table-index') >= begin_index && $(this).data('table-index') <= end_index);
+                        return ($(this).data('query-segment-id') == query_segment_id );
                     }).prop( "checked", true );
 
+
+//                    $(querysegment_form_id+" input[type='checkbox']").filter(function() {
+//                        alert ($(this).data('query-segment-id') == query_segment_id );
+//                    })
+                    $(querysegment_form_id+" tr").removeClass('bg-success');
+                    $(querysegment_form_id+" tr[data-query-segment-id='"+query_segment_id+"']").addClass('bg-success');
+                    console.log($(querysegment_form_id+" tr"));
+                    console.log($(querysegment_form_id+" tr[data-query-segment-id='"+query_segment_id+"']"));
+
                     $(querysegment_form_id+" input[type='checkbox']").filter(function() {
-                        return ($(this).data('table-index') < begin_index || $(this).data('table-index') > end_index);
+                        return ($(this).data('query-segment-id') != query_segment_id );
                     }).prop( "checked", false );
 
                 }else{
                     $("button[name='intent_modal_button']").fadeOut("slow");
-                    if(begin_index != -1){
-                        $(querysegment_form_id+" input[type='checkbox']").filter(function() {
-                            return ($(this).data('table-index') == begin_index);
-                        }).prop( "checked", true );
+                    $(querysegment_form_id+" input[type='checkbox']").filter(function() {
+                        return ($(this).data('query-segment-id') == query_segment_id );
+                    }).prop( "checked", true );
 
-                        $(querysegment_form_id+" input[type='checkbox']").filter(function() {
-                            return ($(this).data('table-index') != begin_index);
-                        }).prop( "checked", false );
+                    $(querysegment_form_id+" tr").removeClass('bg-success');
+                    $(querysegment_form_id+" tr[data-query-segment-id='"+query_segment_id+"']").addClass('bg-success');
 
-                    }else if(end_index != -1){
-                        $(querysegment_form_id+" input[type='checkbox']").filter(function() {
-                            return ($(this).data('table-index') == end_index);
-                        }).prop( "checked", true );
-
-                        $(querysegment_form_id+" input[type='checkbox']").filter(function() {
-                            return ($(this).data('table-index') != end_index);
-                        }).prop( "checked", false );
-
-                    }else{
-                        $(querysegment_form_id+" input[type='checkbox']").filter(function() {
-                            return true;
-                        }).prop( "checked", false );
-
-                    }
+                    $(querysegment_form_id+" input[type='checkbox']").filter(function() {
+                        return ($(this).data('query-segment-id') != query_segment_id );
+                    }).prop( "checked", false );
                 }
+
+//                if(begin_index != -1 && end_index != -1){
+//                    $("button[name='intent_modal_button']").fadeIn("slow");
+//                    $(querysegment_form_id+" input[type='checkbox']").filter(function() {
+//                        return ($(this).data('table-index') >= begin_index && $(this).data('table-index') <= end_index);
+//                    }).prop( "checked", true );
+//
+//                    $(querysegment_form_id+" input[type='checkbox']").filter(function() {
+//                        return ($(this).data('table-index') < begin_index || $(this).data('table-index') > end_index);
+//                    }).prop( "checked", false );
+//
+//                }else{
+//                    $("button[name='intent_modal_button']").fadeOut("slow");
+//                    if(begin_index != -1){
+//                        $(querysegment_form_id+" input[type='checkbox']").filter(function() {
+//                            return ($(this).data('table-index') == begin_index);
+//                        }).prop( "checked", true );
+//
+//                        $(querysegment_form_id+" input[type='checkbox']").filter(function() {
+//                            return ($(this).data('table-index') != begin_index);
+//                        }).prop( "checked", false );
+//
+//                    }else if(end_index != -1){
+//                        $(querysegment_form_id+" input[type='checkbox']").filter(function() {
+//                            return ($(this).data('table-index') == end_index);
+//                        }).prop( "checked", true );
+//
+//                        $(querysegment_form_id+" input[type='checkbox']").filter(function() {
+//                            return ($(this).data('table-index') != end_index);
+//                        }).prop( "checked", false );
+//
+//                    }else{
+//                        $(querysegment_form_id+" input[type='checkbox']").filter(function() {
+//                            return true;
+//                        }).prop( "checked", false );
+//
+//                    }
+//                }
             }
 
 
@@ -321,8 +358,9 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
             var mark_intentions_button_function = function(ev){
 
                 ev.preventDefault()// cancel form submission
-                var formData = $(querysegment_form_id).serialize()+"&"+$(intents_form_id).serialize();
+                var formData = $(querysegment_form_id).serialize()+"&"+$(intents_form_id).serialize()+"&querySegmentID="+query_segment_id;
 
+                alert(formData);
                 if($(this).attr("value")=="mark_intentions_button"){
 
                     $.ajax({

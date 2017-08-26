@@ -321,7 +321,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
           changeInfo.referrerInfo = result;
 
           saveAction("tabs.onUpdated",value,changeInfo,now);
-          // savePQ(Url,title,active,tabId,windowId,now);
+          savePQ(Url,title,active,tabId,windowId,now,changeInfo);
         }
       );
 
@@ -376,6 +376,7 @@ chrome.windows.onFocusChanged.addListener(function(windowId){
 // TODO: Multiple calls per page sometimes?
 chrome.webNavigation.onCommitted.addListener(function(details){
   var now = new Date();
+
   if (details.transitionType.indexOf('auto') == -1){
     chrome.tabs.get(details.tabId, function(tab){
     Url = (tab.hasOwnProperty('url')?tab.url:"");
