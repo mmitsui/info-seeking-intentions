@@ -30,10 +30,16 @@ function getItems($userID,$startTimestamp,$endTimestamp,$type,$trash=0,$sessionI
             $querySegmentID_querysegment = "and querySegmentID=$querySegmentID";
         }
     }
+
+    $noisquerypages = '';
+    if($type=='pages'){
+        $noisquerypages ="and is_query=0";
+    }
+
     $startTimestampMillis = $startTimestamp * 1000.0;
     $endTimestampMillis = $endTimestamp * 1000.0;
 
-    $query = "SELECT * FROM $table WHERE userID=$userID AND `is_coagmento`=0 AND `localTimestamp` >= $startTimestampMillis AND `localTimestamp` <= $endTimestampMillis AND `trash`='$trash' AND `permanently_delete`=0 $sessionID_querysegment $querySegmentID_querysegment ORDER BY `localTimestamp` ASC";
+    $query = "SELECT * FROM $table WHERE userID=$userID AND `is_coagmento`=0 AND `localTimestamp` >= $startTimestampMillis AND `localTimestamp` <= $endTimestampMillis AND `trash`='$trash' AND `permanently_delete`=0 $sessionID_querysegment $querySegmentID_querysegment $noisquerypages ORDER BY `localTimestamp` ASC";
     $cxn = Connection::getInstance();
     $results = $cxn->commit($query);
     $rows = array();
@@ -61,13 +67,19 @@ function getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,$trash
     $lastpage = null;
     $lastquery = null;
 
-    while($index_pages < count($pages) and $index_queries < count($queries)){
+    while($index_pages < count($pages) and $index_queries < count($queries)) {
         $lastpage = $pages[$index_pages];
         $lastquery = $queries[$index_queries];
-        if($lastpage['localTimestamp'] < $lastquery['localTimestamp']){
+        if ($lastpage['localTimestamp'] < $lastquery['localTimestamp']) {
             $interleaved_objects[] = $lastpage;
-            $interleaved_objects[count($interleaved_objects)-1]['type'] = 'page';
-            $interleaved_objects[count($interleaved_objects)-1]['id'] = $lastpage['pageID'];
+            $interleaved_objects[count($interleaved_objects) - 1]['type'] = 'page';
+            $interleaved_objects[count($interleaved_objects) - 1]['id'] = $lastpage['pageID'];
+            $index_pages += 1;
+        }else if(($lastpage['localTimestamp'] == $lastquery['localTimestamp'])and ($lastpage['url'] == $lastquery['url'])){
+            $interleaved_objects[] = $lastquery;
+            $interleaved_objects[count($interleaved_objects)-1]['type'] = 'query';
+            $interleaved_objects[count($interleaved_objects)-1]['id'] = $lastquery['queryID'];
+            $index_queries += 1;
             $index_pages += 1;
         }else{
             $interleaved_objects[] = $lastquery;
@@ -255,7 +267,7 @@ function getSessionTables($userID,$startTimestamp,$endTimestamp){
                                 <tr>
                                     <th >Time</th>
                                     <th >Type</th>
-                                    <th >Mark</th>
+                                    <th >Annotate</th>
                                     <th >Session</th>
                                     <th >Title/Query</th>
                                     <th >Domain</th>
@@ -272,6 +284,14 @@ function getSessionTables($userID,$startTimestamp,$endTimestamp){
 
 
 
+
+        $sessionIDToLabel = array();
+        $query = "SELECT * FROM session_labels_user WHERE userID=$userID";
+        $cxn = Connection::getInstance();
+        $result = $cxn->commit($query);
+        while($line = mysql_fetch_array($result,MYSQL_ASSOC)){
+            $sessionIDToLabel[$line['id']] = $line['sessionLabel'];
+        }
 
         foreach($pages as $page){
             $session_table .= "<tr >";
@@ -291,10 +311,12 @@ function getSessionTables($userID,$startTimestamp,$endTimestamp){
             $session_table .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
             $begin_button = "<button name=\"begin_button\" data-table-index=\"$table_index\" type=\"button\" class=\"btn btn-success\">Begin</button>";
             $end_button = "<button name=\"end_button\" data-table-index=\"$table_index\" type=\"button\" class=\"btn btn-danger\">End</button>";
-            $session_table .= "<td><input data-table-index=\"$table_index\" type=\"checkbox\" name='$name' value='$value'> $begin_button $end_button </td>";
+            $session_table .= "<td><input data-table-index=\"$table_index\" type=\"checkbox\" name='$name' value='$value' style='display:none'> $begin_button $end_button </td>";
 //        $session_table .="<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>";
 
-            $session_table .="<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
+
+
+            $session_table .="<td>".(isset($page['sessionID']) ?$sessionIDToLabel[$page['sessionID']] : "")."</td>";
 
             $session_table .= "<td name=\"title_$table_index\"><span title='".(isset($page['title'])?htmlentities($page['title']):"")."'>".(isset($page['title'])?substr($page['title'],0,60)."...":"")."</span></td>";
             $session_table .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
@@ -310,7 +332,7 @@ function getSessionTables($userID,$startTimestamp,$endTimestamp){
         $session_table .= "<input type=\"hidden\" name=\"userID\" value='$userID'/>";
         $session_table .= "<input type=\"hidden\" name=\"startTimestamp\" value='$startTimestamp'/>";
         $session_table .= "<input type=\"hidden\" name=\"endTimestamp\" <?php echo value='$endTimestamp'/>";
-        $session_table .= "<button type=\"button\" name=\"mark_session_button\" value=\"mark_session_button\" class=\"btn btn-success\">Mark Session</button>";
+        $session_table .= "<button type=\"button\" name=\"mark_session_button\" value=\"mark_session_button\" class=\"btn btn-success\">Annotate Session</button>";
         $session_table .= "</center>";
         $session_table .= "</div>";
 
@@ -406,7 +428,7 @@ function printTutorialModal(){
 
 
 
-                    <p><u><strong>Mark Query Segments And Intentions</strong></u></p>
+                    <p><u><strong>Annotate Query Segments And Intentions</strong></u></p>
                     <ul>
                         <li>Next you must assign intentions to each query segment.</li>
                         <li>You may first need to mark query segments within sessions.  Recall that each session is composed of one or more query segments pertaining to the same task.</li>

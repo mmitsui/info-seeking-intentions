@@ -36,11 +36,285 @@ function getTasks($userID){
     return $rows;
 }
 
+function getSessionIDByTaskID($userID,$taskID){
 
+    $query = "";
+    if(is_null($taskID)){
+        $query = "SELECT * FROM pages WHERE userID=$userID AND taskID IS NULL AND sessionID IS NOT NULL GROUP BY sessionID";
+    }else{
+        $query = "SELECT * FROM pages WHERE userID=$userID AND taskID=$taskID AND sessionID IS NOT NULL GROUP BY sessionID";
+    }
+
+    $cxn = Connection::getInstance();
+    $result = $cxn->commit($query);
+    $sessionIDs = array();
+    while($row = mysql_fetch_array($result,MYSQL_ASSOC))
+    {
+        $sessionIDs[] = $row['sessionID'];
+    }
+
+    return $sessionIDs;
+}
+
+function getTasksForDay($userID,$startTimestamp){
+    $endTimestamp = $startTimestamp+86400;
+    $startTimestamp_millis = $startTimestamp * 1000;
+    $endTimestamp_millis = $endTimestamp * 1000;
+    $query = "SELECT taskID FROM pages WHERE taskID IS NOT NULL AND `localTimestamp` >= $startTimestamp_millis AND `localTimestamp` <= $endTimestamp_millis";
+    $cxn = Connection::getInstance();
+    $result = $cxn->commit($query);
+    $taskIDs = array();
+    while($row = mysql_fetch_array($result,MYSQL_ASSOC))
+    {
+        $taskIDs[] = $row['taskID'];
+    }
+
+
+    if(count($taskIDs) > 0){
+        $query = "SELECT * FROM task_labels_user WHERE userID=$userID AND taskID IN (".implode(",",$taskIDs).")";
+        $cxn = Connection::getInstance();
+        $result = $cxn->commit($query);
+        $rows = array();
+        while($row = mysql_fetch_array($result,MYSQL_ASSOC))
+        {
+            $rows[] = $row;
+        }
+        return $rows;
+
+    }else{
+        return null;
+    }
+
+}
+
+function getTaskByName($userID,$taskName){
+    $query = "SELECT * FROM task_labels_user WHERE userID=$userID AND deleted != 1 AND taskName='$taskName' ORDER BY taskID ASC";
+    $cxn = Connection::getInstance();
+    $result = $cxn->commit($query);
+
+    if(mysql_num_rows($result) > 0){
+        return mysql_fetch_array($result,MYSQL_ASSOC);
+    }else{
+        return null;
+    }
+
+}
+
+function getQuerySegmentsForSession($userID,$sessionID){
+    $query = "SELECT querySegmentID FROM pages WHERE userID=$userID AND sessionID=$sessionID AND querySegmentID IS NOT NULL GROUP BY querySegmentID";
+    $cxn = Connection::getInstance();
+    $result = $cxn->commit($query);
+    $rows = array();
+    while($line = mysql_fetch_array($result,MYSQL_ASSOC)){
+        $rows[] = $line['querySegmentID'];
+    }
+    return $rows;
+}
+
+function getIntentsForQuerySegmentID($userID,$querySegmentID){
+
+    $intentions = array(
+        'id_start'=>'Identify something to get started',
+        'id_more'=>'Identify more to search',
+//        'learn_feature'=>'Learn system feature',
+//        'learn_structure'=>'Learn system structure',
+        'learn_domain'=>'Learn domain knowledge',
+        'learn_database'=>'Learn database content',
+        'find_known'=>'Find a known item',
+        'find_specific'=>'Find specific information',
+        'find_common'=>'Find items sharing a named characteristic',
+        'find_without'=>'Find items without predefined criteria',
+//        'locate_specific'=>'Locate a specific item',
+//        'locate_common'=>'Locate items with common characteristics',
+//        'locate_area'=>'Locate an area/location',
+//        'keep_bibliographical'=>'Keep record of bibliographical information',
+        'keep_link'=>'Keep record of link',
+//        'keep_item'=>'Note item for return',
+        'access_item'=>'Access a specific item',
+        'access_common'=>'Access items with common characteristics',
+        'access_area'=>'Access a web site/home page or similar',
+        'evaluate_correctness'=>'Evaluate correctness of an item',
+        'evaluate_specificity'=>'Evaluate specificity of an item',
+        'evaluate_usefulness'=>'Evaluate usefulness of an item',
+        'evaluate_best'=>'Pick best item(s) from all the useful ones',
+        'evaluate_duplication'=>'Evaluate duplication of an item',
+        'obtain_specific'=>'Obtain specific information',
+        'obtain_part'=>'Obtain part of the item',
+        'obtain_whole'=>'Obtain a whole item(s)',
+        'other'=>'Other'
+
+    );
+
+
+
+    $query = "SELECT * FROM intent_assignments WHERE userID=$userID AND querySegmentID=$querySegmentID";
+    $cxn = Connection::getInstance();
+    $result = $cxn->commit($query);
+    $line = mysql_fetch_array($result,MYSQL_ASSOC);
+    $yesintents = array();
+    foreach($intentions as $key=>$value){
+        if($line[$key]==1){
+            $yesintents[] = $value;
+        }
+    }
+
+    return $yesintents;
+
+}
+
+
+
+function getTaskInformationPanels($userID,$startTimestamp,$endTimestamp){
+    $taskIDNameMap = getTaskIDNameMap($userID);
+    $sessionIDs = getSessionIDs($userID,$startTimestamp,$endTimestamp);
+
+    $sessionIDToLabel = array();
+    $query = "SELECT * FROM session_labels_user WHERE userID=$userID";
+    $cxn = Connection::getInstance();
+    $result = $cxn->commit($query);
+    while($line = mysql_fetch_array($result,MYSQL_ASSOC)){
+        $sessionIDToLabel[$line['id']] = $line['sessionLabel'];
+    }
+    $tasksForDay = getTasksForDay($userID,$startTimestamp);
+    array_push($tasksForDay,array('taskName'=>'UNASSIGNED TO TASK','taskID'=>null));
+
+
+    $display = "";
+    if(count($tasksForDay)==0){
+        $session_panels_html = "<center><h3 class='bg-danger'>You no tasks for the day.  Please go back and mark some.</h3></center>";
+    }else{
+        foreach($tasksForDay as $taskInformation){
+
+
+
+
+            $sessionIDs = getSessionIDByTaskID($userID,$taskInformation['taskID']);
+
+            if(count($sessionIDs)==0){
+                continue;
+            }
+
+            $display .= "<div class=\"panel panel-success\">\n";
+            $display .= "<div class=\"panel-heading\">\n";
+            $test = "<ul><li>one</li><li>two</li></ul>";
+            $display .= "<center><h3>Task: ".$taskInformation['taskName']."</h3></center>";
+            $display .= "</div>";
+
+            $display .= "<div class=\"panel-body\">\n";
+
+            foreach($sessionIDs as $sessionID) {
+                if (!is_null($sessionID)) {
+
+                    $sessionLabel = $sessionIDToLabel[$sessionID];
+                    $pagesQueries = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0,$sessionID);
+
+                    $pages =$pagesQueries;
+                    if(count($pages)==0){
+                        continue;
+                    }
+
+
+                    $display .= "<div class=\"panel panel-primary\">\n";
+                    $display .= "<div class=\"panel-heading\">\n";
+                    $display .= "<center>\n";
+                    $display .= "Session $sessionLabel\n";
+//                $display .= "<button type=\"button\" class=\"btn btn-info\" data-toggle=\"collapse\" data-target=\"#session_panel_$sessionID\">Session $sessionID (Show/Hide)</button>\n";
+
+                    $querySegmentIDs = getQuerySegmentsForSession($userID,$sessionID);
+
+                    $display .= "<br/><br/># Query Segments:\n".count($querySegmentIDs);
+
+                    $display .= "<br/><br/>";
+
+                    foreach($querySegmentIDs as $querySegmentID){
+                        $display .= "<ul> Query Segment $querySegmentID";
+
+                        $intents = getIntentsForQuerySegmentID($userID,$querySegmentID);
+                        if(count($intents)>0){
+                            foreach($intents as $intent){
+                                $display .= "<li>";
+                                $display .= "$intent";
+                                $display .= "</li>";
+                            }
+
+                        }else{
+                            $display .= "<br/>No Intentions";
+                        }
+
+                        $display .= "</ul>";
+                    }
+
+
+                    $display .= "</center>\n";
+                    $display .= "</div>\n";
+
+
+                    $display .= "<form id=\"task_form_$sessionID\" action=\"../services/utils/runPageQueryUtils.php?action=markTask\">\n";
+                    $display .= "<div class=\"panel-body\" id=\"session_panel_$sessionID\">\n";
+
+//                $display .= "<div class=\"panel-body collapse\" id=\"session_panel_$sessionID\">\n";
+                    $display .= "<div class=\"tab-pane\">\n";
+                    $display .= "<table class=\"table table-bordered table-striped table-fixed \">\n";
+                    $display .= "<thead>\n";
+                    $display .= "<tr>\n";
+                    $display .= "<th >Time</th>\n";
+                    $display .= "<th >Type</th>\n";
+                    $display .= "<th >Task</th>\n";
+                    $display .= "<th >Title/Query</th>\n";
+                    $display .= "<th >URL</th>\n";
+                    $display .= "</tr>\n";
+                    $display .= "</thead>\n";
+                    $display .= "<tbody>\n";
+
+
+//            echo "SESSIONID".$sessionID."COUNT".count($pages);
+                    foreach($pages as $page) {
+                        $display .= "<tr >\n";
+                        $display .= "<td>".(isset($page['time'])?$page['time']:"")."</td>";
+
+                        $color = '';
+                        if($page['type']=='page'){
+                            $color = 'class="warning"';
+                        }else{
+                            $color = 'class="info"';
+                        }
+
+                        $display .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
+                        $display .= "<td >".(isset($page['taskID'])? $taskIDNameMap[$page['taskID']] :"")."</td>\n";
+                        $display .= "<td><span title='".(isset($page['title'])?$page['title']:"")."'>".(isset($page['title'])?substr($page['title'],0,60)."...":"")."</span></td>";
+                        $display .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
+                        $display .= "</tr>\n";
+                    }
+                    $display .= "</tbody>\n";
+                    $display .= "</table>\n";
+                    $display .= "</div>\n";
+                    $display .= "</div>\n";
+                    $display .= "</div>\n";
+
+                }
+            }
+            $display .= "</div>";
+            $display .= "</div>\n";
+        }
+    }
+
+    return $display;
+
+}
 function getMarkTasksPanels($userID,$startTimestamp,$endTimestamp){
     $taskIDNameMap = getTaskIDNameMap($userID);
     $sessionIDs = getSessionIDs($userID,$startTimestamp,$endTimestamp);
     $session_panels = array();
+
+    $sessionIDToLabel = array();
+    $query = "SELECT * FROM session_labels_user WHERE userID=$userID";
+    $cxn = Connection::getInstance();
+    $result = $cxn->commit($query);
+    while($line = mysql_fetch_array($result,MYSQL_ASSOC)){
+        $sessionIDToLabel[$line['id']] = $line['sessionLabel'];
+    }
+
+
     $session_panels_html = "";
     if(count($sessionIDs)==0 or (count($sessionIDs)==1 and in_array(null,$sessionIDs))){
         $session_panels_html = "<center><h3 class='bg-danger'>You have marked no sessions. Please go back and mark some.</h3></center>";
@@ -48,6 +322,7 @@ function getMarkTasksPanels($userID,$startTimestamp,$endTimestamp){
     else{
         foreach($sessionIDs as $sessionID){
             if(!is_null($sessionID)){
+                $sessionLabel = $sessionIDToLabel[$sessionID];
                 $pagesQueries = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0,$sessionID);
 
                 $pages =$pagesQueries;
@@ -56,7 +331,7 @@ function getMarkTasksPanels($userID,$startTimestamp,$endTimestamp){
                 $session_panels[$sessionID] = "<div class=\"panel panel-primary\">\n";
                 $session_panels[$sessionID] .= "<div class=\"panel-heading\">\n";
                 $session_panels[$sessionID] .= "<center>\n";
-                $session_panels[$sessionID] .= "<input type=\"checkbox\" name=\"sessionIDs[]\" id=\"sessionID_checkbox_$sessionID\" value=\"$sessionID\"> Session $sessionID - Select for Annotation\n";
+                $session_panels[$sessionID] .= "<input type=\"checkbox\" name=\"sessionIDs[]\" id=\"sessionID_checkbox_$sessionID\" value=\"$sessionID\"> Session $sessionLabel - Select for Annotation\n";
 //                $session_panels[$sessionID] .= "<button type=\"button\" class=\"btn btn-info\" data-toggle=\"collapse\" data-target=\"#session_panel_$sessionID\">Session $sessionID (Show/Hide)</button>\n";
                 if(count($pages) > 0){
                     $all_marked = true;
@@ -148,7 +423,9 @@ function getMarkTasksPanels($userID,$startTimestamp,$endTimestamp){
         $null_panel .= "</div>";
 
         $null_panel .= "<div class=\"panel-body collapse\" id=\"session_panel_null\">\n";
-        $null_panel .= "<center><h3 class=\"bg-danger\">Please assign these to a session</h3></center>";
+        $null_panel .= "<center><h3 class=\"bg-danger\">Please review these items</h3></center>";
+
+//        $null_panel .= "<center><h3 class=\"bg-danger\">Please assign these to a session</h3></center>";
         $null_panel .= "<div class=\"tab-pane\">\n";
 
         $null_panel .= "<table class=\"table table-bordered table-striped table-fixed \">\n";
@@ -233,16 +510,17 @@ function getTasksPanel($userID,$startTimestamp,$endTimestamp){
 
 }
 
-function makeNextSessionID($userID,$startTimestamp){
+function makeNextSessionLabel($userID,$startTimestamp){
     $date = date('Y-m-d', $startTimestamp);
-    $query = "SELECT IFNULL(MAX(sessionID),0) as maxSessionID FROM session_labels_user WHERE userID=$userID AND `date`='$date'";
+    $query = "SELECT IFNULL(MAX(sessionLabel),0) as maxSessionID FROM session_labels_user WHERE userID=$userID AND `date`='$date'";
     $cxn = Connection::getInstance();
     $result = $cxn->commit($query);
     $line = mysql_fetch_array($result,MYSQL_ASSOC);
     $sessionID = $line['maxSessionID']+1;
-    $query = "INSERT INTO session_labels_user (`userID`,`projectID`,`sessionID`,`deleted`,`date`) VALUES ('$userID','$userID','$sessionID',0,'$date')";
+    $query = "INSERT INTO session_labels_user (`userID`,`projectID`,`sessionLabel`,`deleted`,`date`) VALUES ('$userID','$userID','$sessionID',0,'$date')";
     $cxn->commit($query);
-    return $sessionID;
+    return $cxn->getLastID();
+//    return $sessionID;
 }
 
 function markSessionID($userID,$sessionID,$pageIDs,$queryIDs){

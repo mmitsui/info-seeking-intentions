@@ -8,6 +8,14 @@ function getQuerySegmentTables($userID,$startTimestamp,$endTimestamp){
 
     $sessionIDs = getSessionIDs($userID,$startTimestamp,$endTimestamp);
 
+    $sessionIDToLabel = array();
+    $query = "SELECT * FROM session_labels_user WHERE userID=$userID";
+    $cxn = Connection::getInstance();
+    $result = $cxn->commit($query);
+    while($line = mysql_fetch_array($result,MYSQL_ASSOC)){
+        $sessionIDToLabel[$line['id']] = $line['sessionLabel'];
+    }
+
     $pagesQueries = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0,-1);
     $pages =$pagesQueries;
     $table_index = 0;
@@ -23,6 +31,15 @@ function getQuerySegmentTables($userID,$startTimestamp,$endTimestamp){
         $querySegmentToIntent[$line['querySegmentID']] = $line['assignmentID'];
     }
 
+    $querySegmentIDToLabel = array();
+
+    $query = "SELECT * FROM querysegment_labels_user WHERE userID=$userID";
+    $cxn = Connection::getInstance();
+    $result = $cxn->commit($query);
+    while($line = mysql_fetch_array($result,MYSQL_ASSOC)){
+        $querySegmentIDToLabel[$line['id']] = $line['querySegmentLabel'];
+    }
+
 
     if(count($pages)<=0){
         $query_segment_table = '<center><h3 class=\'bg-danger\'>You logged no activity. Please search and browse.</h3></center>';
@@ -31,12 +48,13 @@ function getQuerySegmentTables($userID,$startTimestamp,$endTimestamp){
 
         foreach($sessionIDs as $sessionID) {
             if(!is_null($sessionID)){
+                $sessionLabel = $sessionIDToLabel[$sessionID];
                 $pq_session = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0,$sessionID);
 
                 $query_segment_tablemap[$sessionID] = "<div class=\"panel panel-primary\">\n";
                 $query_segment_tablemap[$sessionID] .= "<div class=\"panel-heading\">\n";
                 $query_segment_tablemap[$sessionID] .= "<center>\n";
-                $query_segment_tablemap[$sessionID] .= "Session $sessionID";
+                $query_segment_tablemap[$sessionID] .= "Session $sessionLabel";
                 $query_segment_tablemap[$sessionID] .= "</center>\n";
                 $query_segment_tablemap[$sessionID] .= "</div>\n";
 //
@@ -48,9 +66,8 @@ function getQuerySegmentTables($userID,$startTimestamp,$endTimestamp){
                                 <tr>
                                     <th >Time</th>
                                     <th >Type</th>
-                                    <th >Mark</th>
+                                    <th >Annotate</th>
                                     <th >Marked?</th>
-                                    <th >Session</th>
                                     <th >Query Segment</th>
                                     <th >Title/Query</th>
                                     <th >Domain</th>
@@ -63,6 +80,10 @@ function getQuerySegmentTables($userID,$startTimestamp,$endTimestamp){
                                 <tbody>";
                 foreach($pq_session as $page){
                     $querySegmentID = $page['querySegmentID'];
+                    $querySegmentLabel = $querySegmentIDToLabel[$querySegmentID ];
+
+
+
 
                     $query_segment_tablemap[$sessionID] .= "<tr data-query-segment-id='$querySegmentID'>";
                     $query_segment_tablemap[$sessionID] .="<td name=\"time_$table_index\">".(isset($page['time'])?$page['time']:"")."</td>";
@@ -80,8 +101,9 @@ function getQuerySegmentTables($userID,$startTimestamp,$endTimestamp){
 
                     $query_segment_tablemap[$sessionID] .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
                     $begin_button = "";
-                    if(!in_array($querySegmentID,$querySegmentIDs_done) and !is_null($querySegmentID)){
+                    if(!in_array($querySegmentID,$querySegmentIDs_done) and !is_null($querySegmentID) and ($page['type']=='query')){
                         $begin_button = "<button name=\"begin_button\" data-query-segment-id=\"$querySegmentID\" data-table-index=\"$table_index\" type=\"button\" class=\"btn btn-success\">Mark Intentions</button>";
+                        array_push($querySegmentIDs_done,$querySegmentID);
                     }
 
                     $end_button = '';
@@ -89,8 +111,8 @@ function getQuerySegmentTables($userID,$startTimestamp,$endTimestamp){
                     $query_segment_tablemap[$sessionID] .= "<td><input  data-table-index=\"$table_index\" data-query-segment-id='$querySegmentID' type=\"checkbox\" name='$name' value='$value' style='display:none'> $begin_button $end_button </td>";
                     $query_segment_tablemap[$sessionID] .="<td>".(isset($querySegmentToIntent[$querySegmentID]) ?"<i class=\"fa fa-check\" aria-hidden=\"true\"></i>" : "")."</td>";
 //        $query_segment_table .="<td>".(isset($page['taskID'])? $page['taskID'] :"")."</td>";
-                    $query_segment_tablemap[$sessionID] .="<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
-                    $query_segment_tablemap[$sessionID] .="<td>".(isset($page['querySegmentID']) ?$page['querySegmentID'] : "")."</td>";
+//                    $query_segment_tablemap[$sessionID] .="<td>".(isset($page['sessionID']) ?$page['sessionID'] : "")."</td>";
+                    $query_segment_tablemap[$sessionID] .="<td>".(isset($page['querySegmentID']) ?$querySegmentLabel : "")."</td>";
                     $query_segment_tablemap[$sessionID] .= "<td name=\"title_$table_index\"><span title='".(isset($page['title'])?$page['title']:"")."'>".(isset($page['title'])?substr($page['title'],0,50)."...":"")."</span></td>";
                     $query_segment_tablemap[$sessionID] .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
                     $table_index += 1;
@@ -99,7 +121,7 @@ function getQuerySegmentTables($userID,$startTimestamp,$endTimestamp){
 
 
                     $query_segment_tablemap[$sessionID] .= "</tr >";
-                    array_push($querySegmentIDs_done,$querySegmentID);
+
 
                 }
                 $query_segment_tablemap[$sessionID] .= "</tbody>\n";
@@ -214,7 +236,7 @@ function getQuerySegmentTables($userID,$startTimestamp,$endTimestamp){
 
 function makeNextQuerySegmentID($userID,$startTimestamp){
     $date = date('Y-m-d', $startTimestamp);
-    $query = "SELECT IFNULL(MAX(querySegmentID),0) as maxQuerySegmentID FROM querysegment_labels_user WHERE userID='$userID' AND `date`='$date'";
+    $query = "SELECT IFNULL(MAX(querySegmentLabel),0) as maxQuerySegmentID FROM querysegment_labels_user WHERE userID='$userID' AND `date`='$date'";
 //    $query = "SELECT IFNULL(MAX(querySegmentID),0) as maxQuerySegmentID FROM querysegment_labels_user WHERE userID=$userID";
     $cxn = Connection::getInstance();
     $result = $cxn->commit($query);

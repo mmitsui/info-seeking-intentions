@@ -2,9 +2,9 @@
 "update_url": "https://clients2.google.com/service/update2/crx",
 
     "manifest_version" : 2,
-    "name" : "Workplace Study Extension - Pilot 5",
+    "name" : "Workplace Study Extension - ar",
     "description" : "Companion extension for Workplace Study, 2017.",
-    "version" : "1.0.4",
+    "version" : "1.0.6",
     "content_scripts": [],
     "background" : {
         "persistent": true,

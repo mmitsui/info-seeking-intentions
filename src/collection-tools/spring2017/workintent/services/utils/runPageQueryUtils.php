@@ -108,7 +108,7 @@ if(isset($_GET['action'])){
         if(count($pageIDs) == 0 && count($queryIDs) == 0){
             echo json_encode(array('error'=>true,'message'=>'No selection given.'));
         }else{
-            $sessionID = makeNextSessionID($userID,$startTimestamp);
+            $sessionID = makeNextSessionLabel($userID,$startTimestamp);
             markSessionID($userID,$sessionID,$pageIDs,$queryIDs);
             echo json_encode(getSessionTables($userID,$startTimestamp,$endTimestamp));
 
@@ -133,17 +133,23 @@ if(isset($_GET['action'])){
         if($taskName==''){
             echo json_encode(array('error'=>true,'message'=>'No task name given.'));
         }else{
-            $taskID = addTask($userID,$taskName);
-            $sessionIDs = postInputAsArray($_POST['sessionIDs']);
-            $message = '';
-            if(count($sessionIDs) > 0){
-                $message = 'Task has been added and assigned!';
-                markTaskID($userID,$sessionIDs,$taskID);
+
+            if(!is_null(getTaskByName($userID,$_POST['taskName']))){
+                echo json_encode(array('error'=>true,'message'=>'This task has already been added.'));
             }else{
-                $message = 'Task has been added!';
+                $taskID = addTask($userID,$taskName);
+                $sessionIDs = postInputAsArray($_POST['sessionIDs']);
+                $message = '';
+                if(count($sessionIDs) > 0){
+                    $message = 'Task has been added and assigned!';
+                    markTaskID($userID,$sessionIDs,$taskID);
+                }else{
+                    $message = 'Task has been added!';
+                }
+
+                echo json_encode(array_merge(getMarkTasksPanels($userID,$startTimestamp,$endTimestamp),getTasksPanel($userID),array('message'=>$message)));
             }
 
-            echo json_encode(array_merge(getMarkTasksPanels($userID,$startTimestamp,$endTimestamp),getTasksPanel($userID),array('message'=>$message)));
         }
 //        if(count($sessionIDs) >= 1){
 //            markTaskID($userID,$sessionIDs,$taskID);

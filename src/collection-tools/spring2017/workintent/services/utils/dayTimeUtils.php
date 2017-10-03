@@ -45,13 +45,16 @@ function getStartEndTimestamp($startTimeSeconds = null){
     return array('startTime'=>$startTimeSeconds,'endTime'=>$startTimeSeconds+$SECONDSPERDAY);
 }
 
-function dayButtonStrings($startEndTimeArray, $url, $selectedTime = null){
+function dayButtonStrings($startEndTimeArray, $url, $selectedTime = null, $userID = null){
     $todayMignightSeconds = strtotime('today midnight');
     $buttonsArray = array();
     foreach($startEndTimeArray as $startEndElement){
         $startTimeSeconds = $startEndElement['startTime'];
         $endTimeSeconds = $startEndElement['endTime'];
         $href = $url."?startTime=$startTimeSeconds&endTime=$endTimeSeconds";
+        if(!is_null($userID)){
+            $href .= "&userID=".$userID;
+        }
         $date = getdate($startTimeSeconds);
         $weekday = substr($date['weekday'],0,3);
         $month = $date['month'];

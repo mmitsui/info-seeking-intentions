@@ -140,7 +140,7 @@
                             $('#trash_confirmation').fadeOut(3000);
                         }
                     }).fail(function(data) {
-                        alert("There was a server error.  Please try again later or contact mmitsui@scarletmail.rutgers.edu if you experience further issues.");
+                        alert("Communication to the server was temporarily lost. Pages were not restored. Please try again later or contact mmitsui@scarletmail.rutgers.edu if you experience further issues.");
                     });
                 }else if($(this).attr("value")=="permanently_delete_button"){
                     $.ajax({
@@ -169,7 +169,7 @@
 
 
                     }).fail(function(data) {
-                        alert("There was a server error.  Please try again later or contact mmitsui@scarletmail.rutgers.edu if you experience further issues.");
+                        alert("Communication to the server was temporarily lost. Pages were not permanently removed. Please try again later or contact mmitsui@scarletmail.rutgers.edu if you experience further issues.");
                     });
                 }
             };
@@ -211,7 +211,7 @@
 
 
                         }).fail(function(data) {
-                            alert("There was a server error.  Please try again later or contact mmitsui@scarletmail.rutgers.edu if you experience further issues.");
+                            alert("Communication to the server was temporarily lost. Pages were not moved to trash. Please try again later or contact mmitsui@scarletmail.rutgers.edu if you experience further issues.");
                         });
                     });
 
@@ -353,7 +353,7 @@
                         <center>
                             <?php
                             $actionUrls = actionUrls($selectedStartTimeSeconds);
-                            echo "<a type=\"button\" class=\"btn btn-info btn-lg\" href='".$actionUrls['sessions']."'>Mark Your Day's Sessions &raquo;</a>";
+                            echo "<a type=\"button\" class=\"btn btn-info btn-lg\" href='".$actionUrls['sessions']."'>Annotate Your Day's Sessions &raquo;</a>";
                             ?>
                         </center>
                     </div>

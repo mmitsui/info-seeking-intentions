@@ -71,10 +71,10 @@ if($num_recruits<=$recruit_limit && !$closed && !$section_closed)
         $().ready(function(){$("#spr2015_regform").validate({ignore:"",
             rules: {firstName_1: "required",
             lastName_1: "required",
-            age_1: {
-                required: true,
-                number: true
-            },
+//            age_1: {
+//                required: true,
+//                number: true
+//            },
             email1_1: {
                 required: true,
                 email: true
@@ -88,10 +88,10 @@ if($num_recruits<=$recruit_limit && !$closed && !$section_closed)
             messages: {
             firstName_1: {required:"<span style='color:red'>Please enter your first name.</span>"},
             lastName_1: {required:"<span style='color:red'>Please enter your last name.</span>"},
-            age_1: {
-                required:"<span style='color:red'>Please enter your age.</span>",
-                    number:"<span style='color:red'>Please enter a number.</span>"
-            },
+//            age_1: {
+//                required:"<span style='color:red'>Please enter your age.</span>",
+//                    number:"<span style='color:red'>Please enter a number.</span>"
+//            },
             email1_1: {
                 required: "<span style='color:red'>Please enter your e-mail address.</span>",
                     email: "<span style='color:red'>Please enter a valid e-mail address.</span>"
@@ -147,9 +147,10 @@ if($num_recruits<=$recruit_limit && !$closed && !$section_closed)
 			<tr>
 			  <td colspan=2>
 				<ul>
-				<li>Use this form to register for the paid research study on <em>Information Seeking Intentions</em>.</li>
+				<li>Use this form to register for the paid research study on <em>Search Intentions in Natural Settings</em>.</li>
 				<li>Please fill out the information below then click Submit.</li>
-				<li>You will receive a confirmation email within 24-48 hours with details about time, date, and location of your session.</li>
+                    <li>You will then receive a confirmation e-mail about completing an entry questionnaire.</li>
+				<li>Afterward the entry questionnaire, you will receive a confirmation email within 24-48 hours with details about downloading and installing the software for the study.</li>
 
 				<li><a href="mailto:mmitsui@scarletmail.rutgers.edu?subject=Study inquiry">Contact us</a> if you have any questions.</li>
 				</ul>
@@ -168,41 +169,63 @@ Registration
 								<td>
 
 
-                  <p>Welcome! This is the sign-up form to register for the paid research study.</p>
-                  <p>The research project, <em>Information Seeking Intentions</em>, funded by the National Science Foundation, seeks Journalism/Media Studies students as participants in a study of information seeking.
-                    Participants will conduct two searches in an experimental setting for information relating to different kinds of information search tasks related to journalism assignments.
-                    Each experimental session will last <strong>about two hours</strong>, and will be held in the Communication and Interaction Laboratory in the SC&I main building.
-                    Participants will be asked to complete a background questionnaire about each search task and assignment, and then conduct searches for information relating to the assignment.
-                    After each search session participants will be asked to evaluate the information that they found and explain their search intentions at selected points.
-                    Various aspects of their searching behavior will be recorded for subsequent analysis. </p>
+                                    <p>Welcome! This is the sign-up form to register for the paid research study.</p></div>
+                    <p>The research project,  <em>Search Intentions in Natural Settings</em>, funded by
+                        the National Science Foundation, seeks participants in a study of information
+                        seeking. Participants will conduct searches for their work in a naturalistic setting
+                        - i.e., their work environment - for information relating to different kinds of
+                        information search tasks related to their employment. Participants will first conduct
+                        an initial interview in which they are asked for demographic information, introduced
+                        to the study’s software, and asked about regular search tasks, lasting  <strong>about one hour</strong>.
+                        This will be followed by an experimental session. Participants will be asked to  <strong>record
+                            their searching activity over the course of five days</strong> and to annotate the tasks
+                        that they conduct which will take  <strong>about one hour each day</strong>, as well as to explain
+                        their search intentions at self-selected points during their tasks. Various aspects of their
+                        searching behavior will be recorded for subsequent analysis. The study will conclude with
+                        an exit interview, in which participants will be asked to analyze their search experiences
+                        and to give characterizations of the tasks they performed during the five days; this
+                        last session will last  <strong>about one hour</strong>.
 
-                  <p>All volunteers for this study will receive <strong>$30 cash</strong>
-                    for their participation, and <strong>exemplary participants will receive an additional $10</strong>.
-                    Taking part in this study will help to advance the understanding of the search process and
-                    contribute towards development of search systems that can automatically adapt to a user's specific search goals. </p>
+                    </p>
+
+                    <p>
+                        All volunteers for this study will receive  <strong>$100 cash</strong>  for their participation.
+                        Taking part in this study will help to advance the understanding of the search
+                        process and contribute towards development of search systems that can automatically
+                        adapt to a user's specific search goals.
+
+                    </p>
 
 
-                                  <p>Requirements:
-                                  <ul>
-                                    <li>You must be at least 18 years old to participate. </li>
-                                    <li>Proficiency in English is required.</li>
-                                    <li>Intermediate typing and online search skills are required.</li>
-                                    <li>Normal to corrected vision is required.</li>
-                                    <li>You must have <em>already completed</em> either 04:567:200 (Writing for Media) or 04:567:324 (News Reporting and Writing).</li>
 
-                                  </ul>
-                                  </p>
 
-                  <p>Choosing or declining to participate in this study will not affect your  class standing or grades at Rutgers.
-                    You will not be offered or receive  any special consideration if you take part in this research; it is  purely voluntary.
-                    This study has been approved by the Rutgers  Institutional Review Board (IRB Study #E14-136),
-                    and will be supervised  by Dr. Nicholas Belkin (belkin@rutgers.edu) and Dr. Chirag Shah (chirags@rutgers.edu)
-                    at the School of Communication and Information.</p>
 
-                  <p>For more information about this study, please send e-mail to Matthew
-                    Mitsui at <a href="mailto:mmitsui@scarletmail.rutgers.edu?Subject=Study%20Inquiry" target="_top">mmitsui@scarletmail.rutgers.edu</a>.
-                    You can also contact Matthew Mitsui to ask questions
-                    or get more information about the project. </p>
+
+
+
+                    <p>Requirements:
+                    <ul>
+                        <li>You must be at least 18 years old to participate.</li>
+                        <li>You must be a non-student and employed.</li>
+                        <li>Proficiency in English is required.</li>
+                        <li>Your work must at least occasionally entail information seeking.</li>
+                        <li>Intermediate typing and online search skills are required.</li>
+                        <li>You must use Google Chrome throughout the duration of the study.</li>
+                    </ul>
+                    </p>
+
+
+
+                    <p>You will not be offered or receive any special consideration if you take part
+                        in this research; it is purely voluntary. This study has been approved by the
+                        Rutgers Institutional Review Board (IRB Study #XX), and will be supervised by Dr.
+                        Nicholas Belkin (belkin@rutgers.edu) and Dr. Chirag Shah (chirags@rutgers.edu) at the
+                        School of Communication and Information.</p>
+
+                    <p>For more information about this study, please send e-mail to Matthew
+                        Mitsui at <a href="mailto:mmitsui@scarletmail.rutgers.edu?Subject=Study%20Inquiry" target="_top">mmitsui@scarletmail.rutgers.edu</a>.
+                        You can also contact Matthew Mitsui to ask questions
+                        or get more information about the project. </p>
 
 
 								</td>
@@ -217,7 +240,7 @@ echo "<input type=\"hidden\" name=\"num_users\" value=\"$NUM_USERS\">";
 
 for($x=1;$x<=$NUM_USERS;$x++){
 
-  echo "<h3>Participant $x</h3>";
+  echo "<h3>Participant Form</h3>";
 
   echo "<div class=\"pure-form-aligned\">";
   echo "<fieldset>";
@@ -231,10 +254,10 @@ for($x=1;$x<=$NUM_USERS;$x++){
   echo "<input id=\"lastName_$x\" name=\"lastName_$x\" type=\"text\" placeholder=\"Last Name\" required>";
   echo "</div>";
 
-	echo "<div class=\"pure-control-group\">";
-  echo "<label for=\"age_$x\">Age</label>";
-  echo "<input id=\"age_$x\" name=\"age_$x\" type=\"text\" placeholder=\"Age\" required>";
-  echo "</div>";
+//	echo "<div class=\"pure-control-group\">";
+//  echo "<label for=\"age_$x\">Age</label>";
+//  echo "<input id=\"age_$x\" name=\"age_$x\" type=\"text\" placeholder=\"Age\" required>";
+//  echo "</div>";
 
   echo "<div class=\"pure-control-group\">";
   echo "<label for=\"email1_$x\">Rutgers Email</label>";

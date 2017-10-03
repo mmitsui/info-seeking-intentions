@@ -360,7 +360,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                 ev.preventDefault()// cancel form submission
                 var formData = $(querysegment_form_id).serialize()+"&"+$(intents_form_id).serialize()+"&querySegmentID="+query_segment_id;
 
-                alert(formData);
+//                alert(formData);
                 if($(this).attr("value")=="mark_intentions_button"){
 
                     $.ajax({
@@ -395,7 +395,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
 //                        mySlider = slider_init_function();
 //                        mySlider.on("slideStop",slider_slidestop_function);
                     }).fail(function(data) {
-                        alert("There was a server error.  Please try again later or contact mmitsui@scarletmail.rutgers.edu if you experience further issues.");
+                        alert("Communication to the server was temporarily lost. Intentions were not marked. Please try again later or contact mmitsui@scarletmail.rutgers.edu if you experience further issues.");
                     });
                 }
             };
@@ -428,7 +428,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
 //                        mySlider = slider_init_function();
 //                        mySlider.on("slideStop",slider_slidestop_function);
                     }).fail(function(data) {
-                        alert("There was a server error.  Please try again later or contact mmitsui@scarletmail.rutgers.edu if you experience further issues.");
+                        alert("Communication to the server was temporarily lost. The query segment was not marked. Please try again later or contact mmitsui@scarletmail.rutgers.edu if you experience further issues.");
                     });
                 }
             };
@@ -537,7 +537,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
             <div class="col-md-12">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <center><h4>Mark Your Day's Query Segments</h4></center>
+                        <center><h4>Annotate Your Day's Query Segments</h4></center>
 
                     </div>
                 </div>

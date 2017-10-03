@@ -155,12 +155,16 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
                     if($(this).hasClass('active')){
                         $("button[name='begin_button']").removeClass('active');
                         $("button[name='begin_button']").show();
+                        $(this).html("Begin");
+                        begin_index = -1;
+
                     }else{
                         $("button[name='begin_button']").removeClass('active');
                         $("button[name='begin_button']").hide();
+                        $(this).html("Undo Begin");
                         $(this).addClass('active');
                         $(this).show();
-
+                        begin_index = $(this).data('table-index');
                     }
 //                    if(end_index != -1){
 //                        $(this).addClass('active');
@@ -168,7 +172,8 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
 //                        $(this).toggleClass('active');
 //                    }
 
-                    begin_index = $(this).data('table-index');
+
+
                 }else if($(this).attr("name")=='end_button'){
 
 
@@ -176,11 +181,15 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
                     if($(this).hasClass('active')){
                         $("button[name='end_button']").removeClass('active');
                         $("button[name='end_button']").show();
+                        $(this).html("End");
+                        end_index = -1;
                     }else{
                         $("button[name='end_button']").removeClass('active');
                         $("button[name='end_button']").hide();
+                        $(this).html("Undo End");
                         $(this).addClass('active');
                         $(this).show();
+                        end_index = $(this).data('table-index');
 
                     }
 //                    if(begin_index != -1){
@@ -188,7 +197,7 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
 //                    }else{
 //                        $(this).toggleClass('active');
 //                    }
-                    end_index = $(this).data('table-index');
+
                 }
 
                 if(begin_index != -1 && end_index != -1){
@@ -200,15 +209,32 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
                         return ($(this).data('table-index') < begin_index || $(this).data('table-index') > end_index);
                     }).prop( "checked", false );
 
+
+                    $(session_form_id+" button[type='button'][name='end_button']").filter(function() {
+                        return ($(this).data('table-index') == begin_index);
+                    }).hide();
+
+                    $(session_form_id+" button[type='button'][name='begin_button']").filter(function() {
+                        return ($(this).data('table-index') == end_index);
+                    }).hide();
+
                 }else{
                     if(begin_index != -1){
                         $(session_form_id+" input[type='checkbox']").filter(function() {
                             return ($(this).data('table-index') == begin_index);
                         }).prop( "checked", true );
 
+
+
                         $(session_form_id+" input[type='checkbox']").filter(function() {
                             return ($(this).data('table-index') != begin_index);
                         }).prop( "checked", false );
+
+
+                        $(session_form_id+" button[type='button'][name='end_button']").filter(function() {
+                            return ($(this).data('table-index') == begin_index);
+                        }).hide();
+
 
                     }else if(end_index != -1){
                         $(session_form_id+" input[type='checkbox']").filter(function() {
@@ -219,11 +245,28 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
                             return ($(this).data('table-index') != end_index);
                         }).prop( "checked", false );
 
+
+
+                        $(session_form_id+" button[type='button'][name='begin_button']").filter(function() {
+                            return ($(this).data('table-index') == end_index);
+                        }).hide();
+
+
+
                     }else{
                         $(session_form_id+" input[type='checkbox']").filter(function() {
                             return true;
                         }).prop( "checked", false );
 
+
+                        $(session_form_id+" button[type='button'][name='end_button']").filter(function() {
+                            return ($(this).data('table-index') != begin_index);
+                        }).show();
+
+
+                        $(session_form_id+" button[type='button'][name='begin_button']").filter(function() {
+                            return ($(this).data('table-index') != end_index);
+                        }).show();
                     }
                 }
             }
@@ -261,7 +304,7 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
                         }
 
                     }).fail(function(data) {
-                        alert("There was a server error.  Please try again later or contact mmitsui@scarletmail.rutgers.edu if you experience further issues.");
+                        alert("Communication to the server was temporarily lost. The session was not marked. Please try again later or contact mmitsui@scarletmail.rutgers.edu if you experience further issues.");
                     });
                 }
             };
@@ -366,7 +409,7 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
             <div class="col-md-12">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <center><h4>Mark Your Day's Sessions</h4></center>
+                        <center><h4>Annotate Your Day's Sessions</h4></center>
 
                     </div>
                 </div>
@@ -482,7 +525,7 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
 
 
 
-                <p><u><strong>Mark Query Segments And Intentions</strong></u></p>
+                <p><u><strong>Annotate Query Segments And Intentions</strong></u></p>
                 <ul>
                     <li>Next you must assign intentions to each query segment.</li>
                     <li>You may first need to mark query segments within sessions.  Recall that each session is composed of one or more query segments pertaining to the same task.</li>

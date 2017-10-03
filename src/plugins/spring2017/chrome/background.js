@@ -43,10 +43,19 @@ $.ajax({
   data : {},
   dataType: "text",
   success : function(msg){
+  	if ($.trim(msg)){   
+    		// alert("CheckLogin Success: "+msg);
+		}
     toggleLoggedIn(JSON.parse(msg).loggedin);
     renderLoggedIn(JSON.parse(msg).loggedin);
   },
   error: function(msg){
+  	if ($.trim(msg)){   
+    		// alert("CheckLogin Error: "+msg);
+		}else{
+			// alert("CheckLogin Error!");
+		}
+    // alert("URL:"+checkLoggedInUrl+"msg:"+msg);
     toggleLoggedIn(false);
     renderLoggedIn(false);
   }
@@ -72,7 +81,7 @@ chrome.tabs.query(query, function(tabs) {
 }
 
 
-function savePQ(url,title,active,tabId,windowId,now,details){
+function savePQ(url,title,active,tabId,windowId,now,action,details){
   if(loggedIn){
 
     var data = {
@@ -90,6 +99,9 @@ function savePQ(url,title,active,tabId,windowId,now,details){
     data.localTime =  ("0" + now.getHours()).slice(-2) + ":" + ("0" + now.getMinutes()).slice(-2) + ":" + ("0" + now.getSeconds()).slice(-2);
     data.localTimestamp = now.getTime();
     data.details = JSON.stringify(details);
+    data.action = action;
+    // alert(data.action);
+
 
     
 
@@ -99,11 +111,18 @@ function savePQ(url,title,active,tabId,windowId,now,details){
       data : data,
       dataType: "text",
       success : function(resp){
-
+      	if ($.trim(resp)){   
+    		// alert("SavePQ Success: "+resp);
+		}
 
 
       },
       error: function(resp){
+        if ($.trim(resp)){   
+    		// alert("SavePQ Error: "+resp);
+		}else{
+			// alert("SavePQ Error!");
+		}
 
       }
     });
@@ -141,10 +160,17 @@ function saveAction(action,value,actionJSON,now){
      data : data,
      dataType: "text",
      success : function(resp){
+  //    	if ($.trim(resp)){   
+  //   		alert("SaveAction Success: "+resp);
+		// }
 
      },
      error: function(resp){
-
+		if ($.trim(resp)){   
+    		// alert("SaveAction Error: "+resp);
+		}else{
+			// alert("SaveAction Error!");
+		}
      }
    });  
   }
@@ -175,7 +201,9 @@ chrome.tabs.onActivated.addListener(function(activeInfo){
   var now = new Date();
 
   chrome.tabs.get(activeInfo.tabId, function(tab){
-    Url = (tab.hasOwnProperty('url')?tab.url:"");
+
+    if(tab){
+      Url = (tab.hasOwnProperty('url')?tab.url:"");
     title = (tab.hasOwnProperty('title')?tab.title:"");
     active = tab.active;
     tabId = (tab.hasOwnProperty('id')?tab.id:-1);
@@ -189,9 +217,14 @@ chrome.tabs.onActivated.addListener(function(activeInfo){
           activeInfo.referrerInfo = result;
 
           saveAction("tabs.onActivated",activeInfo.tabId,activeInfo,now);
-          savePQ(Url,title,active,tabId,windowId,now,activeInfo);
+          savePQ(Url,title,active,tabId,windowId,now,"tabs.onActivated",activeInfo);
         }
       );
+
+    }else{
+      // alert(chrome.runtime.lastError);
+    }
+    
 
     
   });
@@ -321,7 +354,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
           changeInfo.referrerInfo = result;
 
           saveAction("tabs.onUpdated",value,changeInfo,now);
-          savePQ(Url,title,active,tabId,windowId,now,changeInfo);
+          savePQ(Url,title,active,tabId,windowId,now,"tabs.onUpdated",changeInfo);
         }
       );
 
@@ -377,7 +410,8 @@ chrome.windows.onFocusChanged.addListener(function(windowId){
 chrome.webNavigation.onCommitted.addListener(function(details){
   var now = new Date();
 
-  if (details.transitionType.indexOf('auto') == -1){
+  if (details.transitionType != 'auto_subframe'){
+  // if (details.transitionType.indexOf('auto') == -1){
     chrome.tabs.get(details.tabId, function(tab){
     Url = (tab.hasOwnProperty('url')?tab.url:"");
     title = (tab.hasOwnProperty('title')?tab.title:"");
@@ -392,7 +426,7 @@ chrome.webNavigation.onCommitted.addListener(function(details){
         function(result) {
           details.referrerInfo = result;
           saveAction("webNavigation.onCommitted",details.tabId,details,now);
-          savePQ(Url,title,active,tabId,windowId,now,details);
+          savePQ(Url,title,active,tabId,windowId,now,"webNavigation.onCommitted",details);
         }
       );
     

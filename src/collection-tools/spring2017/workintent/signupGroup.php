@@ -9,7 +9,7 @@
 	<link rel="stylesheet" href="study_styles/bootstrap-lumen/css/bootstrap.min.css">
 	<link rel="stylesheet" href="study_styles/custom/text.css">
 	<link rel="stylesheet" href="styles.css">
-<title>Information Seeking Intentions Study: Sign Up</title>
+<title>Search Intentions in Natural Settings Study: Sign Up</title>
 <link rel="stylesheet" type="text/css" href="styles.css" />
 <style type="text/css">
 		.cursorType{
@@ -71,16 +71,16 @@
 
     if(isset($_POST['email1_1']) && emailMatches($_POST['email1_1'])){
         ?>
-        <p style='background-color:red;color:white'>We are sorry, but you have already created an account with this e-mail! Your username and password have been sent to this e-mail address.</p>
+        <p style='background-color:red;color:white'>We are sorry, but you have already created an account with this e-mail! Please use your e-mail to log in to your plugin if you are having issues.</p>
         <p>Please <a href="mailto:mmitsui@scarletmail.rutgers.edu?subject=Study inquiry">contact us</a> if you have any questions.</p>
 
         <?php
 
-        $email1 = $_POST['email1_1'];
-        $subject = "Test Subject";
-        $message = "Test Message";
-        $headers = "Test Headers";
-        mail ($email1, $subject, $message, $headers);
+//        $email1 = $_POST['email1_1'];
+//        $subject = "Test Subject";
+//        $message = "Test Message";
+//        $headers = "Test Headers";
+//        mail ($email1, $subject, $message, $headers);
         exit();
     }
     else if (
@@ -88,8 +88,8 @@
 	   (isset($_POST['firstName_1'])) &&
 	   (isset($_POST['lastName_1'])) &&
 	   (isset($_POST['email1_1'])) &&
-		(isset($_POST['reEmail_1'])) &&
-		(isset($_POST['age_1']))
+		(isset($_POST['reEmail_1']))
+//                  && (isset($_POST['age_1']))
 		)
 		{
 			$connection = Connection::getInstance();
@@ -128,14 +128,15 @@
                     $date = $base->getDate();
                     $timestamp = $base->getTimestamp();
                     $user_ip = $base->getIP();
-										$age = $_POST["age_$x"];
+//										$age = $_POST["age_$x"];
 										$user_assoc["un_$x"]=$username;
 										$user_assoc["pwd_$x"]=$password;
 
 
                     $results = $connection->commit($query);
 
-                    $query = "INSERT INTO recruits (firstName, lastName, age, email1, approved, `date`, `time`, `timestamp`,userID,projectID,registrationID) VALUES('$firstName','$lastName','$age','$email1','1', '$date', '$time', '$timestamp','$next_userID','$next_userID','$next_registrationID')";
+                    $query = "INSERT INTO recruits (firstName, lastName, email1, approved, `date`, `time`, `timestamp`,userID,projectID,registrationID) VALUES('$firstName','$lastName','$email1','1', '$date', '$time', '$timestamp','$next_userID','$next_userID','$next_registrationID')";
+//                    $query = "INSERT INTO recruits (firstName, lastName, age, email1, approved, `date`, `time`, `timestamp`,userID,projectID,registrationID) VALUES('$firstName','$lastName','$age','$email1','1', '$date', '$time', '$timestamp','$next_userID','$next_userID','$next_registrationID')";
                     $results = $connection->commit($query);
                     $recruitsID = $connection->getLastID();
 
@@ -157,15 +158,15 @@
                 $headers  = 'MIME-Version: 1.0' . "\r\n";
                 $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
                 $headers .= 'From: Information Seeking Intentions <mmitsui@scarletmail.rutgers.edu>' . "\r\n";
-								$headers .= 'Bcc: Matthew Mitsui <mmitsui@scarletmail.rutgers.edu>' . "\r\n";
+                $headers .= 'Bcc: Matthew Mitsui <mmitsui@scarletmail.rutgers.edu>' . "\r\n";
 
 
 
-                $subject = "Information seeking intentions study participation confirmation";
+                $subject = "Search intentions in natural settings study participation confirmation";
 
                 $message = "<html xmlns='http://www.w3.org/1999/xhtml'><head><meta http-equiv='Content-Type content='text/html; charset=utf-8' />";
                 $message .= "\r\n";
-                $message .= "<title>Information seeking intentions study participation confirmation email</title></head>\n<body>\n";
+                $message .= "<title>Search intentions in natural settings study participation confirmation email</title></head>\n<body>\n";
                 $message .= "\r\n";
                 $message .= "Thank you for your interest in taking part in our study. The details are shown below.<br/><br/>";
                 $message .= "\r\n";
@@ -199,15 +200,21 @@
 
 
 
-                $message .= "<strong>Please arrive on time.  If you are at least 15 minutes late and there is a session after yours, we will need to reschedule your session.</strong><br/><br/>";
-								$message .= "During this study you will conduct task-based searches and will be asked explain your search intentions at various points of your search.<br/><br/>";
+								$message .= "During this study you will conduct task-based searches 
+                                        and will be asked explain your search intentions 
+                                        at various points of your search.<br/><br/>";
                 $message .= "\r\n";
-								$message .= "You will receive <strong>$30 cash</strong> for participating in the study.  The most exemplary participants will receive <strong>an additional $10</strong>.<br/><br/>";
+
+                http://coagmento.org/workintent/entryQuestionnaire.php
+								$message .= "You will receive <strong>$100 cash</strong> for participating in the study.  </strong>.<br/><br/>";
+
+                                $message .= "Before being able to access the study, we would first like you to answer an entry questionnaire regarding demographics and the tasks you typically work on.
+                                             To complete the questionnaire, please go here: http://coagmento.org/workintent/entryQuestionnaire.php.<br/><br/>";
 								$message .= "\r\n";
 
 
                 $message .= "\r\n";
-                $message .= "Feel free to <a href=\"mailto:mmitsui@scarletmail.rutgers.edu?subject=Study inquiry\">contact us</a> if you have any questions.";
+                $message .= "After completing the questionnaire, you will receive a confirmation e-mail in 24-48 hours on downloading and installing the plugin for this study. Feel free to <a href=\"mailto:mmitsui@scarletmail.rutgers.edu?subject=Study inquiry\">contact us</a> if you have any questions.";
 								$message .= "\r\n";
                 $message .= "</body></html>";
 
@@ -216,7 +223,6 @@
                 mail ('mmitsui88@gmail.com', $subject, $message, $headers); //Copy to researchers conducting the study
 //                mail ('belkin@rutgers.edu', $subject, $message, $headers); //Copy to researchers conducting the study
 //                mail ('erha43@gmail.com', $subject, $message, $headers); //Copy to researchers conducting the study
-//                mail ('ws307@scarletmail.rutgers.edu', $subject, $message, $headers); //Copy to researchers conducting the study
 
 
 								// mail ('kevin.eric.albertson@gmail.com', $subject, $message, $headers); //Copy to researchers conducting the study
@@ -235,7 +241,12 @@
 								echo "<h3>Registration Complete!</h3>";
 								echo "<table>\n";
                 echo "<tr><td></td></tr>\n";
-                echo "<tr><td align=left>Thank you for submitting your request for participating in this study. <br/><br/>You will receive a confirmation email with the time, date, and location of your study session. If you have questions, feel free to <br/><a href=\"mailto:mmitsui@scarletmail.rutgers.edu?subject=Study inquiry\">contact us</a>.<hr/></td></tr>\n";
+                echo "<tr><td align=left>Thank you for submitting your request for participating in this study. 
+                        <br/>
+                        <br/>
+                        You will receive a confirmation email with a link to the entry questionnaire.
+                        Afterwards, within 24-48 hours, you will receive information on downloading and installing the plugin for this study.  
+                        If you have questions, feel free to <a href=\"mailto:mmitsui@scarletmail.rutgers.edu?subject=Study inquiry\">contact us</a>.<hr/></td></tr>\n";
                 echo "<tr><td><strong>Participant information</strong></td></tr>\n";
 
                 for($x=1;$x<=$NUM_USERS;$x++){
