@@ -15,8 +15,40 @@ var previousTabActionData = null;
 var previousWindowActionData = null;
 var previousWebNavActionData = null;
 var previousActionData = null;
+var red = [255,0,0,255];
+var green = [34,139,34,255];
+chrome.browserAction.setBadgeText({text:' '});
+chrome.browserAction.setBadgeBackgroundColor({color:red});
+
 //var serp_storage_url = domain + '/saveserp';
 //var check_userid_url = domain + '/users/checkid';
+
+
+
+chrome.runtime.onMessage.addListener(function(request, sender, callback) {
+  if (request.action == "xhttp") {
+  	// alert('data'+JSON.stringify(request.data));
+
+    $.ajax({
+        type: request.method,
+        url: request.url,
+        data: request.data,
+        success: function(responseText){
+        	console.log("success"+responseText);
+            callback(responseText);
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            //if required, do some error handling
+            console.log("error");
+            console.log(errorThrown);
+            callback();
+        }
+    });
+
+    return true; // prevents the callback from being called too early on return
+  }
+});
+
 
 
 
@@ -26,7 +58,6 @@ function toggleLoggedIn(logged){
 
 function renderLoggedIn(loggedIn){
   var red = [255,0,0,255];
-  // var green = [0,255,0,255];
   var green = [34,139,34,255];
   if(loggedIn){
     chrome.browserAction.setBadgeText({text:' '});
@@ -37,29 +68,34 @@ function renderLoggedIn(loggedIn){
   }
 }
 
-$.ajax({
-  url: checkLoggedInUrl,
-  method : "post",
-  data : {},
-  dataType: "text",
-  success : function(msg){
-  	if ($.trim(msg)){   
-    		// alert("CheckLogin Success: "+msg);
-		}
-    toggleLoggedIn(JSON.parse(msg).loggedin);
-    renderLoggedIn(JSON.parse(msg).loggedin);
-  },
-  error: function(msg){
-  	if ($.trim(msg)){   
-    		// alert("CheckLogin Error: "+msg);
-		}else{
-			// alert("CheckLogin Error!");
-		}
-    // alert("URL:"+checkLoggedInUrl+"msg:"+msg);
-    toggleLoggedIn(false);
-    renderLoggedIn(false);
-  }
-});
+function checkLoggedIn(){
+	$.ajax({
+	  url: checkLoggedInUrl,
+	  method : "post",
+	  data : {},
+	  dataType: "text",
+	  success : function(msg){
+	  	if ($.trim(msg)){   
+	    		// alert("CheckLogin Success: "+msg);
+			}
+	    toggleLoggedIn(JSON.parse(msg).loggedin);
+	    renderLoggedIn(JSON.parse(msg).loggedin);
+	  },
+	  error: function(msg){
+	  	if ($.trim(msg)){   
+	    		// alert("CheckLogin Error: "+msg);
+			}else{
+				// alert("CheckLogin Error!");
+			}
+	    // alert("URL:"+checkLoggedInUrl+"msg:"+msg);
+	    toggleLoggedIn(false);
+	    renderLoggedIn(false);
+	  }
+	});
+}
+
+checkLoggedIn();
+
 
 
 var timerLock = false; // Prevent multiple options pages from opening.
@@ -100,7 +136,7 @@ function savePQ(url,title,active,tabId,windowId,now,action,details){
     data.localTimestamp = now.getTime();
     data.details = JSON.stringify(details);
     data.action = action;
-    // alert(data.action);
+
 
 
     
@@ -113,22 +149,26 @@ function savePQ(url,title,active,tabId,windowId,now,action,details){
       success : function(resp){
       	if ($.trim(resp)){   
     		// alert("SavePQ Success: "+resp);
-		}
+		    }
 
 
       },
       error: function(resp){
         if ($.trim(resp)){   
     		// alert("SavePQ Error: "+resp);
-		}else{
-			// alert("SavePQ Error!");
-		}
+		    }else{
+			 // alert("SavePQ Error!");
+		    }
 
       }
     });
   }
 
 }
+
+
+
+
 
 function saveAction(action,value,actionJSON,now){
   if(loggedIn){
@@ -176,6 +216,8 @@ function saveAction(action,value,actionJSON,now){
   }
       
 }
+
+
 
 
 // TODO ACTIONS
@@ -231,6 +273,8 @@ chrome.tabs.onActivated.addListener(function(activeInfo){
 
 
 });
+
+
 
 
 
@@ -331,6 +375,23 @@ chrome.tabs.onReplaced.addListener(function(addedTabId, removedTabId){
 // Note: only use onCommitted
 // TODO: Use only onCommitted?  Or this too?
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
+
+    
+    if (changeInfo.status === 'complete') {
+
+    	chrome.tabs.executeScript(tabId, { file: "external/js/jquery-3.2.1.min.js" }, function() {
+    		chrome.tabs.executeScript(tabId, { 
+    			allFrames: true, 
+    			file: "payload.js" }
+    			);
+		});
+
+        // chrome.tabs.executeScript(tabId, {
+        //     allFrames: true, 
+        //     file: 'payload.js'
+        // });
+    }
+
   var now = new Date();
   var action = "tabs.onUpdated";
   var value = tabId;
@@ -339,6 +400,8 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
 
   // 
   if(('status' in changeInfo && changeInfo.status == 'complete')&& !('url' in changeInfo)){
+
+  	checkLoggedIn();
 
     chrome.tabs.get(changeInfo.tabId, function(tab){
       Url = (tab.hasOwnProperty('url')?tab.url:"");
@@ -412,6 +475,10 @@ chrome.webNavigation.onCommitted.addListener(function(details){
 
   if (details.transitionType != 'auto_subframe'){
   // if (details.transitionType.indexOf('auto') == -1){
+  	if(details.tabId < 0){
+  		chrome.extension.getBackgroundPage().console.log('Error in chrome.webNavigation.onCommitted.addListener on tabId: '+details.tabId );
+  		return;
+  	}
     chrome.tabs.get(details.tabId, function(tab){
     Url = (tab.hasOwnProperty('url')?tab.url:"");
     title = (tab.hasOwnProperty('title')?tab.title:"");
@@ -434,6 +501,15 @@ chrome.webNavigation.onCommitted.addListener(function(details){
   }
   
 });
+
+
+
+
+
+// chrome.omnibox.onInputChanged.addListener(function(text, suggest){
+// 	chrome.extension.getBackgroundPage().console.log(text);
+// });
+
 
 // TODO: Can't use?
 // //chrome.omnibox.onInputEntered.addListener(function(text, disposition){

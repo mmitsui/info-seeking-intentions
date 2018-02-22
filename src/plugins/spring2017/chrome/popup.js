@@ -17,11 +17,18 @@ $(document).ready(function(){
     var logoutUrl = homeDir + "/logout.php";
     var sendCredentialsUrl = homeDir + "/sendCredentials.php";
     var homeUrl = homeDir + "/instruments/getHome.php";
+    var tutorialUrl = homeDir + "/getTutorial.php";
     var contactUrl = "mailto:mmitsui@scarletmail.rutgers.edu?Subject=Intent%20Study%20Inquiry";
 
 
     function goHome(){
         chrome.tabs.create({url:homeUrl}, function(tab){
+        },
+        );
+    }
+
+    function gotoTutorial(){
+        chrome.tabs.create({url:tutorialUrl}, function(tab){
         },
         );
     }
@@ -61,36 +68,58 @@ $(document).ready(function(){
 
     // TODO: Is AJAX call here okay? set logged in background variable
     function handleLoggedIn(msg){
+
+
         msg = JSON.parse(msg);
+
         if(msg.loggedin){
+
             toggleLoggedIn(msg.loggedin)
             renderLoggedIn(msg.loggedin);
             $(signedinYesID).show();
             $(signedinNoID).hide();
+            $('html').height($(signedinYesID).height());
+
             $(firstNameID).text(msg.firstName);
             $(lastNameID).text(msg.lastName);
         }else{
             $(signedinYesID).show();
             $(signedinNoID).hide();
+            $('html').height($(signedinYesID).height());
+
             
 
+            // alert("login"+CryptoJS.SHA1($(usernameInputID).val())+"password"+CryptoJS.SHA1($(passwordInputID).val())+"extensionID"+chrome.runtime.id);
             $.ajax({
             type: "POST",
             url: loginUrl,
-            data:{username:$(usernameInputID).val(),password:$(passwordInputID).val(),browser:"chrome",extensionID:chrome.runtime.id},
+            data:{
+                // username:$(usernameInputID).val(),
+                // password:$(passwordInputID).val(),
+                username_sha1:CryptoJS.SHA1($(usernameInputID).val()).toString(),
+                password_sha1:CryptoJS.SHA1($(passwordInputID).val()).toString(),
+                browser:"chrome",
+                extensionID:chrome.runtime.id
+            },
             success: function(msg){
+                // alert(msg);
+
                 msg = JSON.parse(msg);
                 if(msg.success){
                     $(firstNameID).text(msg.firstName);
                     $(lastNameID).text(msg.lastName);
                     $(signedinNoID).hide();
                     $(signedinYesID).show();
+                    $('html').height($(signedinYesID).height());
+
                     $(loginErrorTextID).text('');
                     toggleLoggedIn(true);
                     renderLoggedIn(true);
                 }else{
                     $(signedinNoID).show();
                     $(signedinYesID).hide();
+                    $('html').height($(signedinNoID).height());
+
                     $(loginErrorTextID).text(msg.errortext);
                     toggleLoggedIn(false);
                     renderLoggedIn(false);
@@ -111,12 +140,17 @@ $(document).ready(function(){
     $.ajax({
         type: "POST",
         url: checkLoggedInUrl,
-        data : {extensionID:chrome.runtime.id},
+        data : {
+            extensionID:chrome.runtime.id
+        },
         dataType: "text",
         success: handleLoggedIn,
         error: function(msg){
+            
             $(signedinNoID).show();
             $(signedinYesID).hide();
+            $('html').height($(signedinNoID).height());
+            
             toggleLoggedIn(false);
             renderLoggedIn(false);
         }
@@ -126,23 +160,35 @@ $(document).ready(function(){
     $( "#login_button" ).click(function() {
 
 
+
         $.ajax({
             type: "POST",
             url: loginUrl,
-            data:{username:$(usernameInputID).val(),password:$(passwordInputID).val(),browser:"chrome",extensionID:chrome.runtime.id},
+            data:{
+                username_sha1:CryptoJS.SHA1($(usernameInputID).val()).toString(),
+                password_sha1:CryptoJS.SHA1($(passwordInputID).val()).toString(),
+                browser:"chrome",
+                extensionID:chrome.runtime.id
+            },
             success: function(msg){
+
+
                 msg = JSON.parse(msg);
                 if(msg.success){
                     $(firstNameID).text(msg.firstName);
                     $(lastNameID).text(msg.lastName);
+                    
                     $(signedinNoID).hide();
                     $(signedinYesID).show();
+                    $('html').height($(signedinYesID).height());
                     $(loginErrorTextID).text('');
                     toggleLoggedIn(true);
                     renderLoggedIn(true);
                 }else{
                 	$(signedinNoID).show();
                     $(signedinYesID).hide();
+                    $('html').height($(signedinNoID).height());
+
                 	$(loginErrorTextID).text(msg.errortext);
                     toggleLoggedIn(false);
                 	renderLoggedIn(false);
@@ -150,6 +196,7 @@ $(document).ready(function(){
 
             },
             error: function(msg){
+
                 toggleLoggedIn(false);
                 renderLoggedIn(false);
             },
@@ -172,6 +219,8 @@ $(document).ready(function(){
                     $(passwordInputID).val('');
                     $(signedinNoID).show();
                     $(signedinYesID).hide();
+                    $('html').height($(signedinNoID).height());
+
                     toggleLoggedIn(false);
                     renderLoggedIn(false);
                 }
@@ -185,7 +234,10 @@ $(document).ready(function(){
         $.ajax({
             type: "POST",
             url: sendCredentialsUrl,
-            data:{username:$(usernameInputID).val()},
+            data:{
+                // username:$(usernameInputID).val()
+                username_sha1:CryptoJS.SHA1($(usernameInputID).val()).toString()
+            },
             success: function(msg){
 
                 msg = JSON.parse(msg);
@@ -211,6 +263,10 @@ $(document).ready(function(){
 
     $( "#homepage_button" ).click(function() {
         goHome();
+    });
+
+    $( "#tutorial_button" ).click(function() {
+        gotoTutorial();
     });
 
 });

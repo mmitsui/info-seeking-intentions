@@ -2,13 +2,19 @@
 "update_url": "https://clients2.google.com/service/update2/crx",
 
     "manifest_version" : 2,
-    "name" : "Workplace Study Extension - ar",
+    "name" : "Workplace Study Extension - 118",
     "description" : "Companion extension for Workplace Study, 2017.",
-    "version" : "1.0.6",
+    "version" : "1.0.10",
     "content_scripts": [],
     "background" : {
         "persistent": true,
-        "scripts" : ["external/js/jquery-3.2.1.min.js","background.js"]
+        "scripts" : ["external/js/jquery-3.2.1.min.js",
+            "external/js/cryptojs/components/core-min.js",
+            "external/js/cryptojs/components/sha1-min.js",
+            "external/js/cryptojs/rollups/sha1-min.js",
+            
+
+            "background.js"]
     },
     "web_accessible_resources":["*.png"],
     
@@ -19,7 +25,9 @@
         "storage",
         "tabs",
         "<all_urls>",
-        "webNavigation"
+        "webNavigation",
+        "clipboardRead",
+        "http://*/"
     ],
     "omnibox": { "keyword" : "test" },
     
