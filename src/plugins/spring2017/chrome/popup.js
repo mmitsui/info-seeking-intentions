@@ -55,7 +55,6 @@ $(document).ready(function(){
 
     function renderLoggedIn(loggedIn){
     	var red = [255,0,0,255];
-    	// var green = [0,255,0,255];
     	var green = [34,139,34,255];
     	if(loggedIn){
     		chrome.browserAction.setBadgeText({text:' '});
@@ -66,14 +65,9 @@ $(document).ready(function(){
     	}
     }
 
-    // TODO: Is AJAX call here okay? set logged in background variable
     function handleLoggedIn(msg){
-
-
         msg = JSON.parse(msg);
-
         if(msg.loggedin){
-
             toggleLoggedIn(msg.loggedin)
             renderLoggedIn(msg.loggedin);
             $(signedinYesID).show();
@@ -87,23 +81,16 @@ $(document).ready(function(){
             $(signedinNoID).hide();
             $('html').height($(signedinYesID).height());
 
-            
-
-            // alert("login"+CryptoJS.SHA1($(usernameInputID).val())+"password"+CryptoJS.SHA1($(passwordInputID).val())+"extensionID"+chrome.runtime.id);
             $.ajax({
             type: "POST",
             url: loginUrl,
             data:{
-                // username:$(usernameInputID).val(),
-                // password:$(passwordInputID).val(),
                 username_sha1:CryptoJS.SHA1($(usernameInputID).val()).toString(),
                 password_sha1:CryptoJS.SHA1($(passwordInputID).val()).toString(),
                 browser:"chrome",
                 extensionID:chrome.runtime.id
             },
             success: function(msg){
-                // alert(msg);
-
                 msg = JSON.parse(msg);
                 if(msg.success){
                     $(firstNameID).text(msg.firstName);
@@ -135,8 +122,6 @@ $(document).ready(function(){
         }
     }
 
-
-    // TODO: set logged in background variable
     $.ajax({
         type: "POST",
         url: checkLoggedInUrl,
@@ -156,11 +141,8 @@ $(document).ready(function(){
         }
     });
 
-    // TODO: set logged in background variable
+
     $( "#login_button" ).click(function() {
-
-
-
         $.ajax({
             type: "POST",
             url: loginUrl,
@@ -171,8 +153,6 @@ $(document).ready(function(){
                 extensionID:chrome.runtime.id
             },
             success: function(msg){
-
-
                 msg = JSON.parse(msg);
                 if(msg.success){
                     $(firstNameID).text(msg.firstName);

@@ -27,8 +27,6 @@ chrome.browserAction.setBadgeBackgroundColor({color:red});
 
 chrome.runtime.onMessage.addListener(function(request, sender, callback) {
   if (request.action == "xhttp") {
-  	// alert('data'+JSON.stringify(request.data));
-
     $.ajax({
         type: request.method,
         url: request.url,
@@ -76,18 +74,17 @@ function checkLoggedIn(){
 	  dataType: "text",
 	  success : function(msg){
 	  	if ($.trim(msg)){   
-	    		// alert("CheckLogin Success: "+msg);
+	    		// Login success
 			}
 	    toggleLoggedIn(JSON.parse(msg).loggedin);
 	    renderLoggedIn(JSON.parse(msg).loggedin);
 	  },
 	  error: function(msg){
 	  	if ($.trim(msg)){   
-	    		// alert("CheckLogin Error: "+msg);
+	    		// Login error
 			}else{
-				// alert("CheckLogin Error!");
+				// Login error
 			}
-	    // alert("URL:"+checkLoggedInUrl+"msg:"+msg);
 	    toggleLoggedIn(false);
 	    renderLoggedIn(false);
 	  }
@@ -104,14 +101,12 @@ function openOptions() {
     // If not, open up options page if it isn't open.
     var query = {
       url: chrome.runtime.getURL(homeUrl)
-//        url: chrome.runtime.getURL("/options.html")
 };
 chrome.tabs.query(query, function(tabs) {
   if (!timerLock && tabs.length == 0) {
     timerLock = true;
     setTimeout(function() {timerLock = false;}, 1000);
     chrome.tabs.create({'url': url} );
-//            chrome.tabs.create({'url': "/options.html"} );    
 }
 });
 }
@@ -148,16 +143,16 @@ function savePQ(url,title,active,tabId,windowId,now,action,details){
       dataType: "text",
       success : function(resp){
       	if ($.trim(resp)){   
-    		// alert("SavePQ Success: "+resp);
+    		  // Success
 		    }
 
 
       },
       error: function(resp){
         if ($.trim(resp)){   
-    		// alert("SavePQ Error: "+resp);
+    		  //Error
 		    }else{
-			 // alert("SavePQ Error!");
+			   //Error
 		    }
 
       }
@@ -200,16 +195,14 @@ function saveAction(action,value,actionJSON,now){
      data : data,
      dataType: "text",
      success : function(resp){
-  //    	if ($.trim(resp)){   
-  //   		alert("SaveAction Success: "+resp);
-		// }
+          //Success
 
      },
      error: function(resp){
 		if ($.trim(resp)){   
-    		// alert("SaveAction Error: "+resp);
+    		//Error
 		}else{
-			// alert("SaveAction Error!");
+			//Error
 		}
      }
    });  
