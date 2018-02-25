@@ -1,6 +1,7 @@
 $(document).ready(function(){
 
     
+    // Elements
     var signedinYesID = '#signedin_yes';
     var signedinNoID = '#signedin_no';
     var firstNameID = '#first_name';
@@ -8,9 +9,10 @@ $(document).ready(function(){
     var loginErrorTextID = '#login_error_text';
     var usernameInputID = '#username';
     var passwordInputID = '#password';
-    var homeDir = "http://coagmento.org/workintent";
+    
     
     // URLs
+    var homeDir = "http://coagmento.org/workintent";
     var registerUrl = homeDir+"/signup_intro.php";
     var checkLoggedInUrl = homeDir + "/getLoggedIn.php";
     var loginUrl = homeDir + "/login.php";
@@ -22,30 +24,19 @@ $(document).ready(function(){
 
 
     function goHome(){
-        chrome.tabs.create({url:homeUrl}, function(tab){
-        },
-        );
+        chrome.tabs.create({url:homeUrl}, function(tab){},);
     }
 
     function gotoTutorial(){
-        chrome.tabs.create({url:tutorialUrl}, function(tab){
-        },
-        );
+        chrome.tabs.create({url:tutorialUrl}, function(tab){},);
     }
 
     function sendContactEmail(){
-        chrome.tabs.create({url:contactUrl}, function(tab){
-            setTimeout(function(){
-                chrome.tabs.remove(tab.id);
-            },500);
-        },
-        );
+        chrome.tabs.create({url:contactUrl}, function(tab){setTimeout(function(){chrome.tabs.remove(tab.id);},500);},);
     }
 
     function goToRegistration(){
-        chrome.tabs.create({url:registerUrl}, function(tab){
-        },
-        );
+        chrome.tabs.create({url:registerUrl}, function(tab){},);
     }
 
 

@@ -152,10 +152,9 @@ function setBufferClear(){
     }
 }
 
-/* Keylib */
-// Alphanumeric
 document.addEventListener('keypress', function (e) {
-    var time = new Date().getTime();
+
+       var time = new Date().getTime();
     setBufferClear();
 
     e = e || window.event;
@@ -198,88 +197,84 @@ document.addEventListener('keypress', function (e) {
         modifier_buffer[time].push(modifier);
     }else{
         modifier_buffer[time] = [modifier];
-    } 
+    }  
+
+    
 });
 
 
 var lastsnippet = '';
 
 document.addEventListener('copy', function (e) {
-    setBufferClear();
 
-    var snippet = window.getSelection().toString();
-    lastsnippet = {'snippet':snippet,'title':document.title,'url':window.location.href};
+        var time = new Date().getTime();
+        setBufferClear();
+        var snippet = window.getSelection().toString();
+        lastsnippet = {'snippet':snippet,'title':document.title,'url':window.location.href};    
+        copy_buffer[time] = lastsnippet;
 
-    var time = new Date().getTime();
-    copy_buffer[time] = lastsnippet;
 });
 
 
 
-document.addEventListener('paste', function (e) {
-    var time = new Date().getTime();
-    paste_buffer[time] = lastsnippet;
+document.addEventListener('paste', function (e) {  
+
+        var time = new Date().getTime();
+        setBufferClear();
+        paste_buffer[time] = lastsnippet;
+
 });
-
-
-
-
-
-
-
-
-// gBrowser.addEventListener("click", function(e){saveClick(e,'click');}, false);
-
-//             gBrowser.addEventListener("dblclick", function(e){saveClick(e,'dblclick');}, false);
-
 
 
 
 function saveClick(event,type)
 {
-    var time = new Date().getTime();
-    setBufferClear();
-    click_buffer[time] = {'type':type,
-        'clientX':event.clientX,
-        'clientY':event.clientY,
-        'pageX':event.pageX,
-        'pageY':event.pageY,
-        'screenX':window.screenX,
-        'screenY':window.screenY,
-        'scrollX':window.scrollX,
-        'scrollY':window.scrollY,
-    }
+
+        var time = new Date().getTime();
+        setBufferClear();
+        click_buffer[time] = {'type':type,
+            'clientX':event.clientX,
+            'clientY':event.clientY,
+            'pageX':event.pageX,
+            'pageY':event.pageY,
+            'screenX':window.screenX,
+            'screenY':window.screenY,
+            'scrollX':window.scrollX,
+            'scrollY':window.scrollY,
+        }
+
 }
 
 
 
 
 function scrollStart(event){
-    var time = new Date().getTime();
-    setBufferClear();
 
-    var datum = {
+        var time = new Date().getTime();
+        setBufferClear();
+
+        var datum = {
         'screenX':window.screenX,
         'screenY':window.screenY,
         'scrollX':window.scrollX,
         'scrollY':window.scrollY,
-    };
+        };
 
-    if(time in scroll_buffer){
-        scroll_buffer[time].push(datum);
-    }else{
-        scroll_buffer[time] = [datum];
-    }
-
-    
+        if(time in scroll_buffer){
+            scroll_buffer[time].push(datum);
+        }else{
+            scroll_buffer[time] = [datum];
+        }
+ 
 }
 
 
 function mouseEventStart(eventName,event){
-    var time = new Date().getTime();
-    setBufferClear();
 
-    var datum = {
+        var time = new Date().getTime();
+        setBufferClear();
+
+        var datum = {
         'type':eventName,
         'screenX':window.screenX,
         'screenY':window.screenY,
@@ -289,13 +284,14 @@ function mouseEventStart(eventName,event){
         'clientY':event.clientY,
         'pageX':event.pageX,
         'pageY':event.pageY,
-    }
+        }
 
-    if(time in mouse_buffer){
-        mouse_buffer[time].push(datum);
-    }else{
-        mouse_buffer[time] = [datum];
-    }
+        if(time in mouse_buffer){
+            mouse_buffer[time].push(datum);
+        }else{
+            mouse_buffer[time] = [datum];
+        }
+
 }
 
 

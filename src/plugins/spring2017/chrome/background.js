@@ -1,49 +1,46 @@
 var loggedIn = false;
-var device = "chrome";
+
+
 var domain = 'http://coagmento.org/workintent';
 var homeUrl = domain + '/index.php';
 var actionSaveUrl = domain + '/services/insertAction.php';
 var savePQUrl = domain+"/services/savePQ.php";
-
 var checkLoggedInUrl = domain + "/getLoggedIn.php";
+
 var previousTabAction = '';
 var previousWindowAction = '';
 var previousWebNavAction = '';
 var previousAction = '';
-
 var previousTabActionData = null;
 var previousWindowActionData = null;
 var previousWebNavActionData = null;
 var previousActionData = null;
+
 var red = [255,0,0,255];
 var green = [34,139,34,255];
+
 chrome.browserAction.setBadgeText({text:' '});
 chrome.browserAction.setBadgeBackgroundColor({color:red});
 
-//var serp_storage_url = domain + '/saveserp';
-//var check_userid_url = domain + '/users/checkid';
-
-
-
 chrome.runtime.onMessage.addListener(function(request, sender, callback) {
   if (request.action == "xhttp") {
-    $.ajax({
+    if(loggedIn){
+      $.ajax({
         type: request.method,
         url: request.url,
         data: request.data,
         success: function(responseText){
-        	console.log("success"+responseText);
-            callback(responseText);
+          console.log("commit data success:"+responseText);
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
             //if required, do some error handling
-            console.log("error");
+            console.log("commit data error");
             console.log(errorThrown);
             callback();
         }
     });
-
     return true; // prevents the callback from being called too early on return
+    }
   }
 });
 
@@ -95,23 +92,6 @@ checkLoggedIn();
 
 
 
-var timerLock = false; // Prevent multiple options pages from opening.
-
-function openOptions() {
-    // If not, open up options page if it isn't open.
-    var query = {
-      url: chrome.runtime.getURL(homeUrl)
-};
-chrome.tabs.query(query, function(tabs) {
-  if (!timerLock && tabs.length == 0) {
-    timerLock = true;
-    setTimeout(function() {timerLock = false;}, 1000);
-    chrome.tabs.create({'url': url} );
-}
-});
-}
-
-
 function savePQ(url,title,active,tabId,windowId,now,action,details){
   if(loggedIn){
 
@@ -121,7 +101,6 @@ function savePQ(url,title,active,tabId,windowId,now,action,details){
     active:active,
     tabId:tabId,
     windowId:windowId
-    // TODO: action, and other columns
     }
 
     
@@ -297,17 +276,13 @@ chrome.tabs.onCreated.addListener(function(tab){
         { code: "document.referrer;" },
         function(result) {
           tab.referrerInfo = result;
-
-
           saveAction("tabs.onCreated",tab.id,{currentTab:currentTab,newTab:tab},now);
         }
       );
 
   });
 
-  chrome.tabs.getCurrent(function (result){
-    
-  })
+  // chrome.tabs.getCurrent(function (result){});
   
   
 
@@ -378,11 +353,6 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
     			file: "payload.js" }
     			);
 		});
-
-        // chrome.tabs.executeScript(tabId, {
-        //     allFrames: true, 
-        //     file: 'payload.js'
-        // });
     }
 
   var now = new Date();
@@ -423,14 +393,14 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
   
 });
 
-// chrome.tabs.onZoomChange.addListener(function(ZoomChangeInfo){
-//   var now = new Date();
-//   chrome.tabs.get(ZoomChangeInfo.tabId, function(tab){
-//     ZoomChangeInfo.windowId = windowId;
-//     saveAction("tabs.onZoomChange",ZoomChangeInfo.oldZoomFactor + "," + ZoomChangeInfo.newZoomFactor,ZoomChangeInfo,now);
-//   });
+chrome.tabs.onZoomChange.addListener(function(ZoomChangeInfo){
+  var now = new Date();
+  chrome.tabs.get(ZoomChangeInfo.tabId, function(tab){
+    ZoomChangeInfo.windowId = windowId;
+    saveAction("tabs.onZoomChange",ZoomChangeInfo.oldZoomFactor + "," + ZoomChangeInfo.newZoomFactor,ZoomChangeInfo,now);
+  });
   
-// });
+});
 
 
 
@@ -499,134 +469,8 @@ chrome.webNavigation.onCommitted.addListener(function(details){
 
 
 
-// chrome.omnibox.onInputChanged.addListener(function(text, suggest){
-// 	chrome.extension.getBackgroundPage().console.log(text);
-// });
 
-
-// TODO: Can't use?
-// //chrome.omnibox.onInputEntered.addListener(function(text, disposition){
-// //                                          var now = new Date();
-// //                                          var action = "onmibox.onInputEntered";
-// //                                          var value = text;
-// ////                                          alert(text);
-// //                                          
-// //                                          
-// //                                          var data = {
-// //                                          action:action,
-// //                                          value:value
-// //                                          };
-// //                                          saveAction(data,now);
-// //                                          
-// //                                          });
-
-
-
-// TODO: Any highlighted/change actions in addition that are typically fired?
-// TODO: Record in tandem with webNavigation.onCommitted
-// TODO: On Facebook, onVisited updates itself several times.
-// TODO: Shows stats like visit count.  Not given in other items...
+// TODO: Anything else that can be used here?
 // chrome.history.onVisited.addListener(function(historyItem){
-//   var now = new Date();
-//   var action = "history.onVisited";
-//   var value = historyItem.id;
-//   var data = {
-//     action:action,
-//     value:value,
-//     actionJSON:JSON.stringify(historyItem)
-//   };
-//   alert(JSON.stringify(historyItem));
-//   saveAction(data,now);
-//   // data = {
-//   //   URL: historyItem.url,
-//   //   title: historyItem.title
-//   // }
-//   // now = new Date();
-//   // savePQ(data,now);
 // });
-
-
-
-
-//chrome.history.onVisited.addListener(function(historyItem){
-//    // Check if credentials are set and verified in sync storage
-//    
-//                                     $.ajax({
-//                                            url: "http://coagmento.org/EOPN/services/savePQ.php",
-//                                            //              url: "http://peopleanalytics.org/ExplorationStudy/api/record.php",
-//                                            method : "get",
-//                                            data : {
-//                                            
-//                                            //                password: resp.password,
-//                                            URL: historyItem.url,
-//                                            title: historyItem.title,
-//                                            localTimestamp: new Date().getTime()
-//                                            },
-//                                            dataType: "text",
-//                                            success : function(resp){
-//                                            //                                              alert("SAVED!"+resp);
-//                                            
-//                                            },
-//                                            error: function(resp){
-//                                            //                                              alert("FAILED!"+resp);
-//                                            }
-//                                            });
-//                                     }
-//                                     
-//    
-//                                $.ajax({
-//                                            url: "http://coagmento.org/EOPN/services/getUsername.php",
-//                                            method : "get",
-//                                            data : {},
-//                                            dataType: "text",
-//                                            success : function(resp){
-//                                       
-//                                       username=resp;
-//                                       
-//                                       
-//                                       
-//                                       if (username == "") {
-//                                       if(historyItem.url != "http://coagmento.org/EOPN/index.php"){
-////                                       openOptions();
-//                                       }
-//                                       
-//                                       //        if (resp.username == "" || resp.password == "") {
-//                                       //            openOptions();
-//                                       } else {
-//                                       // Send ajax request
-//                                       
-//                                       $.ajax({
-//                                              url: "http://coagmento.org/EOPN/services/savePQ.php",
-//                                              //              url: "http://peopleanalytics.org/ExplorationStudy/api/record.php",
-//                                              method : "get",
-//                                              data : {
-//                                              
-//                                              //                password: resp.password,
-//                                              URL: historyItem.url,
-//                                              title: historyItem.title,
-//                                              localTimestamp: new Date().getTime()
-//                                              },
-//                                              dataType: "text",
-//                                              success : function(resp){
-////                                              alert("SAVED!"+resp);
-//                                              
-//                                              },
-//                                              error: function(resp){
-////                                              alert("FAILED!"+resp);
-//                                              }
-//                                              });
-//                                       }
-//                                       
-//                                       
-//                                       
-//                                            },
-//                                            error: function(resp){
-//                                            callback.call(window, "Unknown error has occured", "error");
-//                                            }
-//                                            });
-//                                     
-//
-//                                     
-//                                     
-//                                     });
 
