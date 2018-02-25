@@ -61,9 +61,12 @@
     }
 
     function emailMatches($email){
-        $cxn = Connection::getInstance();
-        $result = $cxn->commit("SELECT * FROM recruits WHERE email1='$email'");
-        return mysql_num_rows($result) >0;
+        return false;
+
+
+//        $cxn = Connection::getInstance();
+//        $result = $cxn->commit("SELECT * FROM recruits WHERE email1='$email'");
+//        return mysql_num_rows($result) >0;
 
     }
 
@@ -89,7 +92,12 @@
 	   (isset($_POST['lastName_1'])) &&
 	   (isset($_POST['email1_1'])) &&
 		(isset($_POST['reEmail_1']))
-//                  && (isset($_POST['age_1']))
+                  && (isset($_POST['age_1']))
+        && (isset($_POST['date_firstchoice_1']))
+                  && (isset($_POST['date_secondchoice_1']))
+        && (isset($_POST['consent_furtheruse']))
+                  && (isset($_POST['interview_medium_1']))
+                  && (isset($_POST['medium_credentials_1']))
 		)
 		{
 			$connection = Connection::getInstance();
@@ -123,6 +131,15 @@
                     $firstName= addslashes($_POST["firstName_$x"]);
                     $lastName = addslashes($_POST["lastName_$x"]);
                     $email1 = $_POST["email1_$x"];
+                    $email_sha1 = sha1($_POST["email1_$x"]);
+                    $age = $_POST["age_$x"];
+                    $date_firstchoice = $_POST["date_firstchoice_$x"];
+                    $date_secondchoice = $_POST["date_secondchoice_$x"];
+                    $consent_furtheruseonline = $_POST["consent_furtheruse"];
+                    $interview_medium = addslashes($_POST["interview_medium_$x"]);
+                    $medium_credentials = addslashes($_POST["medium_credentials_$x"]);
+
+                    $study_source = addslashes($_POST["study_source_$x"]);
 
                     $time = $base->getTime();
                     $date = $base->getDate();
@@ -135,7 +152,7 @@
 
                     $results = $connection->commit($query);
 
-                    $query = "INSERT INTO recruits (firstName, lastName, email1, approved, `date`, `time`, `timestamp`,userID,projectID,registrationID) VALUES('$firstName','$lastName','$email1','1', '$date', '$time', '$timestamp','$next_userID','$next_userID','$next_registrationID')";
+                    $query = "INSERT INTO recruits (firstName, lastName, email1, email_sha1, approved, `date`, `time`, `timestamp`,userID,projectID,registrationID,`age`,`date_firstchoice`,`date_secondchoice`,`consent_furtheruseonline`,`interview_medium`,`medium_credentials`,`recruitment_source`) VALUES ('$firstName','$lastName','$email1','$email_sha1','1', '$date', '$time', '$timestamp','$next_userID','$next_userID','$next_registrationID','$age','$date_firstchoice','$date_secondchoice','$consent_furtheruseonline','$interview_medium','$medium_credentials','$study_source')";
 //                    $query = "INSERT INTO recruits (firstName, lastName, age, email1, approved, `date`, `time`, `timestamp`,userID,projectID,registrationID) VALUES('$firstName','$lastName','$age','$email1','1', '$date', '$time', '$timestamp','$next_userID','$next_userID','$next_registrationID')";
                     $results = $connection->commit($query);
                     $recruitsID = $connection->getLastID();
@@ -168,7 +185,17 @@
                 $message .= "\r\n";
                 $message .= "<title>Search intentions in natural settings study participation confirmation email</title></head>\n<body>\n";
                 $message .= "\r\n";
-                $message .= "Thank you for your interest in taking part in our study. The details are shown below.<br/><br/>";
+
+                $message .= "Thank you for your interest in taking part in our study! This is a confirmation e-mail to confirm your participation.  Please save this for your records.<br/><br/>
+
+During this study you will conduct task-based searches 
+                                        and will be asked explain your search intentions 
+                                        at various points of your search. You will receive <strong>$95 cash</strong> for participating in the study.<br/><br/>
+                                        Below are the date and time of your entry and exit interviews.  Please remember these times.  You will be sent a reminder e-mail before each interview.<br/><br/>
+
+If you have chosen these dates in error, please re-register.  In addition, you may also contact us at mmitsui@scarletmail.rutgers.edu to inform us of the correction.<br/><br/>
+
+Do not hesitate to contact us if you have any further questions.<br/><br/>";
                 $message .= "\r\n";
                 $message .= "<strong>Participant name: </strong>";
 
@@ -181,48 +208,34 @@
 
 
 
+                $date_firstchoice = $_POST["date_firstchoice_1"];
+                $date_secondchoice = $_POST["date_secondchoice_1"];
+
+                $message .= "<p><strong>Date of Pre-Task Interview:</strong> $date_firstchoice</p>\n";
+                $message .= "<p><strong>Date of Post-Task Interview:</strong> $date_secondchoice</p>\n";
+
+                $message_experimenter = "There is a new participant for the study! The participant's information is below:<br/><br/>";
+                $message_experimenter .= "<strong>Participant name: </strong>";
+                $message_experimenter .= $firstName." ".$lastName."<br/>";
+                $message_experimenter .= "<p><strong>Date of Pre-Task Interview:</strong> $date_firstchoice</p>\n";
+                $message_experimenter .= "<p><strong>Date of Post-Task Interview:</strong> $date_secondchoice</p>\n";
+                $message_experimenter .= "<p><strong>Data Entry URL:</strong> http://coagmento.org/workintent/userDataEntry.php?userID=$userID</p>\n";
+
+
                 $username = $user_assoc["un_1"];
                 $password = $user_assoc["pwd_1"];
-                $message .= "<br/>\r\n";
-
-
+//                $message .= "<p>Username: $username</p>\n";
+//                $message .= "<p>Password: $password</p>\n";
+//                $message .= "<br/>\r\n";
                 $message .= "\r\n";
-
-
-
-
-
-
-
-
-
-
-
-
-
-								$message .= "During this study you will conduct task-based searches 
-                                        and will be asked explain your search intentions 
-                                        at various points of your search.<br/><br/>";
-                $message .= "\r\n";
-
-                http://coagmento.org/workintent/entryQuestionnaire.php
-								$message .= "You will receive <strong>$100 cash</strong> for participating in the study.  </strong>.<br/><br/>";
-
-                                $message .= "Before being able to access the study, we would first like you to answer an entry questionnaire regarding demographics and the tasks you typically work on.
-                                             To complete the questionnaire, please go here: http://coagmento.org/workintent/entryQuestionnaire.php.<br/><br/>";
-								$message .= "\r\n";
-
-
-                $message .= "\r\n";
-                $message .= "After completing the questionnaire, you will receive a confirmation e-mail in 24-48 hours on downloading and installing the plugin for this study. Feel free to <a href=\"mailto:mmitsui@scarletmail.rutgers.edu?subject=Study inquiry\">contact us</a> if you have any questions.";
-								$message .= "\r\n";
                 $message .= "</body></html>";
 
 
-                mail ('mmitsui@scarletmail.rutgers.edu', $subject, $message, $headers); //Copy to researchers conducting the study
-                mail ('mmitsui88@gmail.com', $subject, $message, $headers); //Copy to researchers conducting the study
-//                mail ('belkin@rutgers.edu', $subject, $message, $headers); //Copy to researchers conducting the study
-//                mail ('erha43@gmail.com', $subject, $message, $headers); //Copy to researchers conducting the study
+                mail ('mmitsui@scarletmail.rutgers.edu', $subject, $message_experimenter, $headers); //Copy to researchers conducting the study
+                mail ('mmitsui88@gmail.com', $subject, $message_experimenter, $headers); //Copy to researchers conducting the study
+                mail ('belkin@rutgers.edu', $subject, $message_experimenter, $headers); //Copy to researchers conducting the study
+                mail ('er484@scarletmail.rutgers.edu', $subject, $message_experimenter, $headers); //Copy to researchers conducting the study
+                mail ('jl2033@scarletmail.rutgers.edu', $subject, $message_experimenter, $headers); //Copy to researchers conducting the study
 
 
 								// mail ('kevin.eric.albertson@gmail.com', $subject, $message, $headers); //Copy to researchers conducting the study
@@ -244,9 +257,7 @@
                 echo "<tr><td align=left>Thank you for submitting your request for participating in this study. 
                         <br/>
                         <br/>
-                        You will receive a confirmation email with a link to the entry questionnaire.
-                        Afterwards, within 24-48 hours, you will receive information on downloading and installing the plugin for this study.  
-                        If you have questions, feel free to <a href=\"mailto:mmitsui@scarletmail.rutgers.edu?subject=Study inquiry\">contact us</a>.<hr/></td></tr>\n";
+                        ";
                 echo "<tr><td><strong>Participant information</strong></td></tr>\n";
 
                 for($x=1;$x<=$NUM_USERS;$x++){
@@ -255,6 +266,8 @@
                     $lastName = $_POST["lastName_$x"];
                     $username =$user_assoc["un_$x"];
                     $password = $user_assoc["pwd_$x"];
+                    $date_firstchoice = $_POST["date_firstchoice_$x"];
+                    $date_secondchoice = $_POST["date_secondchoice_$x"];
 
 
 
@@ -266,6 +279,8 @@
                     echo "<tr><td>First name: $firstName</td></tr>\n";
                     echo "<tr><td>Last name: $lastName</td></tr>\n";
                     echo "<tr><td>Email: $email1</td></tr>\n";
+                    echo "<tr><td>Date of Pre-Task Interview: $date_firstchoice</td></tr>\n";
+                    echo "<tr><td>Date of Post-Task Interview: $date_secondchoice</td></tr>\n";
 
                 }
 

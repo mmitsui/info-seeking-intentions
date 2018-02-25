@@ -3,7 +3,7 @@ require_once('core/Connection.class.php');
 
 
 $num_recruits = 0;
-  $recruit_limit =90; // Current Recruitment Limit as of 10/6/2014
+$recruit_limit =44; // Current Recruitment Limit as of 10/6/2014
 
 
 $cxn = Connection::getInstance();
@@ -86,30 +86,28 @@ function isRadioSelected(radioButtons, obj)
   			  <td colspan=2>
 
     <div>
-        <p>Welcome! This is the sign-up form to register for the paid research study.</p></div>
-      <p>The research project,  <em>Search Intentions in Natural Settings</em>, funded by
-      the National Science Foundation, seeks participants in a study of information
-      seeking. Participants will conduct searches for their work in a naturalistic setting
-      - i.e., their work environment - for information relating to different kinds of
-      information search tasks related to their employment. Participants will first conduct
-      an initial interview in which they are asked for demographic information, introduced
-      to the study’s software, and asked about regular search tasks, lasting  <strong>about one hour</strong>.
-      This will be followed by an experimental session. Participants will be asked to  <strong>record
-        their searching activity over the course of five days</strong> and to annotate the tasks
-      that they conduct which will take  <strong>about one hour each day</strong>, as well as to explain
-      their search intentions at self-selected points during their tasks. Various aspects of their
-      searching behavior will be recorded for subsequent analysis. The study will conclude with
-      an exit interview, in which participants will be asked to analyze their search experiences
-      and to give characterizations of the tasks they performed during the five days; this
-      last session will last  <strong>about one hour</strong>.
+        <p>Welcome! This is the sign-up form to register for the paid research study.</p>
+    </div>
+      <p>
+
+                  The research project, <i>Search Intentions in Natural Settings</i>, funded by the National Science Foundation, seeks
+          participants in a study of information seeking. Participants will conduct searches for their work in a naturalistic
+          setting - i.e., their work environment - for information relating to different kinds of information search tasks
+          related to their employment. Participants will first conduct an initial interview in which they are asked for
+          demographic information, introduced to the study’s software, and asked about regular search tasks, lasting
+                  <strong>about one hour</strong>. This will be followed by an experimental session.
+                  Participants will be asked to <strong>record their searching activity over the course of five days</strong> and to
+                  annotate the tasks that they conduct which will take <strong>about one hour each day</strong>, as well as to explain
+                  their search intentions at self-selected points during their tasks. Various aspects of their searching
+                  behavior will be recorded for subsequent analysis. The study will conclude with an exit interview,
+                  in which participants will be asked to analyze their search experiences and to give characterizations of the tasks they performed during the five days; this last session will last about one hour.
 
       </p>
 
     <p>
-      All volunteers for this study will receive  <strong>$100 cash</strong>  for their participation.
-      Taking part in this study will help to advance the understanding of the search
-      process and contribute towards development of search systems that can automatically
-      adapt to a user's specific search goals.
+        All volunteers for this study will receive <strong>$95.00</strong> cash for their participation. Taking part in this study will
+        help to advance the understanding of the search process and contribute towards development of search systems
+        that can automatically adapt to a user's specific search goals.
 
     </p>
 
@@ -124,8 +122,8 @@ function isRadioSelected(radioButtons, obj)
       <ul>
         <li>You must be at least 18 years old to participate.</li>
         <li>You must be a non-student and employed.</li>
-        <li>Proficiency in English is required.</li>
-        <li>Your work must at least occasionally entail information seeking.</li>
+                      <li>Your work must at least occasionally entail information seeking.</li>
+                      <li>Proficiency in English is required.</li>
         <li>Intermediate typing and online search skills are required.</li>
         <li>You must use Google Chrome throughout the duration of the study.</li>
       </ul>
@@ -133,16 +131,16 @@ function isRadioSelected(radioButtons, obj)
 
 
 
-    <p>You will not be offered or receive any special consideration if you take part
-      in this research; it is purely voluntary. This study has been approved by the
-      Rutgers Institutional Review Board (IRB Study #XX), and will be supervised by Dr.
-      Nicholas Belkin (belkin@rutgers.edu) and Dr. Chirag Shah (chirags@rutgers.edu) at the
-      School of Communication and Information.</p>
+    <p>
+        You will not be offered or receive any special consideration if you take part in this research; it is purely
+        voluntary. This study has been approved by the Rutgers Institutional Review Board (IRB Study #18-057), and will be
+        supervised by Dr. Nicholas Belkin (belkin@rutgers.edu) and Dr. Chirag Shah (chirags@rutgers.edu) at the School
+        of Communication and Information.
+    </p>
 
-    <p>For more information about this study, please send e-mail to Matthew
-      Mitsui at <a href="mailto:mmitsui@scarletmail.rutgers.edu?Subject=Study%20Inquiry" target="_top">mmitsui@scarletmail.rutgers.edu</a>.
-      You can also contact Matthew Mitsui to ask questions
-      or get more information about the project. </p>
+    <p>For more information about this study, please send e-mail to Matthew Mitsui at
+        <a href="mailto:mmitsui@scarletmail.rutgers.edu?Subject=Study%20Inquiry" target="_top">mmitsui@scarletmail.rutgers.edu</a>.
+        You can also contact Matthew Mitsui to ask questions or get more information about the project. </p>
   				</td>
   			</tr>
   <!--
@@ -155,7 +153,7 @@ function isRadioSelected(radioButtons, obj)
 
     <tr>
   					<td align="center" colspan=2>
-        <button class='btn'>Continue</button>
+        <button class='btn btn-default'>Continue</button>
   					</td>
   				</tr>
 

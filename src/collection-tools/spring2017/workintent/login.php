@@ -13,21 +13,22 @@ Maybe we can use this as a replacement for the sidebar login as well.
 
 	$success = array();
 
-	$blankusername = isset($_POST['username']) && (trim($_POST['username']) =='');
-    $blankpassword = isset($_POST['password']) && ($_POST['password'] =='');
+	$blankusername = isset($_POST['username_sha1']) && (trim($_POST['username_sha1']) =='' || trim($_POST['username_sha1']) =='da39a3ee5e6b4b0d3255bfef95601890afd80709');
+    $blankpassword = isset($_POST['password_sha1']) && (trim($_POST['password_sha1']) =='' || trim($_POST['password_sha1']) =='da39a3ee5e6b4b0d3255bfef95601890afd80709');
 
     //Check if <username/email,password> exists
-	if(isset($_POST['username']) && isset($_POST['password']) && !($blankusername || $blankpassword)){
-        $username = trim($_POST['username']);
-        $password = $_POST['password'];
+	if(isset($_POST['username_sha1']) && isset($_POST['password_sha1']) && !($blankusername || $blankpassword)){
+        $username = trim($_POST['username_sha1']);
+        $password = $_POST['password_sha1'];
         $extensionID = $_POST['extensionID'];
         $password_sha1 = sha1($password);
         $query = "";
 	    if(filter_var($username, FILTER_VALIDATE_EMAIL)){
-            $query = "SELECT * FROM (SELECT userID,email1,firstName,lastName FROM recruits WHERE `email1`='$username') a INNER JOIN (SELECT `userID`,`username`,`password` from users WHERE `password`='$password') b on a.userID=b.userID";
+            $query = "SELECT * FROM (SELECT userID,email1,firstName,lastName FROM recruits WHERE `email1`='$username') a INNER JOIN (SELECT `userID`,`username`,`password` from users WHERE `password_sha1`='$password') b on a.userID=b.userID";
         }else{
-	        $query = "SELECT * FROM (SELECT userID,email1,firstName,lastName FROM recruits) a INNER JOIN (SELECT `userID`,`username`,`password` from users WHERE `username`='$username' AND `password`='$password') b on a.userID=b.userID";
+	        $query = "SELECT * FROM (SELECT userID,email1,firstName,lastName FROM recruits) a INNER JOIN (SELECT `userID`,`username`,`password` from users WHERE `username_sha1`='$username' AND `password_sha1`='$password') b on a.userID=b.userID";
         }
+
 
         $results = $cxn->commit($query);
 
@@ -92,7 +93,6 @@ Maybe we can use this as a replacement for the sidebar login as well.
         //Full credentials weren't given
         $success['success'] = false;
         $success['errortext'] = "Username and/or password not given";
-
 
     }
 

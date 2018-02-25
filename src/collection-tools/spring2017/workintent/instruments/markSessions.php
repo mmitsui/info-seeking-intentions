@@ -32,83 +32,37 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
     <html>
     <head>
         <title>
-            Mark Sessions
+            Identify Sessions
         </title>
 
         <link rel="stylesheet" href="../study_styles/bootstrap-3.3.7-dist/css/bootstrap.min.css">
-<!--        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.1/css/bootstrap-slider.min.css">-->
+        <link rel="stylesheet" href="../study_styles/font-awesome-4.7.0/css/font-awesome.min.css">
+
+        <!--        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.1/css/bootstrap-slider.min.css">-->
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<!--        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.1/bootstrap-slider.min.js"></script>-->
+        <script src="../lib/bootstrap_notify/bootstrap-notify.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+        <!--        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.1/bootstrap-slider.min.js"></script>-->
 
         <style>
-            /*.slider {*/
-                /*height: 100% !important;*/
-            /*}*/
+
+            div#pop-up {
+                display: none;
+                position: absolute;
+            }
+
+
+            body{
+                background: #DFE2DB !important;
+            }
 
             .tab-pane{
                 height:300px;
                 overflow-y:scroll;
                 width:90%;
-            }
-            /*table {*/
-            /*width: 100%;*/
-            /*}*/
-
-            /*thead, tbody, tr, td, th { display,: block; }*/
-
-            /*tr:after {*/
-            /*content: ' ';*/
-            /*display: block;*/
-            /*visibility: hidden;*/
-            /*clear: both;*/
-            /*}*/
-
-            /*thead th {*/
-            /*height: 30px;*/
-
-            /*!*text-align: left;*!*/
-            /*}*/
-
-            /*tbody {*/
-            /*height: 120px;*/
-            /*overflow-y: auto;*/
-            /*}*/
-
-            /*thead {*/
-            /*!* fallback *!*/
-            /*}*/
-
-
-            /*tbody td, thead th {*/
-            /*width: 19.2%;*/
-            /*float: left;*/
-            /*}*/
-
-
-            /*.table-fixed thead {*/
-            /*width: 97%;*/
-            /*}*/
-            /*.table-fixed tbody {*/
-            /*height: 230px;*/
-            /*overflow-y: auto;*/
-            /*width: 100%;*/
-            /*}*/
-            /*.table-fixed thead, .table-fixed tbody, .table-fixed tr, .table-fixed td, .table-fixed th {*/
-            /*display: block;*/
-            /*}*/
-            /*.table-fixed tbody td, .table-fixed thead > tr> th {*/
-            /*float: left;*/
-            /*border-bottom-width: 0;*/
-            /*}*/
-            .alert{
-                position:fixed;
-                top:0;
-                align:center;
-                width:100%;
-                display:none;
-                margin: 0 auto;
             }
         </style>
 
@@ -116,212 +70,836 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
             var session_form_id= '#session_form';
             var begin_index = -1;
             var end_index = -1;
-//            var slider_id = '#session_slider';
-//            var slider_params = {
-//                reversed : false,
-//                formatter : function(value){
-//                    var minValue = value[0];
-//                    var maxValue = value[1];
-//                    var minTime = $("td[name=time_"+minValue+"]").html();
-//                    var minTitle = $("td[name=title_"+minValue+"]").html();
-//                    var maxTime = $("td[name=time_"+maxValue+"]").html();
-//                    var maxTitle = $("td[name=title_"+maxValue+"]").html();
-//                    return minTime + " (" + minTitle + ") - " + maxTime + " (" + maxTitle + ")";
-//                }
-//            };
-//            var slider_init_function = function(){
-//                return $(slider_id).slider(slider_params);
-//            };
 
-//            var slider_slidestop_function = function(f){
-//                var values = $(slider_id).val().split(",");
-//                values = $.map(values,function(elem,i){
-//                    return parseInt(elem);
-//                });
-//                var minValue = values[0];
-//                var maxValue = values[1];
-////                        alert("min " + minValue + "max " + maxValue + values);
-//                $(session_form_id+" input[type='checkbox']").filter(function() {
-//                    return ($(this).data('table-index') >= minValue && $(this).data('table-index') <= maxValue);
-//                }).prop( "checked", true );
+
+
+            var history = {};
+            var history_begin = {};
+            var history_end = {};
+            var min_row_index = 0;
+            var max_row_index = 0;
+            var sortedRowIndices = [];
+            var max_new_labels = 0;
+            var unfinishedLabels = [];
+            var all_begin_labels = [];
+            var all_end_labels = [];
+
+            var reset_data = function(){
+                history = {};
+                history_begin = {};
+                history_end = {};
+                min_row_index = 0;
+                max_row_index = 0;
+                sortedRowIndices = [];
+                max_new_labels = 0;
+
+                var max_fixed_labels = $.map($("td[name='session-id']"),function(o,i){
+                    return parseInt($(o).html()) || 0;
+                });
+                max_new_labels = Math.max.apply(Math,max_fixed_labels);
+                unfinishedLabels = [];
+                all_begin_labels = [];
+                all_end_labels = [];
+            }
+
+            var edit_history_begin = function(action,index,sessionLabel){
+                if(action=='add'){
+                    history_begin[index] = {'type':'begin','sessionLabel':parseInt(sessionLabel)};
+                }else{
+                    delete history_begin[index];
+                }
+            }
+
+            var edit_history_end = function(action,index,sessionLabel){
+                if(action=='add'){
+                    history_end[index] = {'type':'end','sessionLabel':parseInt(sessionLabel)};
+                }else{
+                    delete history_end[index];
+                }
+            }
+
+
+            var clear_selection_function = function(){
+                $("tr").removeClass('active');
+
+                $("button[name='end_button']").removeClass('active');
+                $("button[name='begin_button']").removeClass('active');
+                $("button[name='end_button']").show();
+                $("button[name='begin_button']").show();
+                $("button[name='end_button']").html('End');
+                $("button[name='begin_button']").html('Begin');
+
+                $(session_form_id+" tr").filter(function() {
+                    return ($(this).data('marked'));
+                }).addClass('success');
+
+                $('span[name="filler"]').html("");
+
+                $('div#pop-up').hide();
+                reset_data();
+            }
+
+
+
+            var populate_session_popup = function(row_index,begin_or_end,begin_end_func) {
+                $('#session_list').html("");
+
+                if(begin_or_end=='begin'){
+                    $('#session_list').append("<p>This is the beginning of which session?</p>");
+                }else{
+                    $('#session_list').append("<p>This is the end of which session?</p>");
+                }
+
+                $('#session_list').append("<ul id='newList'></ul>");
+
+                $.each(unfinishedLabels, function(index, label) {
+                    $("#newList").append("<div class='radio'><label><input type='radio' name='whichsession' value='"+label+"'/> Session "+label+"</label></div>");
+                });
+
+                if(begin_or_end=='begin'){
+                    $("#newList").append("<div class='radio'><label><input type='radio' name='whichsession' value='0'/> New Session</label></div>");
+                }
+
+                $('#session_list').append("<input type='hidden' id='row_index' value='"+row_index+"'/>");
+                $('#label_session_button').unbind("click").click(begin_end_func);
+            }
+
+
+
+            var popup_show = function(ev,button,row_index,begin_or_end,begin_end_func){
+
+                populate_session_popup(row_index,begin_or_end,begin_end_func);
+                var position = $(button).offset();
+                $('div#pop-up').show()
+                    .css('top', position.top)
+                    .css('left', position.left+$(button).width()+30)
+                    .css('position','absolute')
+                    .appendTo('body');
+
+                $('div#pop-up').mousedown(function() {
+                    $(this).css('cursor','move');
+                });
+
+            }
+
+            var popup_clear = function(ev){
+                $('div#pop-up').hide();
+            }
+
+
+
+
 //
-//                $(session_form_id+" input[type='checkbox']").filter(function() {
-//                    return ($(this).data('table-index') < minValue || $(this).data('table-index') > maxValue);
-//                }).prop( "checked", false );
-//            };
+            var click_new_session_begin = function(){
+                var row_index = parseInt($('#row_index').val());
+                var sessionLabel = -1;
+                if(typeof $('input[name="whichsession"]:checked').val() !== typeof undefined ){
+                    sessionLabel = $('input[name="whichsession"]:checked').val()
+                }else{
+                    $.notify({
+                        // options
+                        message: "Please make a selection."
+                    },{
+                        // settings
+                        type: 'danger'
+                    });
+                    return;
+                }
+
+                if(sessionLabel==0){
+                    edit_history_begin('add',row_index,max_new_labels+1);
+                }else{
+                    edit_history_begin('add',row_index,sessionLabel);
+                }
+
+
+                $('button').filter(function () {
+                    return $(this).data('table-index') ==row_index && $(this).html()=="Begin";
+                }).addClass('active').html("Undo Begin");
+
+
+
+
+//                $.notify({
+//                    // options
+//                    message: "New beginning marked!"
+//                },{
+//                    // settings
+//                    type: 'success'
+//                });
+
+
+                update_session_labels();
+                popup_clear();
+            }
+
+            var click_new_session_end = function(){
+
+                var row_index = parseInt($('#row_index').val());
+                var sessionLabel = -1
+                if(typeof $('input[name="whichsession"]:checked').val() !== typeof undefined ){
+                    sessionLabel = $('input[name="whichsession"]:checked').val()
+                }else{
+                    $.notify({
+                        // options
+                        message: "Please make a selection."
+                    },{
+                        // settings
+                        type: 'danger'
+                    });
+                    return;
+                }
+
+                if(sessionLabel==0){
+                    edit_history_end('add',row_index,max_new_labels+1);
+                }else{
+                    edit_history_end('add',row_index,sessionLabel);
+                }
+
+
+                $('button').filter(function () {
+                    return $(this).data('table-index') ==row_index && $(this).html()=="End";
+                }).addClass('active').html("Undo End");
+
+//                $.notify({
+//                    // options
+//                    message: "New ending marked!"
+//                },{
+//                    // settings
+//                    type: 'success'
+//                });
+
+                update_session_labels();
+                popup_clear();
+
+
+            }
+
+
+
+
+
+
+
+
+            function sortNumber(a,b) {
+                return a - b;
+            }
+
+
+            var update_session_labels = function(){
+                sortedRowIndices = [];
+                $.each(history_begin, function(row_index, value) {
+                    sortedRowIndices.push(parseInt(row_index));
+                });
+                $.each(history_end, function(row_index, value) {
+                    sortedRowIndices.push(parseInt(row_index));
+                });
+                sortedRowIndices.sort(sortNumber);
+                min_row_index = sortedRowIndices[0];
+                max_row_index = sortedRowIndices[sortedRowIndices.length-1];
+                if(sortedRowIndices.length == 0){
+                    min_row_index = 0;
+                    max_row_index = 0;
+
+                }
+
+
+
+                //                Getting unfinished labels
+                var begin_labels = [];
+                var end_labels = [];
+                var all_labels = [];
+                all_begin_labels = [];
+                all_end_labels = [];
+                $.each(history_begin, function(row_index, history_item) {
+                    begin_labels.push(history_item['sessionLabel']);
+                    all_begin_labels.push(history_item['sessionLabel']);
+                    all_labels.push(history_item['sessionLabel']);
+
+                });
+                $.each(history_end, function(row_index, history_item) {
+                    end_labels.push(history_item['sessionLabel']);
+                    all_end_labels.push(history_item['sessionLabel']);
+                    all_labels.push(history_item['sessionLabel']);
+
+                });
+                unfinishedLabels = [];
+                $.grep(begin_labels, function(el) {
+                    if ($.inArray(el, end_labels) == -1 && $.inArray(el, unfinishedLabels) == -1){
+                        unfinishedLabels.push(el);
+                    }
+                });
+
+
+                max_new_labels = Math.max.apply(Math,all_labels);
+                if(all_labels.length ==0){
+                    max_new_labels = 0;
+                    var max_fixed_labels = $.map($("td[name='session-id']"),function(o,i){
+                        return parseInt($(o).html()) || 0;
+                    });
+                    max_new_labels = Math.max.apply(Math,max_fixed_labels);
+                }
+
+//                Renaming rows
+                $('span[name="filler"]').html("");
+
+                $(session_form_id+" input[type='checkbox']").filter(function () {
+                    return true;
+                }).prop( "checked", false ).removeData('session-label');
+
+
+
+                for(i=0; i < sortedRowIndices.length; i++){
+                    var current_row_index = sortedRowIndices[i];
+                    var sessionLabel = '';
+                    if(current_row_index in history_end){
+                        sessionLabel = history_end[current_row_index]['sessionLabel'];
+                    }else{
+                        sessionLabel = history_begin[current_row_index]['sessionLabel'];
+                    }
+
+//                    alert("ROW "+current_row_index);
+//                    alert("Session Label"+sessionLabel);
+                    $('span[name="filler"]').filter(function () {
+                        return $(this).data('table-index') >= current_row_index;
+                    }).html("Session "+sessionLabel);
+
+                    $('tr').filter(function () {
+                        return $(this).data('table-index') >= current_row_index;
+                    }).addClass('active');
+
+                    $(session_form_id+" input[type='checkbox']").filter(function () {
+                        return $(this).data('table-index') >= current_row_index;
+                    }).prop( "checked", true).data('session-label',sessionLabel);
+                }
+
+                $('span[name="filler"]').filter(function () {
+                    return $(this).data('table-index') > sortedRowIndices[sortedRowIndices.length-1];
+                }).html("");
+
+                $('tr').filter(function () {
+                    return $(this).data('table-index') > sortedRowIndices[sortedRowIndices.length-1];
+                }).removeClass('active');
+
+
+                $(session_form_id+" input[type='checkbox']").filter(function () {
+                    return $(this).data('table-index') > sortedRowIndices[sortedRowIndices.length-1];
+                }).prop( "checked", false ).removeData('session-label');
+
+
+
+
+
+
+
+                //                    $(session_form_id+" input[type='checkbox']").filter(function() {
+//                        return ($(this).data('table-index') >= begin_index && $(this).data('table-index') <= end_index);
+//                    }).prop( "checked", true );
+
+                if(begin_labels.length+end_labels.length >=2){
+                    $('#identify_session_group').show();
+                }else{
+                    $('#identify_session_group').hide();
+                }
+
+            }
+
+
+
+
             var denote_beginend_function = function(ev){
+                var hide_same = false;
+                var label = $(this).html();
+                var curr_row_index = $(this).data('table-index');
+
                 if($(this).attr("name")=='begin_button'){
 
-                    if($(this).hasClass('active')){
-                        $("button[name='begin_button']").removeClass('active');
-                        $("button[name='begin_button']").show();
-                        $(this).html("Begin");
-                        begin_index = -1;
+                    if(curr_row_index <= min_row_index){
+                        if(label=="Begin"){
+                            edit_history_begin('add',curr_row_index,max_new_labels+1);
+                            $(this).addClass('active');
+                            $(this).html("Undo Begin");
+                            update_session_labels();
+                        }
+                        else if(label=="Undo Begin"){
 
-                    }else{
-                        $("button[name='begin_button']").removeClass('active');
-                        $("button[name='begin_button']").hide();
-                        $(this).html("Undo Begin");
-                        $(this).addClass('active');
-                        $(this).show();
-                        begin_index = $(this).data('table-index');
+                            if((Object.keys(history_begin).length+Object.keys(history_end).length)>=2 && (sortedRowIndices[1] in history_end) ){
+                                $.notify({
+                                    // options
+                                    message: "Your annotations should not begin with 'End'."
+                                },{
+                                    // settings
+                                    type: 'danger'
+                                });
+                                return;
+                            }
+
+
+                            edit_history_begin('remove',curr_row_index,-1);
+                            $(this).removeClass('active');
+                            $(this).html("Begin");
+                            update_session_labels();
+                        }
+
                     }
-//                    if(end_index != -1){
-//                        $(this).addClass('active');
-//                    }else{
-//                        $(this).toggleClass('active');
-//                    }
+                    else if(curr_row_index >= max_row_index)
+                    {
+                        last_type = ''
+                        if(max_row_index in history_end){
+                            last_type = history_end[max_row_index]['type'];
+                        }else if(max_row_index in history_begin){
+                            last_type = history_begin[max_row_index]['type'];
+                        }
+
+                        if(label=="Begin"){
+                            if(curr_row_index - max_row_index > 1 && last_type=='end'){
+                                alert(curr_row_index - max_row_index);
+                                $.notify({
+                                    // options
+                                    message: "Begin should come immediately after End."
+                                },{
+                                    // settings
+                                    type: 'danger'
+                                });
+                                return;
+                            }
+
+                            if(unfinishedLabels.length >=2){
+                                popup_show(ev,$(this),curr_row_index,'begin',click_new_session_begin);
+                            }else if(all_begin_labels.length >=2){
+                                popup_show(ev,$(this),curr_row_index,'begin',click_new_session_begin);
+                            }
+                            else{
+                                edit_history_begin('add',curr_row_index,max_new_labels+1);
+                                $(this).addClass('active');
+                                $(this).html("Undo Begin");
+                                update_session_labels();
+                            }
 
 
+                        }
 
+                        if(label=="Undo Begin"){
+                            edit_history_begin('remove',curr_row_index,-1);
+                            $(this).removeClass('active');
+                            $(this).html("Begin");
+                            update_session_labels();
+                        }
+
+                    }
+                    else{
+
+                        if(label=="Begin"){
+                            popup_show(ev,$(this),curr_row_index,'begin',click_new_session_begin);
+//                            if(unfinishedLabels.length >= 2){
+//                                populate_session_popup();
+//                            }else{
+//                                history[curr_row_index] = {'type':'begin','sessionLabel':max_new_labels+1};
+//                                max_new_labels += 1;
+//                                $(this).addClass('active');
+//                                $(this).html("Undo Begin");
+//                                update_session_labels();
+//                            }
+                        }
+                        else{
+                            if(unfinishedLabels.length >= 2){
+                                var prev_index = sortedRowIndices.indexOf(curr_row_index)-1;
+                                if(prev_index >=0){
+                                    if(curr_row_index in history_end){
+                                        $.notify({
+                                            // options
+                                            message: "A Begin should come immediately after an End."
+                                        },{
+                                            // settings
+                                            type: 'danger'
+                                        });
+                                        return;
+                                    }
+                                }
+                            }
+
+                            edit_history_begin('remove',curr_row_index,-1);
+                            $(this).removeClass('active');
+                            $(this).html("Begin");
+                            update_session_labels();
+
+                        }
+                    }
                 }else if($(this).attr("name")=='end_button'){
 
 
-
-                    if($(this).hasClass('active')){
-                        $("button[name='end_button']").removeClass('active');
-                        $("button[name='end_button']").show();
+                    if(unfinishedLabels.length ==0 && label=="End"){
+                        $(this).removeClass('active');
                         $(this).html("End");
-                        end_index = -1;
-                    }else{
-                        $("button[name='end_button']").removeClass('active');
-                        $("button[name='end_button']").hide();
-                        $(this).html("Undo End");
-                        $(this).addClass('active');
-                        $(this).show();
-                        end_index = $(this).data('table-index');
-
+                        $.notify({
+                            // options
+                            message: "End should not come first."
+                        },{
+                            // settings
+                            type: 'danger'
+                        });
+                        return;
                     }
-//                    if(begin_index != -1){
-//                        $(this).addClass('active');
-//                    }else{
-//                        $(this).toggleClass('active');
-//                    }
 
-                }
-
-                if(begin_index != -1 && end_index != -1){
-                    $(session_form_id+" input[type='checkbox']").filter(function() {
-                        return ($(this).data('table-index') >= begin_index && $(this).data('table-index') <= end_index);
-                    }).prop( "checked", true );
-
-                    $(session_form_id+" input[type='checkbox']").filter(function() {
-                        return ($(this).data('table-index') < begin_index || $(this).data('table-index') > end_index);
-                    }).prop( "checked", false );
-
-
-                    $(session_form_id+" button[type='button'][name='end_button']").filter(function() {
-                        return ($(this).data('table-index') == begin_index);
-                    }).hide();
-
-                    $(session_form_id+" button[type='button'][name='begin_button']").filter(function() {
-                        return ($(this).data('table-index') == end_index);
-                    }).hide();
-
-                }else{
-                    if(begin_index != -1){
-                        $(session_form_id+" input[type='checkbox']").filter(function() {
-                            return ($(this).data('table-index') == begin_index);
-                        }).prop( "checked", true );
-
-
-
-                        $(session_form_id+" input[type='checkbox']").filter(function() {
-                            return ($(this).data('table-index') != begin_index);
-                        }).prop( "checked", false );
-
-
-                        $(session_form_id+" button[type='button'][name='end_button']").filter(function() {
-                            return ($(this).data('table-index') == begin_index);
-                        }).hide();
-
-
-                    }else if(end_index != -1){
-                        $(session_form_id+" input[type='checkbox']").filter(function() {
-                            return ($(this).data('table-index') == end_index);
-                        }).prop( "checked", true );
-
-                        $(session_form_id+" input[type='checkbox']").filter(function() {
-                            return ($(this).data('table-index') != end_index);
-                        }).prop( "checked", false );
-
-
-
-                        $(session_form_id+" button[type='button'][name='begin_button']").filter(function() {
-                            return ($(this).data('table-index') == end_index);
-                        }).hide();
-
-
-
-                    }else{
-                        $(session_form_id+" input[type='checkbox']").filter(function() {
-                            return true;
-                        }).prop( "checked", false );
-
-
-                        $(session_form_id+" button[type='button'][name='end_button']").filter(function() {
-                            return ($(this).data('table-index') != begin_index);
-                        }).show();
-
-
-                        $(session_form_id+" button[type='button'][name='begin_button']").filter(function() {
-                            return ($(this).data('table-index') != end_index);
-                        }).show();
+                    if(curr_row_index < min_row_index){
+                        $(this).removeClass('active');
+                        $(this).html("End");
+                        $.notify({
+                            // options
+                            message: "End should not come before anything else."
+                        },{
+                            // settings
+                            type: 'danger'
+                        });
+                        return;
                     }
-                }
-            }
-            var mark_session_button_function = function(ev){
-                ev.preventDefault()// cancel form submission
-                var formData = $(session_form_id).serialize();
-                if($(this).attr("value")=="mark_session_button"){
-                    $.ajax({
-                        type: 'POST',
-                        url: $(session_form_id).attr('action'),
-                        data: formData
-                    }).done(function(response) {
-//                                alert(response);
-                        response = JSON.parse(response);
-                        if(response.hasOwnProperty('error')){
-                            $('#mark_session_confirmation').removeClass('alert-success');
-                            $('#mark_session_confirmation').addClass('alert-danger');
-                            $('#mark_session_confirmation').html(response.message);
-                            $('#mark_session_confirmation').show();
-                            $('#mark_session_confirmation').fadeOut(3000);
+
+                    else if(curr_row_index >= max_row_index){
+
+                        if(label=="Undo End"){
+                            $(this).removeClass('active');
+                            $(this).html("End");
+                            edit_history_end('remove',curr_row_index,-1);
+                            update_session_labels();
                         }else{
-                            $('#session_panel').html(response.sessionhtml);
-                            $(session_form_id+" button[name='mark_session_button']").click(mark_session_button_function);
-                            $(session_form_id+" button[name='begin_button']").click(denote_beginend_function);
-                            $(session_form_id+" button[name='end_button']").click(denote_beginend_function);
-                            begin_index = -1;
-                            end_index = -1;
-                            $('#mark_session_confirmation').removeClass('alert-danger');
-                            $('#mark_session_confirmation').addClass('alert-success');
-                            $('#mark_session_confirmation').html("Session marked!");
-                            $('#mark_session_confirmation').show();
-                            $('#mark_session_confirmation').fadeOut(3000);
-//                                mySlider = slider_init_function();
-//                                mySlider.on("slideStop",slider_slidestop_function);
+                            if(unfinishedLabels.length >=2){
+                                popup_show(ev,$(this),curr_row_index,'end',click_new_session_end);
+                            }else{
+                                edit_history_end('add',curr_row_index,max_new_labels);
+                                $(this).addClass('active');
+                                $(this).html("Undo End");
+                                update_session_labels();
+                            }
                         }
 
-                    }).fail(function(data) {
-                        alert("Communication to the server was temporarily lost. The session was not marked. Please try again later or contact mmitsui@scarletmail.rutgers.edu if you experience further issues.");
-                    });
+                    }
+                    else{
+                        if(label=="End") {
+                            popup_show(ev,$(this),curr_row_index,'end',click_new_session_end);
+                        }
+                        else{
+                            edit_history_end('remove',curr_row_index,-1);
+                            $(this).removeClass('active');
+                            $(this).html("End");
+                            update_session_labels();
+                        }
+
+
+                    }
                 }
+
+
+//                Post: 1) highlight all rows between max and min 2) update:
+
+//                $(session_form_id+" tr").filter(function() {
+//                    return ($(this).data('marked'));
+//                }).addClass('success');
+//
+//                if(begin_index != -1 && end_index != -1){
+//
+//                    $(session_form_id+" input[type='checkbox']").filter(function() {
+//                        return ($(this).data('table-index') >= begin_index && $(this).data('table-index') <= end_index);
+//                    }).prop( "checked", true );
+//
+//                    $(session_form_id+" input[type='checkbox']").filter(function() {
+//                        return ($(this).data('table-index') < begin_index || $(this).data('table-index') > end_index);
+//                    }).prop( "checked", false );
+//
+//
+//                    $("tr").filter(function() {
+//                        return ($(this).data('table-index') >= begin_index && $(this).data('table-index') <= end_index);
+//                    }).removeClass('success').addClass( "active");
+//
+//                    $("tr").filter(function() {
+//                        return ($(this).data('table-index') < begin_index || $(this).data('table-index') > end_index);
+//                    }).removeClass( "active");
+//
+//                    if(hide_same){
+////                        $(session_form_id+" button[type='button'][name='end_button']").filter(function() {
+////                            return ($(this).data('table-index') == begin_index);
+////                        }).hide();
+////
+////                        $(session_form_id+" button[type='button'][name='begin_button']").filter(function() {
+////                            return ($(this).data('table-index') == end_index);
+////                        }).hide();
+//                    }
+//
+//
+//
+//                    if(begin_index > end_index){
+//                        $.notify({
+//                            // options
+//                            message: "Begin should not come after end."
+//                        },{
+//                            // settings
+//                            type: 'danger'
+//                        });
+//
+//                    }else{
+//
+//                        popup_show(ev,this);
+//
+////                        $("div[name='session_button_group']").fadeIn("slow");
+//
+////                        $("button[name='mark_session_button']").fadeIn("slow");
+//                    }
+//
+//
+//                }else{
+//                    popup_clear(ev);
+//
+////                    $("div[name='session_button_group']").fadeOut("slow");
+////                    $("button[name='mark_session_button']").fadeOut("slow");
+//
+//                    if(begin_index != -1){
+//                        $(session_form_id+" input[type='checkbox']").filter(function() {
+//                            return ($(this).data('table-index') == begin_index);
+//                        }).prop( "checked", true );
+//
+//
+//
+//                        $(session_form_id+" input[type='checkbox']").filter(function() {
+//                            return ($(this).data('table-index') != begin_index);
+//                        }).prop( "checked", false );
+//
+//                        $("tr").filter(function() {
+//                            return ($(this).data('table-index') == begin_index);
+//
+//                        }).removeClass('success').addClass('active');
+//
+//                        $("tr").filter(function() {
+//                            return ($(this).data('table-index') != begin_index);
+//                        }).removeClass('active');
+//
+//
+//
+//                        if(hide_same){
+////                            $(session_form_id+" button[type='button'][name='end_button']").filter(function() {
+////                                return ($(this).data('table-index') == begin_index);
+////                            }).hide();
+//                        }
+//
+//
+//
+//                    }else if(end_index != -1){
+//                        $(session_form_id+" input[type='checkbox']").filter(function() {
+//                            return ($(this).data('table-index') != end_index);
+//                        }).prop( "checked", true );
+//
+//                        $(session_form_id+" input[type='checkbox']").filter(function() {
+//                            return ($(this).data('table-index') != end_index);
+//                        }).prop( "checked", false );
+//
+//                        $("tr").filter(function() {
+//                            return ($(this).data('table-index') == begin_index);
+//
+//                        }).removeClass('success').addClass('active');
+//
+//                        $("tr").filter(function() {
+//                            return ($(this).data('table-index') != end_index);
+//                        }).removeClass('active');
+//
+//
+//
+//                        if(hide_same){
+////                            $(session_form_id+" button[type='button'][name='begin_button']").filter(function() {
+////                                return ($(this).data('table-index') == end_index);
+////                            }).hide();
+//                        }
+//
+//
+//
+//
+//                    }else{
+//                        $(session_form_id+" input[type='checkbox']").filter(function() {
+//                            return true;
+//                        }).prop( "checked", false );
+//
+//
+//
+//                        $("tr").filter(function() {
+//                            return true;
+//                        }).css( "background-color", "");
+//
+//
+//
+//                        $(session_form_id+" button[type='button'][name='end_button']").filter(function() {
+//                            return ($(this).data('table-index') != begin_index);
+//                        }).show();
+//
+//
+//                        $(session_form_id+" button[type='button'][name='begin_button']").filter(function() {
+//                            return ($(this).data('table-index') != end_index);
+//                        }).show();
+//                    }
+//                }
+
+
+            }
+
+
+            var remove_idsession_popup = function(cleardata){
+                $('#identify_session_group').hide();
+                if(cleardata){
+                    reset_data();
+                    clear_selection_function();
+                }
+            }
+
+
+            var mark_session_button_function = function(ev){
+                ev.preventDefault()// cancel form submission
+
+
+//                Get userID, startTimestamp, endTimestamp
+                var userID = $('input[name="userID"]').val();
+                var startTimestamp = $('input[name="startTimestamp"]').val();
+                var endTimestamp = $('input[name="endTimestamp"]').val();
+
+                var begin_labels = [];
+
+
+
+
+                $.each(history_begin, function(key, history_item) {
+                    if(history_item['type']=='begin'){
+                       begin_labels.push(history_item['sessionLabel']);
+                    }
+                });
+
+
+
+                var iter_labels = []
+                $.grep(begin_labels, function(el) {
+                    if ($.inArray(el, iter_labels) == -1){
+                        iter_labels.push(el);
+                    }
+                });
+
+
+
+
+                var f1 = function(){
+                    var return_data = '';
+                    for(i=0; i < iter_labels.length; i++){
+                        var label = iter_labels[i];
+                        var queryIDs = [];
+                        var pageIDs = [];
+
+
+
+                        var queryIDs_filter = $('input[type="checkbox"]').filter(function(){
+                            return $(this).data('session-label')==label && $(this).attr('name')=='queries[]';
+                        });
+
+                        var pageIDs_filter = $('input[type="checkbox"]').filter(function(){
+                            return $(this).data('session-label')==label && $(this).attr('name')=='pages[]';
+                        });
+
+                        $.each(queryIDs_filter, function(row_index, value) {
+                            queryIDs.push($(this).attr('value'));
+                        });
+
+                        $.each(pageIDs_filter, function(row_index, value) {
+                            pageIDs.push($(this).attr('value'));
+                        });
+
+//                        alert("QIDS"+JSON.stringify(queryIDs));
+//                        alert("PIDS"+JSON.stringify(pageIDs));
+                        formData = {
+                            'userID':userID,
+                            'startTimestamp':startTimestamp,
+                            'endTimestamp':endTimestamp,
+                        }
+
+                        if(queryIDs.length>0){
+                            formData['queries[]']=queryIDs;
+                        }
+
+                        if(pageIDs.length>0){
+                            formData['pages[]']=pageIDs;
+                        }
+//                        alert(JSON.stringify(formData));
+
+
+                        $.ajax({
+                            type: 'POST',
+                            url: $(session_form_id).attr('action'),
+                            data: formData
+                        }).done(function(response) {
+                            response = JSON.parse(response);
+                            return_data = response;
+
+                            if(response.hasOwnProperty('error')){
+
+                                $.notify({
+                                    // options
+                                    message: response.message
+                                },{
+                                    // settings
+                                    type: 'danger'
+                                });
+                            }else{
+
+
+                                $('#session_panel').html(response.sessionhtml);
+                                $('#progress_container').html(response.progressbar_html);
+//                                $(session_form_id+" button[name='clear_selection_button']").unbind("click").click(clear_selection_function);
+                                $(session_form_id+" button[name='begin_button']").unbind("click").click(denote_beginend_function);
+                                $(session_form_id+" button[name='end_button']").unbind("click").click(denote_beginend_function);
+                                $('#identify_session_button').unbind('click').click(mark_session_button_function);
+
+
+                            }
+
+                        }).fail(function(data) {
+//                        alert("Communication to the server was temporarily lost. The session was not marked. Please try again later or contact mmitsui@scarletmail.rutgers.edu if you experience further issues.");
+                        });
+
+                        $.notify({
+                            // options
+                            message: "Session marked!"
+                        },{
+                            // settings
+                            type: 'success'
+                        });
+                    }
+
+                    return return_data;
+
+//                    var formData = $(session_form_id).serialize();
+//                    var sessionID = -1;
+//                    if(typeof $('input[name="whichsession"]:checked').val() !== typeof undefined ){
+//                        sessionID = $('input[name="whichsession"]:checked').val()
+//                    }
+                }
+
+                $.when(f1()).done(function(response){
+                    reset_data();
+                    clear_selection_function();
+                    popup_clear();
+                    remove_idsession_popup(false);
+
+
+
+                });
+
+
+
+
+
             };
 
             $(document).ready(function(){
-//                    var mySlider = slider_init_function();
-//                    mySlider.css('width','100% !important');
-//                    mySlider.on("slideStop",slider_slidestop_function);
 
-
-//                $(session_form_id+" input[type='checkbox']").filter(function() {
-//                    return ($(this).data('table-index') > 3 && $(this).data('table-index') < 10);
-//                }).prop( "checked", true );
-
-                    $(session_form_id+" button[name='mark_session_button']").click(mark_session_button_function);
-                    $(session_form_id+" button[name='begin_button']").click(denote_beginend_function);
-                    $(session_form_id+" button[name='end_button']").click(denote_beginend_function);
+//                    $(session_form_id+" button[name='mark_session_button']").unbind("click").click(mark_session_button_function);
+//                    $(session_form_id+" button[name='clear_selection_button']").unbind("click").click(clear_selection_function);
+                    $(session_form_id+" button[name='begin_button']").unbind("click").click(denote_beginend_function);
+                    $(session_form_id+" button[name='end_button']").unbind("click").click(denote_beginend_function);
+                    $("#identify_session_button").unbind("click").click(mark_session_button_function);
+                    $('div#pop-up').draggable({cursor:'move'});
+                    reset_data();
 
                 }
             );
@@ -355,6 +933,28 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
 <!--    <body style="background-color:gainsboro">-->
     <div class="container-fluid">
         <!--   Dates Tab and Review     -->
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="page-header">
+                    <div class="">
+                        <h1>
+                            (Annotation Part 2/5)
+                        </h1>
+                        <h1>Identify Your Day's Sessions
+                        </h1>
+
+
+                        <div id="progress_container">
+                            <?php
+                            echo $sessionTables['progressbar_html'];
+                            ?>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-8">
 
@@ -389,10 +989,15 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
             <div class="col-md-4">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <center><h4>Tutorial</h4></center>
+                        <center><h4>Help</h4></center>
                     </div>
                     <div class="panel-body">
-                        <center><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tutorial_modal">Review Tutorial</button></center>
+
+
+                        <div>
+                            <center><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tutorial_modal">Press for Help</button></center>
+                        </div>
+
                     </div>
 
 
@@ -403,211 +1008,94 @@ $sessionTables = getSessionTables($userID,$selectedStartTimeSeconds,$selectedEnd
 
         <!--   Query Log and Progress     -->
 
+<!--        <div class="row">-->
+<!--            <div class="col-md-12" id="progress_container">-->
+<!--                --><?php
+//                echo $sessionTables['progressbar_html'];
+//                ?>
+<!--            </div>-->
+<!--        </div>-->
 
         <!--   Actions and Trash Bin    -->
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <center><h4>Annotate Your Day's Sessions</h4></center>
-
+                        <center><h4>Identify Your Day's Sessions</h4></center>
                     </div>
-                </div>
-                    <form id="session_form" action="../services/utils/runPageQueryUtils.php?action=markSession">
-<!--                        <div class="panel-body tab-pane" id="session_panel">-->
-<!--                        </div>-->
-                        <div class="container" id="session_panel">
+
+                    <form id="session_form" action="../services/utils/runPageQueryUtils.php?action=markSessionBatch">
+
+
+                            <div class="panel-body" id="session_panel">
                             <?php
                             echo $sessionTables['sessionhtml'];
                             ?>
-<!--                            <div class="row">-->
-<!--                                <div class="col-md-1 border">-->
-<!--                                    <input id="session_slider" type="text" height="100%" data-slider-min="0" data-slider-max="30" data-slider-step="1" data-slider-value="[0,10]" data-slider-orientation="vertical"/>-->
-<!--                                </div>-->
-<!--                                <div class="col-md-11 border tab-pane">-->
-<!--                                    -->
-<!--                                </div>-->
-<!--                            </div>-->
+                            </div>
 
 
-                        </div>
 
                     </form>
 
-
-
-            </div>
-
-
-        </div>
-
-        <div class="row">
-
-            <div class="col-md-12">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <center>
-                            <?php
-                            $actionUrls = actionUrls($selectedStartTimeSeconds);
-                            echo "<a type=\"button\" class=\"btn btn-info btn-lg\" href='".$actionUrls['home']."'>&laquo; Back (Home)</a>";
-                            echo "&nbsp;&nbsp;&nbsp;&nbsp;";
-                            echo "<a type=\"button\" class=\"btn btn-info btn-lg\" href='".$actionUrls['tasks']."'>Next (Assign Tasks to Sessions) &raquo;</a>";
-                            ?>
-                        </center>
-                    </div>
-
                 </div>
-            </div>
 
+
+
+
+            </div>
 
 
         </div>
-
-
     </div>
 
-<div class="modal fade" id="tutorial_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Tutorial</h4>
-            </div>
+<?php
+    printTutorialModal('session');
+?>
 
 
+<div class="btn-group" style="position: fixed; bottom: 20px; right:20px; z-index: 90;">
 
-
-
-            <div class="modal-body" id="select_intentions_panel">
-
-                <p>Once you have downloaded and installed the browser plugin for this study, it can be used to automatically record your daily browsing and searching activities in your Chrome browser.  By default, it is turned off, but you may click the plugin to activate it and start recording.  You may also click “Log Out” to stop recording. At any time, you may also click the Chrome extension to annotate the day’s activities.  You are asked to annotate your activity for every day of the study.</p>
-
-                <p>The annotation is divided into 4 main phases.  Each phase is outlined below:</p>
-
-
-                <p><u><strong>Mark As Private</strong></u></p>
-                <ul>
-                    <li>Select any pages that you wish to permanently delete from the log.  To do so, check their respective boxes in “Send Private Items to Trash” and click “Send to Trash”.</li>
-                    <li>To confirm the deletion of these pages, select them in the “Trash Bin” and click “Permanently Delete”.  To undo deletion, select them in the “Trash Bin” and click "Undo Delete".
-                    </li>
-                </ul>
-
-
-                <p><u><strong>Mark Sessions</strong></u></p>
-                <ul>
-                    <li>Here, you are asked to mark the beginning and end of a search session.</li>
-                    <li>A search session is defined as a contiguous sequences of related searches - i.e., contiguous searches related to the same task.</li>
-                    <li>To mark the beginning of a search session, click the “Begin” button for the page/query that indicates the beginning of the session.</li>
-                    <li>To mark the end of a search session, click the “End” button for the page/query that indicates the end of the session.</li>
-                    <li>To confirm this selection, click “Mark Session” at the bottom of the page.</li>
-                    <li>To undo your selection(s), click the “Begin” or “End” button again.</li>
-                </ul>
-
-
-
-
-
-
-
-                <p><u><strong>Mark Tasks</strong></u></p>
-                <ul>
-                    <li>Next, you must assign sessions to tasks.</li>
-                    <li>Some of the listed tasks are ones we asked you about in the pre-study interview.  You may also create new ones in the right-hand panel “2) Click to Assign a Task”.</li>
-                    <li>Multiple sessions may belong to the same task.  This is fine.</li>
-                    <li>To assign a session to a task, click the checkbox next to it.  You may then assign the task in one of two ways:</li>
-                    <li>Click an existing task from the provided options</li>
-                    <li>Create a new task in the bottom of the panel “2) Click to Assign a Task”.  After naming a new task, click “+ Add Task”</li>
-                </ul>
-
-
-
-
-
-
-
-                <p><u><strong>Annotate Query Segments And Intentions</strong></u></p>
-                <ul>
-                    <li>Next you must assign intentions to each query segment.</li>
-                    <li>You may first need to mark query segments within sessions.  Recall that each session is composed of one or more query segments pertaining to the same task.</li>
-                    <li>A query segment is begun by a query and continues with all of the browsing and clicking that follows from that query.  It ends before the start of the next query.</li>
-                    <li>Some of the annotation may be automatically done.  Other query segments may need to be assigned manually.</li>
-                    <li>Assignment of the beginning and end of query segments works similarly to the “Begin” and “End” annotation for marking sessions.</li>
-                    <li>After marking a query segment, you will be prompted to mark the intentions for that query segment.</li>
-
-                    <li>You must choose one or more search intention; the elicitation question is:
-                        <ul>
-                            <li>What were you trying to accomplish (what was your intention) during this part of the search? Please choose one or more of the "search intentions" on the right; if none fits your goal at this point in the search, please choose "Other", and give a brief explanation.</li>
-                        </ul>
-                    </li>
-
-                    <li>For each identified search intention, you are asked:
-                        <ul>
-                            <li>"Were you successful?" You must answer either "Yes" or "No".</li>
-                            <li>If "No", you must respond, in a text entry box, to the question: "Why not?"</li>
-
-                        </ul>
-                    </li>
-                </ul>
-
-                <p>For more information about this study, please send e-mail to Matthew Mitsui at mmitsui@scarletmail.rutgers.edu. You can also contact Matthew Mitsui to ask questions or get more information about the project.</p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-            </div>
-
-
-            <div class="modal-footer" id="select_intentions_footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Exit</button>
-
-            </div>
-        </div>
-    </div>
-
-
+                    <?php
+                    $actionUrls = actionUrls($selectedStartTimeSeconds);
+                    echo "<a type=\"button\" class=\"btn btn-info btn-lg\" href='".$actionUrls['home']."'><i class=\"fa fa-arrow-circle-left\" aria-hidden=\"true\"></i> Back (Home)</a>";
+                    echo "<a type=\"button\" class=\"btn btn-info btn-lg\" href='".$actionUrls['tasks']."'>Next (Assign Tasks to Sessions) <i class=\"fa fa-arrow-circle-right\" aria-hidden=\"true\"></i></a>";
+                    ?>
 </div>
-    <center><h3 id="mark_session_confirmation" class="alert alert-success"></h3></center>
 
-<!--    <div class="container">-->
-<!--        <div class="row">-->
-<!--            <div class="col-md-12">-->
-<!--                <div class="panel panel-primary">-->
-<!--                    <div class="panel panel-heading">-->
-<!--                        <center><h4>Assign to:</h4></center>-->
-<!--                    </div>-->
-<!--                    <div>-->
-<!--                        <center>-->
-<!--                            <div>-->
-<!--                                <button type="button" class="btn btn-primary">1</button>-->
-<!--                            </div>-->
-<!---->
-<!--                            <div>-->
-<!--                                <button type="button" class="btn btn-primary">2</button>-->
-<!--                            </div>-->
-<!---->
-<!--                            <div>-->
-<!--                                <button type="button" class="btn btn-primary">3</button>-->
-<!--                            </div>-->
-<!--                            <div>-->
-<!--                                <button type="button" class="btn btn-success">+ Add Session</button>-->
-<!--                            </div>-->
-<!--                        </center>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
+    <div id="pop-up" class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <h3 class="panel-title">Please Select a Session</h3>
+
+
+        </div>
+        <div class="panel-body">
+            <div id="session_list">
+
+            </div>
+
+            <center>
+                <button type="button" id='label_session_button' class="btn btn-warning" >Add Label</button>
+                <button type="button" class="btn btn-default" onclick="popup_clear(this);">Cancel</button>
+            </center>
+        </div>
+
+
+
+    </div>
+
+
+<div id='identify_session_group' class="btn-group" style="position: fixed; bottom: 20px; left:20px; z-index: 90;display:none">
+    <button type="button" id='identify_session_button' class="btn btn-warning" >Identify Sessions</button>
+    <button type="button" class="btn btn-default" onclick="remove_idsession_popup(true);">Cancel</button>
+</div>
+
+
+
+
+
+
+
+
 
     </body>
     </html>
-<?php
-?>

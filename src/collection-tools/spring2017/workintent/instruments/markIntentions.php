@@ -42,6 +42,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
         <link rel="stylesheet" href="../study_styles/bootstrap-3.3.7-dist/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="../lib/bootstrap_notify/bootstrap-notify.min.js"></script>
 
 
         <style>
@@ -209,10 +210,10 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
             <div class="col-md-4">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <center><h4>Tutorial</h4></center>
+                        <center><h4>Help</h4></center>
                     </div>
                     <div class="panel-body">
-                        <center><button type="button" class="btn btn-primary">Review Tutorial</button></center>
+                        <center><button type="button" class="btn btn-primary">Press for Help</button></center>
                     </div>
 
 
@@ -233,7 +234,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
                             $actionUrls = actionUrls($selectedStartTimeSeconds);
                             echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['sessions']."'>&laquo; Back (Sessions)</a>";
                             echo "&nbsp;&nbsp;&nbsp;&nbsp;";
-                            echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['query segments']."'>Next (Query Segments) &raquo;</a>";
+                            echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['query segments']."'>Next (Search Segments) &raquo;</a>";
                             ?>
                         </center>
                     </div>
@@ -250,7 +251,7 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
             <div class="col-md-8">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <center><h4>Choose a Query Segment to Mark for Intentions</h4></center>
+                        <center><h4>Choose a Search Segment to Annotate for Intentions</h4></center>
                     </div>
                     <form id="select_querysegments_form" action="../services/utils/runPageQueryUtils.php?action=markTasks">
                     <div class="panel-body" id="select_querysegments_panel">
@@ -291,11 +292,32 @@ $intentionsPanel = getIntentionsPanel($userID,$selectedStartTimeSeconds,$selecte
             </div>
         </div>
 
+
+
         <?php
         echo $markIntentionsPanels['nullpanel_html'];
         ?>
 
 
+    </div>
+
+    <div style="position: fixed; bottom: 0px; right:20px; z-index: 90;">
+        <center>
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <center>
+                        <?php
+                        $actionUrls = actionUrls($selectedStartTimeSeconds);
+                        echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['sessions']."'>&laquo; Back (Sessions)</a>";
+                        echo "&nbsp;&nbsp;&nbsp;&nbsp;";
+                        echo "<a type=\"button\" class=\"btn btn-danger btn-lg\" href='".$actionUrls['query segments']."'>Next (Search Segments) &raquo;</a>";
+                        ?>
+                    </center>
+                </div>
+
+            </div>
+        </center>
     </div>
     </body>
     </html>

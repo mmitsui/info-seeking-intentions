@@ -7,9 +7,8 @@ require_once('core/Questionnaires.class.php');
 date_default_timezone_set('America/New_York');
 
 $num_recruits = 0;
-$recruit_limit =90; // Current Recruitment Limit as of 07/15/2014
+$recruit_limit =44; // Current Recruitment Limit as of 07/15/2014
 $section_closed = false;
-$closed=true;
 $closed = false;
 
 
@@ -22,9 +21,99 @@ $num_recruits = $line['ct'];
 
 
 
+function availableDates(){
+    $cxn = Connection::getInstance();
+    $query = "SELECT * FROM questionnaire_questions WHERE `key`='date_firstchoice' AND questionID=1038 AND question_cat='fall2015intent'";
+    $results = $cxn->commit($query);
+    $line = mysql_fetch_array($results, MYSQL_ASSOC);
+    $js = json_decode($line['question_data']);
+    $dates_available = array();
+    foreach($js->{'options'} as $key=>$val){
+        $thesplit = explode(",",$val);
+        $monthday = $thesplit[0];
+
+//        array_push($dates_available,$val);
+        if(strtotime($monthday)-strtotime("today midnight")>=86400){
+            array_push($dates_available,$val);
+        }
+    }
 
 
-if($num_recruits<=$recruit_limit && !$closed && !$section_closed)
+
+
+    $query = "SELECT * FROM recruits WHERE date_firstchoice != ''";
+    $results = $cxn->commit($query);
+    $dates_taken = array();
+    while($line = mysql_fetch_array($results, MYSQL_ASSOC)){
+        array_push($dates_taken,$line['date_firstchoice']);
+    }
+
+
+    return array_diff($dates_available,$dates_taken);
+
+}
+
+
+
+
+
+function availableDates2(){
+    $cxn = Connection::getInstance();
+    $query = "SELECT * FROM questionnaire_questions WHERE `key`='date_secondchoice' AND questionID=1091 AND question_cat='fall2015intent'";
+    $results = $cxn->commit($query);
+    $line = mysql_fetch_array($results, MYSQL_ASSOC);
+    $js = json_decode($line['question_data']);
+    $dates_available = array();
+    foreach($js->{'options'} as $key=>$val){
+        $thesplit = explode(",",$val);
+        $monthday = $thesplit[0];
+
+        array_push($dates_available,$val);
+//        if(strtotime($monthday)-strtotime("today midnight")>=86400){
+//            array_push($dates_available,$val);
+//        }
+    }
+
+    $query = "SELECT * FROM recruits WHERE date_firstchoice != ''";
+    $results = $cxn->commit($query);
+    $dates_taken = array();
+    while($line = mysql_fetch_array($results, MYSQL_ASSOC)){
+        array_push($dates_taken,$line['date_secondchoice']);
+    }
+
+
+    return array_diff($dates_available,$dates_taken);
+}
+
+
+function allSlotsTaken(){
+    return count(availableDates()) <= 0;
+}
+
+
+
+
+if(!isset($_POST['consentRead'])){
+
+    ?>
+
+    <html>
+    <head>
+    </head>
+    <body>
+    <h3>Search Intentions Study: Read Consent Form!!!!</h3>
+    <hr>
+    <p>You have to first read the consent page and agree to the conditions before registering for participating in the study.</p>
+    <p>Please visit <a href="http://coagmento.org/workintent/consent.php">consent form</a> first, read and accept the study conditions.</p>
+    </body>
+    </html>
+
+    <?php
+    exit();
+
+}
+
+if($num_recruits<=$recruit_limit && !$closed && !$section_closed && !allSlotsTaken())
 {
 	if(1)
 	{
@@ -54,6 +143,41 @@ if($num_recruits<=$recruit_limit && !$closed && !$section_closed)
 
 
 		<script type="text/javascript">
+
+
+            var validateDates = function(){
+                var date1 = parseInt($('#date_firstchoice_1 option:selected').attr('val'));
+                var date2 = parseInt($('#date_secondchoice_1 option:selected').attr('val'));
+
+
+                if(date2-date1!=864000 && date2-date1!=860400){
+
+//                if(date2-date1 != 259200){
+                    if($(this).is($('#date_firstchoice_1'))){
+                        $("#date_secondchoice_1").val($("#date_secondchoice_1 option:first").val());
+
+                        $("#date_secondchoice_span").html("Please choose the Monday 10 days after your pre-task interview.");
+//                        $("#date_secondchoice_span").html("Please choose the Monday after your pre-task interview.");
+                        $("#date_firstchoice_span").html("");
+
+                    }else{
+                        $("#date_firstchoice_1").val($("#date_firstchoice_1 option:first").val());
+                        $("#date_firstchoice_span").html("Please choose the Friday 10 days before your pre-task interview.");
+//                        $("#date_firstchoice_span").html("Please choose the Friday before your pre-task interview.");
+                        $("#date_secondchoice_span").html("");
+
+                    }
+                }else{
+                    $("#date_firstchoice_span").html("");
+
+                    $("#date_secondchoice_span").html("");
+
+                }
+
+            }
+
+
+
 		$().ready(function(){
 			$.validator.addMethod("notEqualTo", function (value, element, param)
 			{
@@ -61,6 +185,9 @@ if($num_recruits<=$recruit_limit && !$closed && !$section_closed)
 			    if (value) return value != target.val();
 			    else return this.optional(element);
 			}, "Does not match");
+
+			$('#date_firstchoice_1').change(validateDates);
+            $('#date_secondchoice_1').change(validateDates);
 		});
 		</script>
     <script>
@@ -71,14 +198,34 @@ if($num_recruits<=$recruit_limit && !$closed && !$section_closed)
         $().ready(function(){$("#spr2015_regform").validate({ignore:"",
             rules: {firstName_1: "required",
             lastName_1: "required",
-//            age_1: {
-//                required: true,
-//                number: true
-//            },
+            age_1: {
+                required: true,
+                number: true
+            },
             email1_1: {
                 required: true,
                 email: true
             },
+                study_source_1: {
+                    required: true,
+                },
+                interview_medium_1:{
+                required:true
+                },
+                medium_credentials_1:
+                    {
+                        required: true
+                    },
+
+
+                date_firstchoice_1: {
+                    required:true
+                 },
+
+                date_secondchoice_1: {
+                    required:true
+                },
+
             reEmail_1: {
                 required: true,
                 email: true,
@@ -88,19 +235,37 @@ if($num_recruits<=$recruit_limit && !$closed && !$section_closed)
             messages: {
             firstName_1: {required:"<span style='color:red'>Please enter your first name.</span>"},
             lastName_1: {required:"<span style='color:red'>Please enter your last name.</span>"},
-//            age_1: {
-//                required:"<span style='color:red'>Please enter your age.</span>",
-//                    number:"<span style='color:red'>Please enter a number.</span>"
-//            },
+            age_1: {
+                required:"<span style='color:red'>Please enter your age.</span>",
+                    number:"<span style='color:red'>Please enter a number.</span>"
+            },
             email1_1: {
                 required: "<span style='color:red'>Please enter your e-mail address.</span>",
                     email: "<span style='color:red'>Please enter a valid e-mail address.</span>"
             },
+                study_source_1: {
+                    required: "<span style='color:red'>Please how you discovered this study.</span>",
+                },
+                 date_firstchoice_1: {
+                 	required: "<span style='color:red'>Please enter a date.</span>",
+                 },
+
+                date_secondchoice_1: {
+                    required: "<span style='color:red'>Please enter a date.</span>",
+                },
             reEmail_1: {
                 required: "<span style='color:red'>Please enter your e-mail address.</span>",
                     email: "<span style='color:red'>Please enter a valid e-mail address.</span>",
                     equalTo: "<span style='color:red'>Please enter the same e-mail address again.</span>",
-            }
+            },
+                interview_medium_1:{
+                    required: "<span style='color:red'>Please enter your preferred method of contact.</span>",
+                },
+                medium_credentials_1:
+                    {
+                        required: "<span style='color:red'>Please enter your username.</span>",
+                    },
+
             },
             errorPlacement: function(error, element)
         {
@@ -169,33 +334,31 @@ Registration
 								<td>
 
 
-                                    <p>Welcome! This is the sign-up form to register for the paid research study.</p></div>
-                    <p>The research project,  <em>Search Intentions in Natural Settings</em>, funded by
-                        the National Science Foundation, seeks participants in a study of information
-                        seeking. Participants will conduct searches for their work in a naturalistic setting
-                        - i.e., their work environment - for information relating to different kinds of
-                        information search tasks related to their employment. Participants will first conduct
-                        an initial interview in which they are asked for demographic information, introduced
-                        to the study’s software, and asked about regular search tasks, lasting  <strong>about one hour</strong>.
-                        This will be followed by an experimental session. Participants will be asked to  <strong>record
-                            their searching activity over the course of five days</strong> and to annotate the tasks
-                        that they conduct which will take  <strong>about one hour each day</strong>, as well as to explain
-                        their search intentions at self-selected points during their tasks. Various aspects of their
-                        searching behavior will be recorded for subsequent analysis. The study will conclude with
-                        an exit interview, in which participants will be asked to analyze their search experiences
-                        and to give characterizations of the tasks they performed during the five days; this
-                        last session will last  <strong>about one hour</strong>.
+                                    <div>
+                                        <p>Welcome! This is the sign-up form to register for the paid research study.</p>
+                                    </div>
+                                    <p>
 
-                    </p>
+                                        The research project, <i>Search Intentions in Natural Settings</i>, funded by the National Science Foundation, seeks
+                                        participants in a study of information seeking. Participants will conduct searches for their work in a naturalistic
+                                        setting - i.e., their work environment - for information relating to different kinds of information search tasks
+                                        related to their employment. Participants will first conduct an initial interview in which they are asked for
+                                        demographic information, introduced to the study’s software, and asked about regular search tasks, lasting
+                                        <strong>about one hour</strong>. This will be followed by an experimental session.
+                                        Participants will be asked to <strong>record their searching activity over the course of five days</strong> and to
+                                        annotate the tasks that they conduct which will take <strong>about one hour each day</strong>, as well as to explain
+                                        their search intentions at self-selected points during their tasks. Various aspects of their searching
+                                        behavior will be recorded for subsequent analysis. The study will conclude with an exit interview,
+                                        in which participants will be asked to analyze their search experiences and to give characterizations of the tasks they performed during the five days; this last session will last about one hour.
 
-                    <p>
-                        All volunteers for this study will receive  <strong>$100 cash</strong>  for their participation.
-                        Taking part in this study will help to advance the understanding of the search
-                        process and contribute towards development of search systems that can automatically
-                        adapt to a user's specific search goals.
+                                    </p>
 
-                    </p>
+                                    <p>
+                                        All volunteers for this study will receive <strong>$95.00</strong> cash for their participation. Taking part in this study will
+                                        help to advance the understanding of the search process and contribute towards development of search systems
+                                        that can automatically adapt to a user's specific search goals.
 
+                                    </p>
 
 
 
@@ -203,29 +366,30 @@ Registration
 
 
 
-                    <p>Requirements:
-                    <ul>
-                        <li>You must be at least 18 years old to participate.</li>
-                        <li>You must be a non-student and employed.</li>
-                        <li>Proficiency in English is required.</li>
-                        <li>Your work must at least occasionally entail information seeking.</li>
-                        <li>Intermediate typing and online search skills are required.</li>
-                        <li>You must use Google Chrome throughout the duration of the study.</li>
-                    </ul>
-                    </p>
+
+                                    <p>Requirements:
+                                    <ul>
+                                        <li>You must be at least 18 years old to participate.</li>
+                                        <li>You must be a non-student and employed.</li>
+                                        <li>Your work must at least occasionally entail information seeking.</li>
+                                        <li>Proficiency in English is required.</li>
+                                        <li>Intermediate typing and online search skills are required.</li>
+                                        <li>You must use Google Chrome throughout the duration of the study.</li>
+                                    </ul>
+                                    </p>
 
 
 
-                    <p>You will not be offered or receive any special consideration if you take part
-                        in this research; it is purely voluntary. This study has been approved by the
-                        Rutgers Institutional Review Board (IRB Study #XX), and will be supervised by Dr.
-                        Nicholas Belkin (belkin@rutgers.edu) and Dr. Chirag Shah (chirags@rutgers.edu) at the
-                        School of Communication and Information.</p>
+                                    <p>
+                                        You will not be offered or receive any special consideration if you take part in this research; it is purely
+                                        voluntary. This study has been approved by the Rutgers Institutional Review Board (IRB Study #18-057), and will be
+                                        supervised by Dr. Nicholas Belkin (belkin@rutgers.edu) and Dr. Chirag Shah (chirags@rutgers.edu) at the School
+                                        of Communication and Information.
+                                    </p>
 
-                    <p>For more information about this study, please send e-mail to Matthew
-                        Mitsui at <a href="mailto:mmitsui@scarletmail.rutgers.edu?Subject=Study%20Inquiry" target="_top">mmitsui@scarletmail.rutgers.edu</a>.
-                        You can also contact Matthew Mitsui to ask questions
-                        or get more information about the project. </p>
+                                    <p>For more information about this study, please send e-mail to Matthew Mitsui at
+                                        <a href="mailto:mmitsui@scarletmail.rutgers.edu?Subject=Study%20Inquiry" target="_top">mmitsui@scarletmail.rutgers.edu</a>.
+                                        You can also contact Matthew Mitsui to ask questions or get more information about the project. </p>
 
 
 								</td>
@@ -254,13 +418,13 @@ for($x=1;$x<=$NUM_USERS;$x++){
   echo "<input id=\"lastName_$x\" name=\"lastName_$x\" type=\"text\" placeholder=\"Last Name\" required>";
   echo "</div>";
 
-//	echo "<div class=\"pure-control-group\">";
-//  echo "<label for=\"age_$x\">Age</label>";
-//  echo "<input id=\"age_$x\" name=\"age_$x\" type=\"text\" placeholder=\"Age\" required>";
-//  echo "</div>";
+	echo "<div class=\"pure-control-group\">";
+  echo "<label for=\"age_$x\">Age</label>";
+  echo "<input id=\"age_$x\" name=\"age_$x\" type=\"text\" placeholder=\"Age\" required>";
+  echo "</div>";
 
   echo "<div class=\"pure-control-group\">";
-  echo "<label for=\"email1_$x\">Rutgers Email</label>";
+  echo "<label for=\"email1_$x\">Email Address</label>";
   echo "<input id=\"email1_$x\" name=\"email1_$x\" type=\"text\" placeholder=\"Primary Email\" required>";
   echo "</div>";
 
@@ -268,6 +432,31 @@ for($x=1;$x<=$NUM_USERS;$x++){
   echo "<label for=\"reEmail_$x\">Confirm Email</label>";
   echo "<input id=\"reEmail_$x\" name=\"reEmail_$x\" type=\"text\" placeholder=\"Confirm Email\" required>";
   echo "</div>";
+
+
+    echo "<div class=\"pure-control-group\">";
+    echo "<label for=\"study_source_$x\">How did you find out about this study? (Facebook, Twitter, Mailing List, etc.)</label>";
+    echo "<input id=\"study_source_$x\" name=\"study_source_$x\" type=\"text\" size='50' placeholder=\"Source\" required>";
+    echo "</div>";
+
+    echo "<br>";
+
+
+    echo "<div class=\"pure-control-group\">";
+    echo "<label for=\"interview_medium_$x\">For this study, we would like to conduct an entry interview and an exit interview.  For these, we would like to use Skype, Google Hangouts, or any medium with equivalent video and audio capabilities.  Which works best for you?</label>";
+    echo "<select id=\"interview_medium_$x\" name=\"interview_medium_$x\">";
+    echo "<option disabled selected value> -- select an option -- </option>";
+    echo "<option value='Skype'>Skype</option>";
+    echo "<option value='Google Hangouts'>Google Hangouts</option>";
+    echo "<option value='Other'>Other</option>";
+    echo "</select>";
+
+    echo "</div>";
+
+    echo "<div class=\"pure-control-group\">";
+    echo "<label for=\"medium_credentials_$x\">For the above, provide the username we can use to contact you (e.g., Skype Name). If you selected 'Other', please also provide the name of the application.</label>";
+    echo "<input id=\"medium_credentials_$x\" name=\"medium_credentials_$x\" type=\"text\" placeholder=\"Username (& Application)\" required>";
+    echo "</div>";
 
 
 
@@ -278,9 +467,72 @@ for($x=1;$x<=$NUM_USERS;$x++){
   }
 
 
+  if(isset($_POST['readConsent']) && $_POST['readConsent']){
+      echo "<input type='hidden' name='consent_furtheruse' value='1'>";
+
+  }else{
+      echo "<input type='hidden' name='consent_furtheruse' value='0'>";
+  }
+
+
 //Demographic Survey
 
 
+    ?>
+
+    <div class="pure-control-group">
+        <div id="date_firstchoice_1_div"><label name="date_firstchoice_1">Please choose a date for your pre-task interview (all listed times are in EST):</label>
+            <span style="color:red" id="date_firstchoice_span"></span>
+            <select name="date_firstchoice_1" id="date_firstchoice_1" required>
+                <option disabled selected>--Select one--</option>
+                <?php
+
+                foreach(availableDates() as $d){
+                    $thesplit = explode(",",$d);
+                    $monthday = $thesplit[0];
+                    $t = strtotime($monthday);
+
+                    echo "<option val='$t'>";
+                    echo "$d";
+                    echo "</option>";
+                }
+                ?>
+            </select>
+            <br>
+        </div>
+    </div>
+
+
+
+    <div class="pure-control-group">
+        <div id="date_secondchoice_1_div"><label name="date_secondchoice_1">Please choose a date for your post-task interview (this must be on the Monday after your pre-task interview; all listed times are in EST):</label>
+            <span style="color:red" id="date_secondchoice_span"></span>
+            <select name="date_secondchoice_1" id="date_secondchoice_1" required>
+                <option disabled selected>--Select one--</option>
+                <?php
+
+                foreach(availableDates2() as $d){
+
+                    $thesplit = explode(",",$d);
+                    $monthday = $thesplit[0];
+                    $t = strtotime($monthday);
+
+
+
+
+                    echo "<option val='$t'>";
+                    echo "$d";
+                    echo "</option>";
+                }
+                ?>
+            </select>
+            <br>
+        </div>
+    </div>
+
+
+
+    <?php
 
 
 
@@ -346,7 +598,8 @@ else if ($closed)
   echo "<hr/>\n";
   echo "</body>";
   echo "</html>";
-}else{
+}
+else{
 
 
   echo "<html>\n";

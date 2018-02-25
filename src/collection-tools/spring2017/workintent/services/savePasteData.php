@@ -9,56 +9,38 @@
 
 if (Base::getInstance()->isSessionActive())
 {
-    
+
     $base = new Base();
-    
-    
-    
-	$localTime = $_GET['localTime'];
-	$localDate = $_GET['localDate'];
-	$localTimestamp = $_GET['localTimestamp'];
-	
-	
-    
-	$from_url = $_GET['fromURL'];
-    $to_url = $_GET['toURL'];
-    
-	$from_title = htmlspecialchars($_GET['fromtitle']);
-    $from_title = str_replace(" - Mozilla Firefox","",$from_title);
-    
-    $to_title = htmlspecialchars($_GET['totitle']);
-    $to_title = str_replace(" - Mozilla Firefox","",$to_title);
-    
-    
-	$snippet = addslashes($_GET['snippet']);
-	$snippet = stripslashes($snippet);
-	$snippet = stripslashes($snippet);
-	$snippetValue = str_replace("\"","&quote;",$snippet);
-	$snippet = str_replace("&quote;", "\"", $snippet);
-	$snippet = str_replace("'", "\\'", $snippet);
-    
-	
-	$projectID = $base->getProjectID();
-	$userID = $base->getUserID();
-	$time = $base->getTime();
-	$date = $base->getDate();
-	$timestamp = $base->getTimestamp();
-	$stageID = $base->getStageID();
-	$questionID = $base->getQuestionID();
-    
-		
-	$query = "INSERT INTO paste_data (userID, projectID, stageID, questionID, from_url, from_title, snippet, to_url, to_title, timestamp, date, time, `localTimestamp`, `localDate`, `localTime`, type)
-	 		                VALUES('$userID','$projectID','$stageID', '$questionID','$from_url','$from_title','$snippet','$to_url','$to_title','$timestamp','$date','$time','$localTimestamp','$localDate','$localTime','text')";
-	
-	$connection = Connection::getInstance();			
-	$results = $connection->commit($query);
-	$snippetID = $connection->getLastID();
-		
-	$action = new Action('paste',$snippetID);
-	$action->setBase($base);
-	$action->setLocalTimestamp($localTimestamp);
-	$action->setLocalTime($localTime);
-	$action->setLocalDate($localDate);
-	$action->save();
+    $userID = $base->getUserID();
+    $projectID = $userID;
+    $time = $base->getTime();
+    $date = $base->getDate();
+    $timestamp = $base->getTimestamp();
+    $paste_buffer = $_POST['pastes'];
+    $values_array = array();
+    foreach($paste_buffer as $lTs=>$paste_data){
+        $localTimestamp	= $lTs;
+        $lts_seconds = $lTs/1000.0;
+        $localDate = date("Y-m-d", $lts_seconds);
+        $localTime = date("h:i:s",$lts_seconds);
+        $url = mysql_escape_string($paste_data['url']);
+        $title = mysql_escape_string($paste_data['title']);
+        $snippet = mysql_escape_string($paste_data['snippet']);
+        array_push($values_array,"($userID,$projectID,'$url','$title','$snippet',$timestamp,'$date','$time',$localTimestamp,'$localDate','$localTime')");
+    }
+
+    $values_str = implode(',',$values_array);
+
+    $cxn = Connection::getInstance();
+    $query = "INSERT INTO paste_data (userID, projectID,`from_url`,`from_title`,`snippet`, `timestamp`, `date`, `time`, `localTimestamp`, `localDate`, `localTime`) VALUES $values_str";
+    $cxn->commit($query);
+
+
+    $action = new Action('clicksave',$cxn->getLastID());
+    $action->setBase($base);
+    $action->setLocalTimestamp($localTimestamp);
+    $action->save();
+
+
 }
 ?>

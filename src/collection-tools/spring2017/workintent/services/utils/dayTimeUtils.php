@@ -91,7 +91,8 @@ function actionUrls($selectedTime = null){
     $markTasksUrl = 'http://coagmento.org/workintent/instruments/markTasks.php'."?startTime=$selectedTime&endTime=$endSelectedTime";
 //    $chooseIntentionsUrl = 'http://coagmento.org/workintent/instruments/chooseIntentions.php'."?startTime=$selectedTime&endTime=$endSelectedTime";
     $markIntentionsUrl = 'http://coagmento.org/workintent/instruments/markIntentions.php'."?startTime=$selectedTime&endTime=$endSelectedTime";
-    $markQuerySegmentsUrl = 'http://coagmento.org/workintent/instruments/markQuerySegments.php'."?startTime=$selectedTime&endTime=$endSelectedTime";
+    $markQuerySegmentsUrl = 'http://coagmento.org/workintent/instruments/markSearchSegments.php'."?startTime=$selectedTime&endTime=$endSelectedTime";
+    $sessionQuestionnaireUrl = 'http://coagmento.org/workintent/instruments/searchSessionQuestionnaire.php'."?startTime=$selectedTime&endTime=$endSelectedTime";
 //    $homeUrl = 'http://coagmento.org/workintent/instruments/getHome.php'."?startTime=$selectedTime&endTime=$endSelectedTime";
 
 
@@ -117,6 +118,8 @@ function actionUrls($selectedTime = null){
     $urlsArray['query segments'] = $markQuerySegmentsUrl;
 
     $urlsArray['intentions'] = $markIntentionsUrl;
+
+    $urlsArray['session questionnaire'] = $sessionQuestionnaireUrl;
 
     return $urlsArray;
 

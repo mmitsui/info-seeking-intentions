@@ -11,52 +11,43 @@ if (Base::getInstance()->isSessionActive())
 {
 
     $base = new Base();
+    $userID = $base->getUserID();
+    $projectID = $userID;
+    $time = $base->getTime();
+    $date = $base->getDate();
+    $timestamp = $base->getTimestamp();
+    $scroll_buffer = $_POST['scrolls'];
+    $values_array = array();
+    foreach($scroll_buffer as $lTs=>$scroll_data){
+        $localTimestamp	= $lTs;
+        $lts_seconds = $lTs/1000.0;
+        $localDate = date("Y-m-d", $lts_seconds);
+        $localTime = date("h:i:s",$lts_seconds);
+
+        foreach($scroll_data as $index=>$datum){
+            $scrollX = $datum['scrollX'];
+            $scrollY = $datum['scrollY'];
+            $screenX = $datum['screenX'];
+            $screenY = $datum['screenY'];
+            array_push($values_array,"($userID,$projectID,'$screenX','$screenY','$scrollX','$scrollY',$timestamp,'$date','$time',$localTimestamp,'$localDate','$localTime')");
+        }
 
 
 
-	$localTime = $_GET['localTime'];
-	$localDate = $_GET['localDate'];
-	$localTimestamp = $_GET['localTimestamp'];
+    }
+
+    $values_str = implode(',',$values_array);
+
+    $cxn = Connection::getInstance();
+    $query = "INSERT INTO scroll_data (userID, projectID,screenX,screenY,scrollX,scrollY, `timestamp`, `date`, `time`, `localTimestamp`, `localDate`, `localTime`) VALUES $values_str";
+    $cxn->commit($query);
 
 
+    $action = new Action('clicksave',$cxn->getLastID());
+    $action->setBase($base);
+    $action->setLocalTimestamp($localTimestamp);
+    $action->save();
 
 
-	$clientX = $_GET['clientX'];
-	$clientY = $_GET['clientY'];
-	$pageX = $_GET['pageX'];
-	$pageY = $_GET['pageY'];
-	$screenX = $_GET['screenX'];
-	$screenY = $_GET['screenY'];
-	$scrollX = $_GET['scrollX'];
-	$scrollY = $_GET['scrollY'];
-	$url = $_GET['URL'];
-	$type= $_GET['type'];
-
-
-
-
-
-	$projectID = $base->getProjectID();
-	$userID = $base->getUserID();
-	$time = $base->getTime();
-	$date = $base->getDate();
-	$timestamp = $base->getTimestamp();
-	$stageID = $base->getStageID();
-	$questionID = $base->getQuestionID();
-
-
-	$query = "INSERT INTO scroll_data (userID, projectID, stageID, questionID, url, clientX, clientY, pageX, pageY, screenX, screenY, scrollX, scrollY, timestamp, date, time, `localTimestamp`, `localDate`, `localTime`,`type`)
-	 		                VALUES('$userID','$projectID','$stageID', '$questionID','$url','$clientX', '$clientY', '$pageX', '$pageY', '$screenX', '$screenY', '$scrollX', '$scrollY', '$timestamp','$date','$time','$localTimestamp','$localDate','$localTime','$type')";
-
-	$connection = Connection::getInstance();
-	$results = $connection->commit($query);
-	$snippetID = $connection->getLastID();
-
-	$action = new Action("scroll-$type",$snippetID);
-	$action->setBase($base);
-	$action->setLocalTimestamp($localTimestamp);
-	$action->setLocalTime($localTime);
-	$action->setLocalDate($localDate);
-	$action->save();
 }
 ?>

@@ -99,10 +99,10 @@ $taskIDNameMap = getTaskIDNameMap($userID);
             <div class="col-md-4">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <center><h4>Tutorial</h4></center>
+                        <center><h4>Help</h4></center>
                     </div>
                     <div class="panel-body">
-                        <center><button type="button" class="btn btn-primary">Review Tutorial</button></center>
+                        <center><button type="button" class="btn btn-primary">Press for Help</button></center>
                     </div>
 
 
@@ -149,7 +149,7 @@ $taskIDNameMap = getTaskIDNameMap($userID);
                     <div class="panel-body">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
-                                <center><button type="button" class="btn btn-info" data-toggle="collapse" data-target="#session1">Query Segment 1</button></center>
+                                <center><button type="button" class="btn btn-info" data-toggle="collapse" data-target="#session1">Search Segment 1</button></center>
                             </div>
                             <div class="panel-body">
                                 <div id="session1" class="collapse">
@@ -206,7 +206,7 @@ $taskIDNameMap = getTaskIDNameMap($userID);
 
                         <div class="panel panel-primary">
                             <div class="panel-heading">
-                                <center><button type="button" class="btn btn-info" data-toggle="collapse" data-target="#session2">Query Segment 2</button></center>
+                                <center><button type="button" class="btn btn-info" data-toggle="collapse" data-target="#session2">Search Segment 2</button></center>
                             </div>
                             <div class="panel-body">
                                 <div id="session2" class="collapse">

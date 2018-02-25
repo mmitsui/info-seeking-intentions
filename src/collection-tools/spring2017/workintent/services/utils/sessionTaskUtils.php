@@ -24,6 +24,17 @@ function addTask($userID,$taskName){
     return $taskID;
 }
 
+function addTask_returnabs($userID,$taskName){
+    $query = "SELECT IFNULL(MAX(taskID),0) as maxTaskID FROM task_labels_user WHERE userID=$userID";
+    $cxn = Connection::getInstance();
+    $result = $cxn->commit($query);
+    $line = mysql_fetch_array($result,MYSQL_ASSOC);
+    $taskID = $line['maxTaskID']+1;
+    $query = "INSERT INTO task_labels_user (`userID`,`projectID`,`taskID`,`taskName`,`deleted`) VALUES ('$userID','$userID','$taskID','$taskName',0)";
+    $cxn->commit($query);
+    return $cxn->getLastID();
+}
+
 function getTasks($userID){
     $query = "SELECT * FROM task_labels_user WHERE userID=$userID AND deleted != 1 ORDER BY taskID ASC";
     $cxn = Connection::getInstance();
@@ -222,12 +233,12 @@ function getTaskInformationPanels($userID,$startTimestamp,$endTimestamp){
 
                     $querySegmentIDs = getQuerySegmentsForSession($userID,$sessionID);
 
-                    $display .= "<br/><br/># Query Segments:\n".count($querySegmentIDs);
+                    $display .= "<br/><br/># Search Segments:\n".count($querySegmentIDs);
 
                     $display .= "<br/><br/>";
 
                     foreach($querySegmentIDs as $querySegmentID){
-                        $display .= "<ul> Query Segment $querySegmentID";
+                        $display .= "<ul> Search Segment $querySegmentID";
 
                         $intents = getIntentsForQuerySegmentID($userID,$querySegmentID);
                         if(count($intents)>0){
@@ -254,7 +265,7 @@ function getTaskInformationPanels($userID,$startTimestamp,$endTimestamp){
 
 //                $display .= "<div class=\"panel-body collapse\" id=\"session_panel_$sessionID\">\n";
                     $display .= "<div class=\"tab-pane\">\n";
-                    $display .= "<table class=\"table table-bordered table-striped table-fixed \">\n";
+                    $display .= "<table class=\"table table-bordered table-fixed \">\n";
                     $display .= "<thead>\n";
                     $display .= "<tr>\n";
                     $display .= "<th >Time</th>\n";
@@ -281,7 +292,23 @@ function getTaskInformationPanels($userID,$startTimestamp,$endTimestamp){
 
                         $display .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
                         $display .= "<td >".(isset($page['taskID'])? $taskIDNameMap[$page['taskID']] :"")."</td>\n";
-                        $display .= "<td><span title='".(isset($page['title'])?$page['title']:"")."'>".(isset($page['title'])?substr($page['title'],0,60)."...":"")."</span></td>";
+                        $title = '';
+                        if($page['type']=='page'){
+                            if(isset($page['title'])){
+                                $title = $page['title'];
+                            }
+                        }else{
+                            if(isset($page['query'])){
+                                $title = $page['query'];
+                            }
+                        }
+                        $title_short = $title;
+                        if(strlen($title)>60 or strlen(trim($title))==0){
+                            $title_short = substr($page['title'],0,60)."...";
+                        }
+
+                        $display .= "<td><span title='$title'>$title_short</span></td>";
+
                         $display .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
                         $display .= "</tr>\n";
                     }
@@ -313,6 +340,7 @@ function getMarkTasksPanels($userID,$startTimestamp,$endTimestamp){
     while($line = mysql_fetch_array($result,MYSQL_ASSOC)){
         $sessionIDToLabel[$line['id']] = $line['sessionLabel'];
     }
+    $null_panel = "";
 
 
     $session_panels_html = "";
@@ -320,19 +348,28 @@ function getMarkTasksPanels($userID,$startTimestamp,$endTimestamp){
         $session_panels_html = "<center><h3 class='bg-danger'>You have marked no sessions. Please go back and mark some.</h3></center>";
     }
     else{
+        $panel_index = 0;
+        $n_marked = 0;
+        $n_total = 0;
         foreach($sessionIDs as $sessionID){
+
             if(!is_null($sessionID)){
+                $panel_index += 1;
                 $sessionLabel = $sessionIDToLabel[$sessionID];
                 $pagesQueries = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0,$sessionID);
 
                 $pages =$pagesQueries;
 
 
-                $session_panels[$sessionID] = "<div class=\"panel panel-primary\">\n";
-                $session_panels[$sessionID] .= "<div class=\"panel-heading\">\n";
-                $session_panels[$sessionID] .= "<center>\n";
-                $session_panels[$sessionID] .= "<input type=\"checkbox\" name=\"sessionIDs[]\" id=\"sessionID_checkbox_$sessionID\" value=\"$sessionID\"> Session $sessionLabel - Select for Annotation\n";
+
+
+//                $session_panels[$sessionID] .= "<center>\n";
+//                <input type=\"checkbox\" name=\"sessionIDs[]\" id=\"sessionID_checkbox_$sessionID\" value=\"$sessionID\">
 //                $session_panels[$sessionID] .= "<button type=\"button\" class=\"btn btn-info\" data-toggle=\"collapse\" data-target=\"#session_panel_$sessionID\">Session $sessionID (Show/Hide)</button>\n";
+
+                $marked='';
+                $panel_marked = '';
+                $panel_heading_marked = '';
                 if(count($pages) > 0){
                     $all_marked = true;
                     foreach($pages as $page) {
@@ -341,23 +378,47 @@ function getMarkTasksPanels($userID,$startTimestamp,$endTimestamp){
                             break;
                         }
                     }
+
                     if($all_marked){
-                        $session_panels[$sessionID] .= "<span class=\"label label-success glyphicon glyphicon-ok\"> </span>";
+                        $n_marked += 1;
+//                        $marked='<span class="label label-success">Marked</span>';
+                        $marked= "<span >Marked! (Session $sessionLabel)</span>";
+                        $panel_marked = "<div class=\"panel panel-success container-fluid\">\n";
+                        $panel_heading_marked = "<div class=\"panel-heading row\" data-panel-index='$panel_index'>\n";;
+//                        $session_panels[$sessionID] .= "<span class=\"label label-success glyphicon glyphicon-ok\"> </span>";
                     }else{
-                        $session_panels[$sessionID] .= "<span class=\"label label-lg label-danger glyphicon glyphicon-remove\"> </span>";
+//                        $marked='<span class="label label-danger">Not Marked</span>';
+                        $marked="<span>Not Marked (Session $sessionLabel: Select for Annotation)</span>";
+                        $panel_marked = "<div class=\"panel panel-warning container-fluid\">\n";
+                        $panel_heading_marked = "<div class=\"panel-heading row\" data-panel-index='$panel_index'>\n";;
+//                        $session_panels[$sessionID] .= "<span class=\"label label-lg label-danger glyphicon glyphicon-remove\"> </span>";
                     }
+                    $n_total += 1;
                 }
 
+                $session_panels[$sessionID] = $panel_marked;
+                $session_panels[$sessionID] .= $panel_heading_marked;
+
+                $session_panels[$sessionID] .= "<div class='col-xs-1'>
+                        <label style='cursor:pointer;display:inline-block;width:100%'>
+                                  <input style='cursor:pointer;zoom:1.6;' data-panel-index='$panel_index'type=\"checkbox\" name=\"sessionIDs[]\" id=\"sessionID_checkbox_$sessionID\" value=\"$sessionID\">
+                                  </label>
+                                  </div>
+                                  <div class='col-xs-11'>
+                                  <h5>$marked</h5>
+                                </div>";
 
 
-                $session_panels[$sessionID] .= "</center>\n";
+
+
+//                $session_panels[$sessionID] .= "</center>\n";
                 $session_panels[$sessionID] .= "</div>\n";
                 $session_panels[$sessionID] .= "<form id=\"task_form_$sessionID\" action=\"../services/utils/runPageQueryUtils.php?action=markTask\">\n";
                 $session_panels[$sessionID] .= "<div class=\"panel-body\" id=\"session_panel_$sessionID\">\n";
 
 //                $session_panels[$sessionID] .= "<div class=\"panel-body collapse\" id=\"session_panel_$sessionID\">\n";
                 $session_panels[$sessionID] .= "<div class=\"tab-pane\">\n";
-                $session_panels[$sessionID] .= "<table class=\"table table-bordered table-striped table-fixed \">\n";
+                $session_panels[$sessionID] .= "<table class=\"table table-bordered table-fixed \">\n";
                 $session_panels[$sessionID] .= "<thead>\n";
                 $session_panels[$sessionID] .= "<tr>\n";
                 $session_panels[$sessionID] .= "<th >Time</th>\n";
@@ -384,7 +445,24 @@ function getMarkTasksPanels($userID,$startTimestamp,$endTimestamp){
 
                     $session_panels[$sessionID] .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
                     $session_panels[$sessionID] .= "<td >".(isset($page['taskID'])? $taskIDNameMap[$page['taskID']] :"")."</td>\n";
-                    $session_panels[$sessionID] .= "<td><span title='".(isset($page['title'])?$page['title']:"")."'>".(isset($page['title'])?substr($page['title'],0,60)."...":"")."</span></td>";
+
+
+                    $title = '';
+                    if($page['type']=='page'){
+                        if(isset($page['title'])){
+                            $title = $page['title'];
+                        }
+                    }else{
+                        if(isset($page['query'])){
+                            $title = $page['query'];
+                        }
+                    }
+                    $title_short = $title;
+                    if(strlen($title)>60 or strlen(trim($title))==0){
+                        $title_short = substr($page['title'],0,60)."...";
+                    }
+
+                    $session_panels[$sessionID] .= "<td><span title='$title'>$title_short</span></td>";
                     $session_panels[$sessionID] .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
                     $session_panels[$sessionID] .= "</tr>\n";
                 }
@@ -408,18 +486,51 @@ function getMarkTasksPanels($userID,$startTimestamp,$endTimestamp){
 
 
 
+    $progress_bar = "";
+    if($n_marked==$n_total){
+//        $progress_bar = "<div class=\"panel panel-success\">";
+//        $progress_bar .= "<div class=\"panel-heading\">";
+        $progress_bar .= "<h2><div class='label label-success'>Progress: All Tasks Marked!</div></h2>";
+//        $progress_bar .= "</div>";
+//        $progress_bar .= "</div>";
+
+    }else{
+//        $progress_bar = "<div class=\"panel panel-warning\">";
+//        $progress_bar .= "<div class=\"panel-heading\">";
+        $progress_bar .= "<h2><div class='label label-warning'>Progress: ".intval($n_marked/floatval($n_total)*100)."% Tasks Marked</div></h2>";
+//        $progress_bar .= "</div>";
+//        $progress_bar .= "</div>";
+
+    }
+
+
+//    $progress_bar .= "<div class=\"panel-body\">";
+
+//    $progress_bar .= "<div class='progress'><div class=\"progress-bar progress-bar-success\" role=\"progressbar\" aria-valuenow=\"".$n_marked."\"
+//  aria-valuemin=\"0\" aria-valuemax=\"".$n_total."\" style=\"width:".intval($n_marked/floatval($n_total)*100)."%\">
+//    <span style='color:black' >70% Complete</span>
+//  </div>
+//  </div>";
+
+
+
+
+//    $progress_bar .= "</div>";
+    $progress_bar .= "</div>";
 
     $pagesQueries = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0,NULL);
     $pages =$pagesQueries;
+
+
     if(count($pages) > 0) {
-        $null_panel = "<div class=\"row\">";
+        $null_panel .= "<div class=\"row\">";
         $null_panel .= "<div class=\"col-md-8\">";
         $null_panel .= "<div class=\"panel panel-primary\">";
 
         $null_panel .= "<div class=\"panel-heading\">";
         $null_panel .= "<center><h4>Unassigned to Session:</h4></center>";
 
-        $null_panel .= "<center><button type=\"button\" class=\"btn btn-info\" data-toggle=\"collapse\" data-target=\"#session_panel_null\">No Session (Show/Hide)</button></center>\n";
+        $null_panel .= "<center><button type=\"button\" class=\"btn btn-default\" data-toggle=\"collapse\" data-target=\"#session_panel_null\">No Session (Show/Hide)</button></center>\n";
         $null_panel .= "</div>";
 
         $null_panel .= "<div class=\"panel-body collapse\" id=\"session_panel_null\">\n";
@@ -428,7 +539,7 @@ function getMarkTasksPanels($userID,$startTimestamp,$endTimestamp){
 //        $null_panel .= "<center><h3 class=\"bg-danger\">Please assign these to a session</h3></center>";
         $null_panel .= "<div class=\"tab-pane\">\n";
 
-        $null_panel .= "<table class=\"table table-bordered table-striped table-fixed \">\n";
+        $null_panel .= "<table class=\"table table-bordered table-fixed \">\n";
         $null_panel .= "<thead>\n";
         $null_panel .= "<tr>\n";
         $null_panel .= "<th >Time</th>\n";
@@ -453,7 +564,23 @@ function getMarkTasksPanels($userID,$startTimestamp,$endTimestamp){
 
             $null_panel .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
             $null_panel .= "<td >".(isset($page['taskID'])? $taskIDNameMap[$page['taskID']] :"")."</td>\n";
-            $null_panel .= "<td><span title='".(isset($page['title'])?$page['title']:"")."'>".(isset($page['title'])?substr($page['title'],0,60)."...":"")."</span></td>";
+
+            $title = '';
+            if($page['type']=='page'){
+                if(isset($page['title'])){
+                    $title = $page['title'];
+                }
+            }else{
+                if(isset($page['query'])){
+                    $title = $page['query'];
+                }
+            }
+            $title_short = $title;
+            if(strlen($title)>60 or strlen(trim($title))==0){
+                $title_short = substr($page['title'],0,60)."...";
+            }
+
+            $null_panel .= "<td><span title='$title'>$title_short</span></td>";
 
             $null_panel .= "<td><span title='".$page['host']."'>".(isset($page['host'])?$page['host']:"")."</span></td>";
             $null_panel .= "</tr>\n";
@@ -469,13 +596,13 @@ function getMarkTasksPanels($userID,$startTimestamp,$endTimestamp){
 //        $null_html .= "</div>";
     }
 
-    return array('taskpanels_html'=>utf8_encode($session_panels_html),'nullpanel_html'=>utf8_encode($null_panel));
+    return array('progressbar_html'=>utf8_encode($progress_bar),'taskpanels_html'=>utf8_encode($session_panels_html),'nullpanel_html'=>utf8_encode($null_panel));
 }
 
 function getTasksPanel($userID,$startTimestamp,$endTimestamp){
 
-    $tasks_html =  "<center>";
-    $tasks_html .= "<div id='task_buttons'>";
+//    $tasks_html =  "<center>";
+    $tasks_html = "<div id='task_buttons'>";
     $tasks = getTasks($userID);
     foreach($tasks as $task){
         $taskID = $task['taskID'];
@@ -485,15 +612,16 @@ function getTasksPanel($userID,$startTimestamp,$endTimestamp){
 
 
     $tasks_html .=  "</div>";
-    $tasks_html .= "<hr/>";
+//    $tasks_html .= "<hr/>";
     $tasks_html .= "<form id=\"add_task_form\" action=\"../services/utils/runPageQueryUtils.php?action=addTask\">";
     $tasks_html .= "<div class=\"form-group\">";
 
 
-    $tasks_html .= "<div class='well'>";
+    $tasks_html .= "<div class='well well-sm'>";
 
 
-    $tasks_html .= "<textarea class=\"form-control\" rows=\"1\" id=\"task_name_textfield\" name=\"taskName\"></textarea>";
+    $tasks_html .= "<h5><strong>Enter a new Task here:</strong></h5>";
+    $tasks_html .= "<div class='form-group'><textarea class=\"form-control\" rows=\"1\" id=\"task_name_textfield\" name=\"taskName\" placeholder='Task Name'></textarea></div>";
     $tasks_html .= "<div>";
     $tasks_html .= "<p><button type=\"button\" value=\"addtask_button\" class=\"btn btn-success btn-block\">+ Add Task</button></p>";
     $tasks_html .= "</div>";
@@ -504,22 +632,43 @@ function getTasksPanel($userID,$startTimestamp,$endTimestamp){
     $tasks_html .= "</div>";
 
     $tasks_html .= "</form>";
-    $tasks_html .= "</center>";
+//    $tasks_html .= "</center>";
 
     return array('taskshtml'=>utf8_encode($tasks_html));
 
 }
 
 function makeNextSessionLabel($userID,$startTimestamp){
+    date_default_timezone_set('America/New_York');
     $date = date('Y-m-d', $startTimestamp);
-    $query = "SELECT IFNULL(MAX(sessionLabel),0) as maxSessionID FROM session_labels_user WHERE userID=$userID AND `date`='$date'";
     $cxn = Connection::getInstance();
+
+
+
+//    $query = "SELECT IFNULL(MAX(sessionLabel),0) as maxSessionID FROM session_labels_user WHERE userID=$userID AND `date`='$date'";
+//    $result = $cxn->commit($query);
+//    $line = mysql_fetch_array($result,MYSQL_ASSOC);
+//    $sessionID = $line['maxSessionID']+1;
+
+    $query = "INSERT INTO session_labels_user (`userID`,`projectID`,`sessionLabel`,`deleted`,`date`) VALUES ('$userID','$userID','0',0,'$date')";
+    $cxn->commit($query);
+    $lastID = $cxn->getLastID($query);
+
+
+    $query = "SELECT IFNULL(MIN(`id`),0) as minSessionID FROM session_labels_user WHERE userID=$userID AND `date`='$date'";
     $result = $cxn->commit($query);
     $line = mysql_fetch_array($result,MYSQL_ASSOC);
-    $sessionID = $line['maxSessionID']+1;
-    $query = "INSERT INTO session_labels_user (`userID`,`projectID`,`sessionLabel`,`deleted`,`date`) VALUES ('$userID','$userID','$sessionID',0,'$date')";
-    $cxn->commit($query);
-    return $cxn->getLastID();
+    $minSessionID = $line['minSessionID'];
+
+
+    $sessionLabel = $lastID-$minSessionID+1;
+    $query = "UPDATE session_labels_user SET `sessionLabel`='$sessionLabel' WHERE userID=$userID AND `date`='$date' AND `id`=$lastID";
+    $result = $cxn->commit($query);
+
+
+
+
+    return $lastID;
 //    return $sessionID;
 }
 
@@ -546,7 +695,10 @@ function getSessionIDs($userID,$startTimestamp,$endTimestamp){
     $results = $cxn->commit($query);
     $sessionIDs = array();
     while($line = mysql_fetch_array($results,MYSQL_ASSOC)){
-        $sessionIDs[] = $line['sessionID'];
+        if(!is_null($line['sessionID'])){
+            $sessionIDs[] = $line['sessionID'];
+        }
+
     }
 
 

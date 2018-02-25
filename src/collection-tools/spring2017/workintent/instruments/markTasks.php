@@ -34,16 +34,23 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
     <html>
     <head>
         <title>
-            Mark Tasks
+            Assign Tasks
         </title>
 
         <!--        <link rel="stylesheet" href="../study_styles/bootstrap-lumen/css/bootstrap.min.css">-->
         <link rel="stylesheet" href="../study_styles/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="../study_styles/font-awesome-4.7.0/css/font-awesome.min.css">
+
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="../lib/bootstrap_notify/bootstrap-notify.min.js"></script>
 
 
         <style>
+
+            body{
+                background: #DFE2DB !important;
+            }
             .tab-pane{
                 height:300px;
                 overflow-y:scroll;
@@ -100,14 +107,19 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
             /*border-bottom-width: 0;*/
             /*}*/
 
-            .alert{
-                position:fixed;
-                top:0;
-                align:center;
-                width:100%;
-                display:none;
-                margin: 0 auto;
-            }
+            /*.alert{*/
+                /*position:fixed;*/
+                /*top:0;*/
+                /*align:center;*/
+                /*width:100%;*/
+                /*display:none;*/
+                /*margin: 0 auto;*/
+            /*}*/
+
+            /*input[type='checkbox']{*/
+                /*width:15px;*/
+                /*height:15px;*/
+            /*}*/
         </style>
 
 
@@ -116,44 +128,68 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
             var tasks_panel_id= '#mark_tasks_panel';
             var task_button_panel_id = '#task_buttons';
             var add_task_form_id = '#add_task_form';
+            var progressbar_container_id = '#progressbar_container';
+
+
+            var highlight_panels = function(){
+                var panel_index = $(this).data('panel-index');
+                if(this.checked){
+                    $("div").find("[data-panel-index='"+panel_index+"']").css('background-color','lightgray');
+                }else{
+                    $("div").find("[data-panel-index='"+panel_index+"']").css('background-color','');
+                }
+            }
 
 
 
 
             $(document).ready(function(){
+                    $('input:checkbox').change(highlight_panels);
 
                 var annotation_function = function(ev) {
                     ev.preventDefault();
                     var taskID = $(this).data('task-id');
-//                    alert(taskID);
                     var formData = $(mark_task_form_id).serialize();
                     formData = formData + "&taskID="+taskID;
-//                    alert(formData);
-//                    alert($(mark_task_form_id).attr('action'));
                     $.ajax({
                         type: 'POST',
                         url: $(mark_task_form_id).attr('action'),
                         data: formData
                     }).done(function(response) {
-//                        alert(response);
                         response = JSON.parse(response);
                         if(response.hasOwnProperty('error')){
-                            $('#addtask_confirmation').html(response.message);
-                            $('#addtask_confirmation').removeClass('alert-success');
-                            $('#addtask_confirmation').addClass('alert-danger');
-                            $('#addtask_confirmation').show();
-                            $('#addtask_confirmation').fadeOut(3000);
+                            $.notify({
+                                // options
+                                message: response.message
+                            },{
+                                // settings
+                                type: 'danger'
+                            });
+//                            $('#addtask_confirmation').html(response.message);
+//                            $('#addtask_confirmation').removeClass('alert-success');
+//                            $('#addtask_confirmation').addClass('alert-danger');
+//                            $('#addtask_confirmation').show();
+//                            $('#addtask_confirmation').fadeOut(3000);
 
 
                         }else{
+                            $.notify({
+                                // options
+                                message: "Task assigned!"
+                            },{
+                                // settings
+                                type: 'success'
+                            });
+                            $(progressbar_container_id).html(response.progressbar_html);
                             $(tasks_panel_id).html(response.taskpanels_html);
-                            $(add_task_form_id+" button").click(add_task_function);
-                            $(task_button_panel_id+" button").click(annotation_function);
-                            $('#addtask_confirmation').removeClass('alert-danger');
-                            $('#addtask_confirmation').addClass('alert-success');
-                            $('#addtask_confirmation').html("Task annotated!");
-                            $('#addtask_confirmation').show();
-                            $('#addtask_confirmation').fadeOut(3000);
+                            $(add_task_form_id+" button").unbind("click").click(add_task_function);
+                            $(task_button_panel_id+" button").unbind("click").click(annotation_function);
+                            $('input:checkbox').change(highlight_panels);
+//                            $('#addtask_confirmation').removeClass('alert-danger');
+//                            $('#addtask_confirmation').addClass('alert-success');
+//                            $('#addtask_confirmation').html("Task assigned!");
+//                            $('#addtask_confirmation').show();
+//                            $('#addtask_confirmation').fadeOut(3000);
                         }
 
                     }).fail(function(data) {
@@ -161,37 +197,51 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
                     });
                 };
 
-                $(task_button_panel_id+" button").click(annotation_function);
+                $(task_button_panel_id+" button").unbind("click").click(annotation_function);
 
                 var add_task_function = function(ev){
                     ev.preventDefault()// cancel form submission
                     var formData = $(add_task_form_id).serialize() + "&"+$(mark_task_form_id).serialize();
-//                    alert(formData);
                     if($(this).attr("value")=="addtask_button"){
                         $.ajax({
                             type: 'POST',
                             url: $(add_task_form_id).attr('action'),
                             data: formData
                         }).done(function(response) {
-//                            alert(response);
                             response = JSON.parse(response);
                             if(response.hasOwnProperty('error')){
-                                $('#addtask_confirmation').html(response.message);
-                                $('#addtask_confirmation').removeClass('alert-success');
-                                $('#addtask_confirmation').addClass('alert-danger');
-                                $('#addtask_confirmation').show();
-                                $('#addtask_confirmation').fadeOut(3000);
+                                $.notify({
+                                    // options
+                                    message: response.message
+                                },{
+                                    // settings
+                                    type: 'danger'
+                                });
+//                                $('#addtask_confirmation').html(response.message);
+//                                $('#addtask_confirmation').removeClass('alert-success');
+//                                $('#addtask_confirmation').addClass('alert-danger');
+//                                $('#addtask_confirmation').show();
+//                                $('#addtask_confirmation').fadeOut(3000);
                             }else{
+                                $(progressbar_container_id).html(response.progressbar_html);
                                 $(tasks_panel_id).html(response.taskpanels_html);
                                 $('#addtask_panel').html(response.taskshtml);
+                                $('input:checkbox').change(highlight_panels);
 //                            $(tasks_panel_id).html(response.taskpanels_html);
-                                $(add_task_form_id+" button").click(add_task_function);
-                                $(task_button_panel_id+" button").click(annotation_function);
-                                $('#addtask_confirmation').removeClass('alert-danger');
-                                $('#addtask_confirmation').addClass('alert-success');
-                                $('#addtask_confirmation').html(response.message);
-                                $('#addtask_confirmation').show();
-                                $('#addtask_confirmation').fadeOut(3000);
+                                $(add_task_form_id+" button").unbind("click").click(add_task_function);
+                                $(task_button_panel_id+" button").unbind("click").click(annotation_function);
+                                $.notify({
+                                    // options
+                                    message: response.message
+                                },{
+                                    // settings
+                                    type: 'success'
+                                });
+//                                $('#addtask_confirmation').removeClass('alert-danger');
+//                                $('#addtask_confirmation').addClass('alert-success');
+//                                $('#addtask_confirmation').html(response.message);
+//                                $('#addtask_confirmation').show();
+//                                $('#addtask_confirmation').fadeOut(3000);
                             }
 
                         }).fail(function(data) {
@@ -200,8 +250,8 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
                     }
                 };
 
-                $(add_task_form_id+" button").click(add_task_function);
-//                $("form input[type=submit]").click(function() {
+                $(add_task_form_id+" button").unbind("click").click(add_task_function);
+//                $("form input[type=submit]").unbind("click").click(function() {
 //                    $("input[type=submit]", $(this).parents("form")).removeAttr("clicked");
 //                    $(this).attr("clicked", "true");
 //                });
@@ -222,6 +272,29 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
 <!--    <body style="background-color:gainsboro">-->
     <div class="container-fluid">
         <!--   Dates Tab and Review     -->
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="page-header">
+                    <div class="">
+                        <h1>
+                            (Annotation Part 3/5)
+                        </h1>
+                        <h1>Assign Tasks to Sessions
+                        </h1>
+                        <div id="progressbar_container">
+                            <?php
+                            echo $markTasksPanels['progressbar_html'];
+                            ?>
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-md-8">
 
@@ -254,10 +327,10 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
             <div class="col-md-4">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <center><h4>Tutorial</h4></center>
+                        <center><h4>Help</h4></center>
                     </div>
                     <div class="panel-body">
-                        <center><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tutorial_modal">Review Tutorial</button></center>
+                        <center><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tutorial_modal">Press for Help</button></center>
                     </div>
 
 
@@ -268,13 +341,21 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
 
 
 
+<!--        <div class="row">-->
+<!--            <div class="col-md-12" id="progressbar_container">-->
+<!--        --><?php
+//            echo $markTasksPanels['progressbar_html'];
+//        ?>
+<!--            </div>-->
+<!--        </div>-->
+
 
         <!--   Actions and Trash Bin    -->
         <div class="row">
             <div class="col-md-8">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <center><h4>Step 1) Choose Sessions to Assign to a Task</h4></center>
+                        <center><h4>Step 1) Choose Sessions to Assign a Task</h4></center>
                     </div>
                     <form id="mark_task_form" action="../services/utils/runPageQueryUtils.php?action=markTasks">
                     <div class="panel-body" id="mark_tasks_panel">
@@ -322,138 +403,39 @@ $tasksPanel = getTasksPanel($userID,$selectedStartTimeSeconds,$selectedEndTimeSe
         echo $markTasksPanels['nullpanel_html'];
         ?>
 
-        <div class="row">
 
-            <div class="col-md-12">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <center>
-                            <?php
-                            $actionUrls = actionUrls($selectedStartTimeSeconds);
-                            echo "<a type=\"button\" class=\"btn btn-info btn-lg\" href='".$actionUrls['sessions']."'>&laquo; Back (Sessions)</a>";
-                            echo "&nbsp;&nbsp;&nbsp;&nbsp;";
-                            echo "<a type=\"button\" class=\"btn btn-info btn-lg\" href='".$actionUrls['query segments']."'>Next (Annotate Query Segments + Intentions) &raquo;</a>";
-                            ?>
-                        </center>
+
+    </div>
+
+<?php
+    printTutorialModal('task');
+?>
+<!--    <center><h3 id="addtask_confirmation" class="alert alert-success"></h3></center>-->
+
+<!--<div class='container' style="position: fixed; bottom: 20px; right:20px; z-index: 90;">-->
+<!--    <center>-->
+
+<!--        <div class="panel panel-default">-->
+<!--            <div class="panel-heading">-->
+<!--                <center>-->
+
+
+                    <div class="btn-group" style="position: fixed; bottom: 20px; right:20px; z-index: 90;">
+                        <?php
+                        $actionUrls = actionUrls($selectedStartTimeSeconds);
+                        echo "<a type=\"button\" class=\"btn btn-info btn-lg\" href='".$actionUrls['sessions']."'><i class=\"fa fa-arrow-circle-left\" aria-hidden=\"true\"></i> Back (Sessions)</a>";
+//                        echo "&nbsp;&nbsp;&nbsp;&nbsp;";
+                        echo "<a type=\"button\" class=\"btn btn-info btn-lg\" href='".$actionUrls['query segments']."'>Next (Annotate Search Segments + Intentions) <i class=\"fa fa-arrow-circle-right\" aria-hidden=\"true\"></i></a>";
+                        ?>
+
                     </div>
+<!--                </center>-->
+<!--            </div>-->
+<!---->
+<!--        </div>-->
+<!--    </center>-->
+<!--</div>-->
 
-                </div>
-            </div>
-        </div>
-
-
-    </div>
-
-<div class="modal fade" id="tutorial_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Tutorial</h4>
-            </div>
-
-
-
-
-
-            <div class="modal-body" id="select_intentions_panel">
-
-                <p>Once you have downloaded and installed the browser plugin for this study, it can be used to automatically record your daily browsing and searching activities in your Chrome browser.  By default, it is turned off, but you may click the plugin to activate it and start recording.  You may also click “Log Out” to stop recording. At any time, you may also click the Chrome extension to annotate the day’s activities.  You are asked to annotate your activity for every day of the study.</p>
-
-                <p>The annotation is divided into 4 main phases.  Each phase is outlined below:</p>
-
-
-                <p><u><strong>Mark As Private</strong></u></p>
-                <ul>
-                    <li>Select any pages that you wish to permanently delete from the log.  To do so, check their respective boxes in “Send Private Items to Trash” and click “Send to Trash”.</li>
-                    <li>To confirm the deletion of these pages, select them in the “Trash Bin” and click “Permanently Delete”.  To undo deletion, select them in the “Trash Bin” and click "Undo Delete".
-                    </li>
-                </ul>
-
-
-                <p><u><strong>Mark Sessions</strong></u></p>
-                <ul>
-                    <li>Here, you are asked to mark the beginning and end of a search session.</li>
-                    <li>A search session is defined as a contiguous sequences of related searches - i.e., contiguous searches related to the same task.</li>
-                    <li>To mark the beginning of a search session, click the “Begin” button for the page/query that indicates the beginning of the session.</li>
-                    <li>To mark the end of a search session, click the “End” button for the page/query that indicates the end of the session.</li>
-                    <li>To confirm this selection, click “Mark Session” at the bottom of the page.</li>
-                    <li>To undo your selection(s), click the “Begin” or “End” button again.</li>
-                </ul>
-
-
-
-
-
-
-
-                <p><u><strong>Mark Tasks</strong></u></p>
-                <ul>
-                    <li>Next, you must assign sessions to tasks.</li>
-                    <li>Some of the listed tasks are ones we asked you about in the pre-study interview.  You may also create new ones in the right-hand panel “2) Click to Assign a Task”.</li>
-                    <li>Multiple sessions may belong to the same task.  This is fine.</li>
-                    <li>To assign a session to a task, click the checkbox next to it.  You may then assign the task in one of two ways:</li>
-                    <li>Click an existing task from the provided options</li>
-                    <li>Create a new task in the bottom of the panel “2) Click to Assign a Task”.  After naming a new task, click “+ Add Task”</li>
-                </ul>
-
-
-
-
-
-
-
-                <p><u><strong>Annotate Query Segments And Intentions</strong></u></p>
-                <ul>
-                    <li>Next you must assign intentions to each query segment.</li>
-                    <li>You may first need to mark query segments within sessions.  Recall that each session is composed of one or more query segments pertaining to the same task.</li>
-                    <li>A query segment is begun by a query and continues with all of the browsing and clicking that follows from that query.  It ends before the start of the next query.</li>
-                    <li>Some of the annotation may be automatically done.  Other query segments may need to be assigned manually.</li>
-                    <li>Assignment of the beginning and end of query segments works similarly to the “Begin” and “End” annotation for marking sessions.</li>
-                    <li>After marking a query segment, you will be prompted to mark the intentions for that query segment.</li>
-
-                    <li>You must choose one or more search intention; the elicitation question is:
-                        <ul>
-                            <li>What were you trying to accomplish (what was your intention) during this part of the search? Please choose one or more of the "search intentions" on the right; if none fits your goal at this point in the search, please choose "Other", and give a brief explanation.</li>
-                        </ul>
-                    </li>
-
-                    <li>For each identified search intention, you are asked:
-                        <ul>
-                            <li>"Were you successful?" You must answer either "Yes" or "No".</li>
-                            <li>If "No", you must respond, in a text entry box, to the question: "Why not?"</li>
-
-                        </ul>
-                    </li>
-                </ul>
-
-                <p>For more information about this study, please send e-mail to Matthew Mitsui at mmitsui@scarletmail.rutgers.edu. You can also contact Matthew Mitsui to ask questions or get more information about the project.</p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-            </div>
-
-
-            <div class="modal-footer" id="select_intentions_footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Exit</button>
-
-            </div>
-        </div>
-    </div>
-
-
-</div>
-    <center><h3 id="addtask_confirmation" class="alert alert-success"></h3></center>
     </body>
     </html>
 <?php
