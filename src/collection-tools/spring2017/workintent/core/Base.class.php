@@ -55,9 +55,10 @@ class Base {
     const PART_ONE_LAST_STAGE = 35;
 
 
+
 	public function __construct() {
         //TEMP FIX: Set all variables initialized to $_SESSION variables to NULL, if $_SESSION variable is not set
-		date_default_timezone_set('America/New_York');
+
 
 		$this->userName = NULL;
         if(isset($_SESSION['CSpace_userName'])){
@@ -69,6 +70,14 @@ class Base {
         if(isset($_SESSION['CSpace_userID'])){
             $this->userID = $_SESSION['CSpace_userID'];
         }
+
+
+        if(isset($_SESSION['CSpace_userTimezone'])){
+            $this->userTimezone = $_SESSION['CSpace_userTimezone'];
+            date_default_timezone_set($this->userTimezone);
+        }else{
+            date_default_timezone_set('America/New_York');
+		}
 
         $this->firstName = NULL;
         if(isset($_SESSION['CSpace_firstName'])){
@@ -467,6 +476,17 @@ class Base {
 		 $_SESSION['CSpace_userID'] = $userID;
 
 	}
+
+	public function getUserTimezone(){
+		return $this->userTimezone;
+	}
+
+
+    public function setUserTimezone($userTimezone)
+    {
+        $this->userTimezone = $userTimezone;
+        $_SESSION['CSpace_userTimezone'] = $userTimezone;
+    }
 
 	public function setProjectID($projectID)
 	{

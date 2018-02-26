@@ -13,6 +13,15 @@ Maybe we can use this as a replacement for the sidebar login as well.
 
 	$success = array();
 
+
+	function getTimezone($userID){
+	    $query = "SELECT * FROM recruits WHERE userID=$userID";
+        $cxn = Connection::getInstance();
+        $result = $cxn->commit($query);
+        $line = mysql_fetch_array($result,MYSQL_ASSOC);
+        return $line['timezone'];
+    }
+
 	$blankusername = isset($_POST['username_sha1']) && (trim($_POST['username_sha1']) =='' || trim($_POST['username_sha1']) =='da39a3ee5e6b4b0d3255bfef95601890afd80709');
     $blankpassword = isset($_POST['password_sha1']) && (trim($_POST['password_sha1']) =='' || trim($_POST['password_sha1']) =='da39a3ee5e6b4b0d3255bfef95601890afd80709');
 
@@ -45,8 +54,11 @@ Maybe we can use this as a replacement for the sidebar login as well.
             $firstName = $row['firstName'];
             $lastName = $row['lastName'];
 
+
+
             $base = Base::getInstance();
             $base->setUserID($userID);
+            $base->setUserTimezone(getTimezone($userID));
             $base->setFirstName($firstName);
             $base->setLastName($lastName);
 
@@ -80,6 +92,7 @@ Maybe we can use this as a replacement for the sidebar login as well.
 
             $base = Base::getInstance();
             $base->setUserID($userID);
+            $base->setUserTimezone(getTimezone($userID));
             $base->setFirstName($firstName);
             $base->setLastName($lastName);
             $success['firstName'] = $firstName;

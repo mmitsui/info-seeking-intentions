@@ -130,6 +130,7 @@
                     $password_sha1 = sha1($password);
                     $firstName= addslashes($_POST["firstName_$x"]);
                     $lastName = addslashes($_POST["lastName_$x"]);
+                    $timezone = addslashes($_POST["timezone_$x"]);
                     $email1 = $_POST["email1_$x"];
                     $email_sha1 = sha1($_POST["email1_$x"]);
                     $age = $_POST["age_$x"];
@@ -152,7 +153,7 @@
 
                     $results = $connection->commit($query);
 
-                    $query = "INSERT INTO recruits (firstName, lastName, email1, email_sha1, approved, `date`, `time`, `timestamp`,userID,projectID,registrationID,`age`,`date_firstchoice`,`date_secondchoice`,`consent_furtheruseonline`,`interview_medium`,`medium_credentials`,`recruitment_source`) VALUES ('$firstName','$lastName','$email1','$email_sha1','1', '$date', '$time', '$timestamp','$next_userID','$next_userID','$next_registrationID','$age','$date_firstchoice','$date_secondchoice','$consent_furtheruseonline','$interview_medium','$medium_credentials','$study_source')";
+                    $query = "INSERT INTO recruits (firstName, lastName, `timezone`,email1, email_sha1, approved, `date`, `time`, `timestamp`,userID,projectID,registrationID,`age`,`date_firstchoice`,`date_secondchoice`,`consent_furtheruseonline`,`interview_medium`,`medium_credentials`,`recruitment_source`) VALUES ('$firstName','$lastName','$timezone','$email1','$email_sha1','1', '$date', '$time', '$timestamp','$next_userID','$next_userID','$next_registrationID','$age','$date_firstchoice','$date_secondchoice','$consent_furtheruseonline','$interview_medium','$medium_credentials','$study_source')";
 //                    $query = "INSERT INTO recruits (firstName, lastName, age, email1, approved, `date`, `time`, `timestamp`,userID,projectID,registrationID) VALUES('$firstName','$lastName','$age','$email1','1', '$date', '$time', '$timestamp','$next_userID','$next_userID','$next_registrationID')";
                     $results = $connection->commit($query);
                     $recruitsID = $connection->getLastID();

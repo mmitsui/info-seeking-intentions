@@ -835,7 +835,8 @@ function getSessionQuestionnaireTables($userID,$startTimestamp,$endTimestamp){
 }
 
 function makeNextQuerySegmentID($userID,$startTimestamp){
-    date_default_timezone_set('America/New_York');
+    $base = Base::getInstance();
+    date_default_timezone_set($base->getUserTimezone());
     $date = date('Y-m-d', $startTimestamp);
     $query = "SELECT IFNULL(MAX(querySegmentLabel),0) as maxQuerySegmentID FROM querysegment_labels_user WHERE userID='$userID' AND `date`='$date'";
 //    $query = "SELECT IFNULL(MAX(querySegmentID),0) as maxQuerySegmentID FROM querysegment_labels_user WHERE userID=$userID";

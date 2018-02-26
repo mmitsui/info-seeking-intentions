@@ -8,7 +8,9 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/workintent/services/utils/querySegmentI
 
 
 function findNextQuerySegmentLabel($userID,$startTimestamp){
-    date_default_timezone_set('America/New_York');
+    $base = Base::getInstance();
+    date_default_timezone_set($base->getUserTimezone());
+//    date_default_timezone_set('America/New_York');
     $date = date('Y-m-d', $startTimestamp);
     $query = "SELECT IFNULL(MAX(querySegmentLabel),0) as maxQuerySegmentID FROM querysegment_labels_user WHERE userID='$userID' AND `date`='$date'";
 //    $query = "SELECT IFNULL(MAX(querySegmentID),0) as maxQuerySegmentID FROM querysegment_labels_user WHERE userID=$userID";
@@ -21,7 +23,9 @@ function findNextQuerySegmentLabel($userID,$startTimestamp){
 }
 
 function markQuerySegmentLabel($userID,$querySegmentID,$startTimestamp){
-    date_default_timezone_set('America/New_York');
+    $base = Base::getInstance();
+    date_default_timezone_set($base->getUserTimezone());
+//    date_default_timezone_set('America/New_York');
     $date = date('Y-m-d', $startTimestamp);
     $query = "INSERT INTO querysegment_labels_user (`userID`,`projectID`,`querySegmentLabel`,`deleted`,`date`) VALUES ('$userID','$userID','$querySegmentID',0,'$date')";
     $cxn = Connection::getInstance();

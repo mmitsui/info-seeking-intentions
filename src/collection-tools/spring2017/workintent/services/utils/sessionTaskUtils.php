@@ -639,7 +639,9 @@ function getTasksPanel($userID,$startTimestamp,$endTimestamp){
 }
 
 function makeNextSessionLabel($userID,$startTimestamp){
-    date_default_timezone_set('America/New_York');
+    $base = Base::getInstance();
+    date_default_timezone_set($base->getUserTimezone());
+//    date_default_timezone_set('America/New_York');
     $date = date('Y-m-d', $startTimestamp);
     $cxn = Connection::getInstance();
 
