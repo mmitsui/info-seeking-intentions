@@ -2,7 +2,7 @@
 The following repository is code from the Information Seeking Intentions study (http://inforetrieval.org/iir/)
 
 # Table of Contents
-1. [About the Project](#toc_2)
+1. [About the Project](#about-the-project)
 2. [Installation](#toc_3)
 3. [Setting Up The Project](#toc_4)
 	1. [Directory Structure](#toc_5)
