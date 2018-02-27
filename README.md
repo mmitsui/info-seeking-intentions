@@ -6,9 +6,10 @@ The following repository is code from the Information Seeking Intentions study (
 2. [User Studies](#user-studies)
 	1. [Fall 2015 Study](#fall-2015-study)
 	2. [Spring 2017 Study](#spring-2017-study)
-2. [Project Components](#project-components)
-3. [Setting Up The Software](#setting-up-the-software)
-	1. [Directory Structure](#toc_5)
+3. [Project Components](#project-components)
+4. [Setting Up The Software](#setting-up-the-software)
+	1. [Server-side Code](#server-side-code)
+	2. [Client-side Code](#client-side-code)
 	2. [Downloading and Initializing Data](#toc_6)
 		1. [Insert Demo Data](#toc_7)
 		2. [Insert Full Data](#toc_8)
@@ -34,15 +35,16 @@ In this study, we collected data about individuals' information-seeking behavior
 
 The code is broken into the following sections:
 * [Collection Tools - Server Code](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/collection-tools) - Server-side code for all user studies run for this project.  Code is mainly written in PHP.
-	* [Fall 2015 Study](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/collection-tools/fall2015/spring2016intent) - Server-side code for the Fall 2015 study.
-	* [ Spring 2017 Study](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/collection-tools/spring2017/workintent) - 
-* [Plugins - Client Code](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/plugins) - Client-side code run on participants' machines for each user study
-	* [Fall 2015 Study - Firefox](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/plugins/fall2015/firefox) - 
-	* [Spring 2017 Study - Chrome](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/plugins/spring2017/chrome) -
+	* [Fall 2015 Study](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/collection-tools/fall2015/spring2016intent) - Server-side code for the [Fall 2015 study](#fall-2015-study).
+	* [ Spring 2017 Study](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/collection-tools/spring2017/workintent) - Server-side code for the [Spring 2017 study](#spring-2017-study).
+* [Plugins - Client Code](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/plugins) - Client-side code installed on participants' machines for each user study.
+	* [Fall 2015 Study - Firefox](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/plugins/fall2015/firefox) - Browser extension installed on the lab machine for the [Fall 2015 study](#fall-2015-study). This is a Firefox extension.
+	* [Spring 2017 Study - Chrome](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/plugins/spring2017/chrome) - Browser extension installed on the participants' remote machines for the [Spring 2017 study](#spring-2017-study). This is a Chrome extension.
 * [Analysis Code] - TBD.  This will contain all analysis code from the project.
 
 # Setting Up The Software
 ## Server-side Code
+
 To install. PHP 5.3.3
 
 To configure
