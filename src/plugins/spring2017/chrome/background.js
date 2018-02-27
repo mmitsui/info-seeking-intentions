@@ -215,6 +215,10 @@ chrome.tabs.onActivated.addListener(function(activeInfo){
   var now = new Date();
 
   chrome.tabs.get(activeInfo.tabId, function(tab){
+    if (chrome.runtime.lastError) {
+        console.log("tabs.onActivated (tabs.get): "+chrome.runtime.lastError.message);
+        return;
+      }
 
     if(tab){
       Url = (tab.hasOwnProperty('url')?tab.url:"");
@@ -228,15 +232,20 @@ chrome.tabs.onActivated.addListener(function(activeInfo){
         tabId,
         { code: "document.referrer;" },
         function(result) {
-          activeInfo.referrerInfo = result;
+
+          if (chrome.runtime.lastError) {
+            console.log("tabs.onActivated (tabs.executeScript): "+chrome.runtime.lastError.message);
+          }else{
+            activeInfo.referrerInfo = result;  
+          }
+
+          
 
           saveAction("tabs.onActivated",activeInfo.tabId,activeInfo,now);
           savePQ(Url,title,active,tabId,windowId,now,"tabs.onActivated",activeInfo);
         }
       );
 
-    }else{
-      // alert(chrome.runtime.lastError);
     }
     
 
@@ -275,17 +284,19 @@ chrome.tabs.onCreated.addListener(function(tab){
         tabId,
         { code: "document.referrer;" },
         function(result) {
-          tab.referrerInfo = result;
+
+          if (chrome.runtime.lastError) {
+            console.log("tabs.onCreated (tabs.executeScript): "+chrome.runtime.lastError.message);
+          }else{
+            tab.referrerInfo = result;
+          }
+
+          
           saveAction("tabs.onCreated",tab.id,{currentTab:currentTab,newTab:tab},now);
         }
       );
 
   });
-
-  // chrome.tabs.getCurrent(function (result){});
-  
-  
-
 });
 
 
@@ -331,7 +342,13 @@ chrome.tabs.onReplaced.addListener(function(addedTabId, removedTabId){
         tabId,
         { code: "document.referrer;" },
         function(result) {
-          saveAction("tabs.onReplaced",addedTabId,{addedTabId:addedTabId,removedTabId:removedTabId,referrerInfo:result},now);
+          var info = {addedTabId:addedTabId,removedTabId:removedTabId}
+          if (chrome.runtime.lastError) {
+            console.log("tabs.onReplaced (tabs.executeScript): "+chrome.runtime.lastError.message);
+          }else{
+            info = {addedTabId:addedTabId,removedTabId:removedTabId,referrerInfo:result}
+          }
+          saveAction("tabs.onReplaced",addedTabId,info,now);
         }
       );
  
@@ -347,10 +364,22 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
     
     if (changeInfo.status === 'complete') {
 
-    	chrome.tabs.executeScript(tabId, { file: "external/js/jquery-3.2.1.min.js" }, function() {
-    		chrome.tabs.executeScript(tabId, { 
-    			allFrames: true, 
-    			file: "payload.js" }
+    	chrome.tabs.executeScript(tabId, 
+        { file: "external/js/jquery-3.2.1.min.js" }
+        , function() {
+          if (chrome.runtime.lastError) {
+              console.log("tabs.onUpdated (tabs.executeScript-jquery): "+chrome.runtime.lastError.message);
+            }
+
+    		  chrome.tabs.executeScript(tabId, { 
+    			 allFrames: true, 
+    			 file: "payload.js" }
+            ,
+            function(){
+            if (chrome.runtime.lastError) {
+              console.log("tabs.onUpdated (tabs.executeScript-payload): "+chrome.runtime.lastError.message);
+            }
+          }
     			);
 		});
     }
@@ -367,6 +396,11 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
   	checkLoggedIn();
 
     chrome.tabs.get(changeInfo.tabId, function(tab){
+      if (chrome.runtime.lastError) {
+        console.log("tabs.onUpdated (tabs.get): "+chrome.runtime.lastError.message);
+        return;
+      }
+
       Url = (tab.hasOwnProperty('url')?tab.url:"");
       title = (tab.hasOwnProperty('title')?tab.title:"");
       active = tab.active;
@@ -377,7 +411,13 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
         tabId,
         { code: "document.referrer;" },
         function(result) {
-          changeInfo.referrerInfo = result;
+
+          if (chrome.runtime.lastError) {
+              console.log("tabs.onUpdated (tabs.executeScript-referrer): "+chrome.runtime.lastError.message);
+            }else{
+              changeInfo.referrerInfo = result;
+            }
+          
 
           saveAction("tabs.onUpdated",value,changeInfo,now);
           savePQ(Url,title,active,tabId,windowId,now,"tabs.onUpdated",changeInfo);
@@ -396,7 +436,12 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
 chrome.tabs.onZoomChange.addListener(function(ZoomChangeInfo){
   var now = new Date();
   chrome.tabs.get(ZoomChangeInfo.tabId, function(tab){
-    ZoomChangeInfo.windowId = windowId;
+    if (chrome.runtime.lastError) {
+        console.log("tabs.onZoomChange (tabs.get): "+chrome.runtime.lastError.message);
+        return;
+      }
+
+    ZoomChangeInfo.windowId = tab.windowId;
     saveAction("tabs.onZoomChange",ZoomChangeInfo.oldZoomFactor + "," + ZoomChangeInfo.newZoomFactor,ZoomChangeInfo,now);
   });
   
@@ -433,6 +478,7 @@ chrome.windows.onFocusChanged.addListener(function(windowId){
 
 
 // TODO: Multiple calls per page sometimes?
+// Error triggered when loading content on SERP for SERP result (e.g. extra links for result). tabId does not exist
 chrome.webNavigation.onCommitted.addListener(function(details){
   var now = new Date();
 
@@ -442,19 +488,32 @@ chrome.webNavigation.onCommitted.addListener(function(details){
   		chrome.extension.getBackgroundPage().console.log('Error in chrome.webNavigation.onCommitted.addListener on tabId: '+details.tabId );
   		return;
   	}
-    chrome.tabs.get(details.tabId, function(tab){
-    Url = (tab.hasOwnProperty('url')?tab.url:"");
-    title = (tab.hasOwnProperty('title')?tab.title:"");
-    active = tab.active;
-    tabId = (tab.hasOwnProperty('id')?tab.id:-1);
-    windowId = tab.windowId;
-    details.tab = tab;
 
-    chrome.tabs.executeScript(
+    
+    chrome.tabs.get(details.tabId, function(tab){
+
+      if (chrome.runtime.lastError) {
+        console.log("webNavigation.onCommitted (tabs.get): "+chrome.runtime.lastError.message);
+        return;
+      }
+
+      Url = (tab.hasOwnProperty('url')?tab.url:"");
+      title = (tab.hasOwnProperty('title')?tab.title:"");
+      active = tab.active;
+      tabId = (tab.hasOwnProperty('id')?tab.id:-1);
+      windowId = tab.windowId;
+      details.tab = tab;
+
+      chrome.tabs.executeScript(
         tabId,
         { code: "document.referrer;" },
         function(result) {
-          details.referrerInfo = result;
+          if (chrome.runtime.lastError) {
+              console.log("webNavigation.onCommitted (tabs.executeScript): "+chrome.runtime.lastError.message);
+            }else{
+              details.referrerInfo = result;
+            }
+          
           saveAction("webNavigation.onCommitted",details.tabId,details,now);
           savePQ(Url,title,active,tabId,windowId,now,"webNavigation.onCommitted",details);
         }
