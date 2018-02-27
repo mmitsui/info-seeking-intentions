@@ -1,5 +1,5 @@
 # Characterizing and Evaluating Whole Session Interactive Information Retrieval
-The following repository is code from the Information Seeking Intentions study (http://inforetrieval.org/iir/)
+The following repository is code from the Information Seeking Intentions study (http://inforetrieval.org/iir/).  This page is about the client-server data collection code for our user studies.  For a description of the analysis code, see TBD.
 
 # Table of Contents
 1. [About the Project](#about-the-project)
@@ -8,14 +8,15 @@ The following repository is code from the Information Seeking Intentions study (
 	2. [Spring 2017 Study](#spring-2017-study)
 3. [Project Components](#project-components)
 4. [Setting Up The Software](#setting-up-the-software)
-	1. [Server-side Code](#server-side-code)
-	2. [Client-side Code](#client-side-code)
-	2. [Downloading and Initializing Data](#toc_6)
+	1. [Requirements](#requirements)
+	2. [Server-side Code](#server-side-code)
+	3. [Client-side Code](#client-side-code)
+	4. [Downloading and Initializing Data](#toc_6)
 		1. [Insert Demo Data](#toc_7)
 		2. [Insert Full Data](#toc_8)
-3. [Project Products](#project-products)
-4. [Testing the Front End](#toc_10)
-5. [TODO](#toc_11)
+5. [Analysis Code](#analysis-code)
+6. [Project Products](#project-products)
+
 
 # About the Project
 This research addresses a newly important issue in contemporary life. As people become more accustomed to using the Web for finding information, they are increasingly using it for addressing ever more complex and personally important information problems. However, current Web search engines have been developed and specifically tuned to helping people find simple, mostly factual information, usually as a single response list to a single, simple query. But when they try to address the new types of problems, people need to engage in longer information seeking episodes than the one query-one response paradigm assumes. They may also need to engage in many activities other than just clicking on a search result, such as reading, evaluating, comparing and using information. Current Web search engines do not sufficiently support this model of information seeking and use. This research addresses this problem by studying why people engage in such complex information seeking (that is, the reasons that motivate them to do this), and what they try to accomplish during the course of an information seeking episode (their search intentions). The end-goal of this research is to design and evaluate new types of search engines for supporting people in accomplishing the goals that have led them to engage in information seeking. This means, in essence, being able to personalize system support to the individual, and the individual's goals and context. Specifically, this research will establish relationships between people's behaviors during an information seeking episode, the motivating goals that led them to engage in information seeking, and their specific intentions at any point in an information seeking episode. This will enable development of systems that will be able to predict how best to support the individual person in addressing their information problem. For example, the findings from this project could help build a system that automatically identifies that a searcher is shopping for a car, and help him/her compare cost-benefits of new vs. used cars, buying vs. leasing, and eventually making an informed decision. Research will be integrated with educational activities via developing modules to supplement courses in iSchools and library/information science programs, etc. This is important, since a broad range of students would learn about new methods of searching and related user studies and evaluation.
@@ -43,15 +44,31 @@ The code is broken into the following sections:
 * [Analysis Code] - TBD.  This will contain all analysis code from the project.
 
 # Setting Up The Software
+
+## Requirements
+
+You will need the following software on your client and server to get started:
+* PHP (ver. 5.3.3) - server
+* MySQL - server
+* Firefox (for Fall 2015 Study) 42.0 or lower - client
+* Chrome (for Spring 2017 Study) - client
+
 ## Server-side Code
 
-To install. PHP 5.3.3
+To install this software, simply put upload it to server. WARNING: At the time running this software, our version of PHP was PHP 5.3.3. Future versions of PHP have several modifications to the core API.  Proceed with caution - depending on your version of PHP, some updates may be necessary.  Connection.class.php is also missing in each project - it is a wrapper to MySQL calls and is easy to reverse engineer from the API calls.
 
-To configure
+Configuring the code may be the most time-consuming part.  You will need to search for references to our `coagmento.org` (e.g. `...coagmento.org/workintent/signup_intro.php...`) and change them to yours (e.g. `...yourserver.com/workintent/signup_intro.php`).
+
 ## Client-side Code
-To install.
 
-To configure.
+Installing these plugins is a drag-and-drop affair.  For the Firefox extension, select the `chrome` folder, `chrome.manifest` and `install.rdf` and compress them into a ZIP.  Rename your `archive.zip` to `archive.xpi`.  Then drag it into Firefox, and you'll be prompted to install and restart.  WARNING: This was created before Firefox version 42.  Afterwards, this version of the extension API became deprecated in favor of several other APIs (and eventually the Web Extensions API).  To get this software to work out of the box, you'll need to downgrade your Firefox version to 42.0 and prevent automatic updates.  Otherwise, we suggest using the Web Extensions API to create an updated version of the software.  For the Chrome extension, enter `chrome://extensions/` into your browser.  Click "Load unpacked extension...".  Then navigate to and select the `chrome` folder.  Any updates/modifications you make to this folder can be tested by reloading the extension in the `chrome://extensions` tab.
+
+To configure the software, change all references to `coagmento.org` to your own server.  In the Firefox extension, you can find these references in `chrome/content/coagmento.js`,`chrome/content/coagmento.xul`. In the Chrome extension, you can find these references in `manifest.json`,`background.js`,`payload.js`, and `popup.js`.
+
+
+# Analysis Code
+
+For documentation on the analysis code, you may refer here: TBD.
 
 # Project Products
 
