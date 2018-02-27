@@ -11,9 +11,6 @@ The following repository is code from the Information Seeking Intentions study (
 	1. [Requirements](#requirements)
 	2. [Server-side Code](#server-side-code)
 	3. [Client-side Code](#client-side-code)
-	4. [Downloading and Initializing Data](#toc_6)
-		1. [Insert Demo Data](#toc_7)
-		2. [Insert Full Data](#toc_8)
 5. [Analysis Code](#analysis-code)
 6. [Project Products](#project-products)
 
@@ -48,16 +45,18 @@ The code is broken into the following sections:
 ## Requirements
 
 You will need the following software on your client and server to get started:
-* PHP (ver. 5.3.3) - server
-* MySQL - server
-* Firefox (for Fall 2015 Study) 42.0 or lower - client
-* Chrome (for Spring 2017 Study) - client
+* Server
+	* PHP (ver. 5.3.3)
+	* MySQL
+* Client
+	* Firefox (for Fall 2015 Study) 42.0 or lower
+	* Chrome (for Spring 2017 Study)
 
 ## Server-side Code
 
 To install this software, simply put upload it to server. WARNING: At the time running this software, our version of PHP was PHP 5.3.3. Future versions of PHP have several modifications to the core API.  Proceed with caution - depending on your version of PHP, some updates may be necessary.  Connection.class.php is also missing in each project - it is a wrapper to MySQL calls and is easy to reverse engineer from the API calls.
 
-Configuring the code may be the most time-consuming part.  You will need to search for references to our `coagmento.org` (e.g. `...coagmento.org/workintent/signup_intro.php...`) and change them to yours (e.g. `...yourserver.com/workintent/signup_intro.php`).
+Configuring the code may be the most time-consuming part.  You will need to search for references to our `coagmento.org` (e.g. `...coagmento.org/workintent/signup_intro.php...`) and change them to yours (e.g. `...yourserver.com/workintent/signup_intro.php`). Each folder also contains the structure of the MySQL databases as a SQL dump in the `mysql-skeleton` folder.
 
 ## Client-side Code
 
