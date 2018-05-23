@@ -7,7 +7,14 @@ require_once('core/Questionnaires.class.php');
 date_default_timezone_set('America/New_York');
 
 $num_recruits = 0;
-$recruit_limit =44; // Current Recruitment Limit as of 07/15/2014
+
+$cxn = Connection::getInstance();
+$query = "SELECT * FROM study_progress WHERE `var_name`='study_completion'";
+$result = $cxn->commit($query);
+$line=mysql_fetch_array($result);
+$recruit_counts =json_decode($line['data'],true); // Current Recruitment Limit as of 10/6/2014
+$recruits_remaining = 40-$recruit_counts['pending']-$recruit_counts['completed']-$recruit_counts['running'];
+
 $section_closed = false;
 $closed = false;
 
@@ -68,19 +75,18 @@ function availableDates2(){
         $thesplit = explode(",",$val);
         $monthday = $thesplit[0];
 
-        array_push($dates_available,$val);
-//        if(strtotime($monthday)-strtotime("today midnight")>=86400){
-//            array_push($dates_available,$val);
-//        }
+//        array_push($dates_available,$val);
+        if(strtotime($monthday)-strtotime("today midnight")>=86400){
+            array_push($dates_available,$val);
+        }
     }
 
-    $query = "SELECT * FROM recruits WHERE date_firstchoice != ''";
+    $query = "SELECT * FROM recruits WHERE date_secondchoice != ''";
     $results = $cxn->commit($query);
     $dates_taken = array();
     while($line = mysql_fetch_array($results, MYSQL_ASSOC)){
         array_push($dates_taken,$line['date_secondchoice']);
     }
-
 
     return array_diff($dates_available,$dates_taken);
 }
@@ -113,7 +119,7 @@ if(!isset($_POST['consentRead'])){
 
 }
 
-if($num_recruits<=$recruit_limit && !$closed && !$section_closed && !allSlotsTaken())
+if($recruits_remaining>0 && !$closed && !$section_closed && !allSlotsTaken())
 {
 	if(1)
 	{
@@ -501,7 +507,7 @@ for($x=1;$x<=$NUM_USERS;$x++){
 
     <div class="pure-control-group">
         <div id="date_firstchoice_1_div">
-            <label name="date_firstchoice_1">Please choose a date for your pre-task interview (all listed times are in EST):</label>
+            <label name="date_firstchoice_1">Please choose a date for your pre-task interview (<strong>all listed times are in EST</strong>):</label>
             <span style="color:red" id="date_firstchoice_span"></span>
             <select name="date_firstchoice_1" id="date_firstchoice_1" required>
                 <option disabled selected>--Select one--</option>
@@ -525,7 +531,7 @@ for($x=1;$x<=$NUM_USERS;$x++){
 
 
     <div class="pure-control-group">
-        <div id="date_secondchoice_1_div"><label name="date_secondchoice_1">Please choose a date for your post-task interview (this must be on the Monday after your pre-task interview; all listed times are in EST):</label>
+        <div id="date_secondchoice_1_div"><label name="date_secondchoice_1">Please choose a date for your post-task interview (this must be the Monday after your pre-task interview; <strong>all listed times are in EST</strong>):</label>
             <span style="color:red" id="date_secondchoice_span"></span>
             <select name="date_secondchoice_1" id="date_secondchoice_1" required>
                 <option disabled selected>--Select one--</option>

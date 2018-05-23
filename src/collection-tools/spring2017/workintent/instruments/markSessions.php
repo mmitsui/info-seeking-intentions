@@ -12,6 +12,17 @@ isSessionOrDie();
 $base = Base::getInstance();
 $userID = $base->getUserID();
 
+
+function getTimezone($userID){
+    $query = "SELECT * FROM recruits WHERE userID=$userID";
+    $cxn = Connection::getInstance();
+    $result = $cxn->commit($query);
+    $line = mysql_fetch_array($result,MYSQL_ASSOC);
+    return $line['timezone'];
+}
+
+$base->setUserTimezone(getTimezone($userID));
+
 $selectedStartTimeSeconds = null;
 if(isset($_GET['startTime'])){
     $selectedStartTimeSeconds = $_GET['startTime'];

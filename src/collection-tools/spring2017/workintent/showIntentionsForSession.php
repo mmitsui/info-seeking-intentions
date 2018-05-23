@@ -31,17 +31,41 @@ while($line=mysql_fetch_array($result,MYSQL_ASSOC)){
 
 $querySegmentIDs = array_unique($querySegmentIDs);
 
-
-$intentions_data =array();
-if(sizeof($querySegmentIDs)==0){
-    echo "<h3>No intentions data for this session!</h3>";
-    exit();
+$ordered_querySegmentIDs = array();
+if(count($querySegmentIDs)>0){
+    $query = "SELECT * FROM ((SELECT querySegmentID,`localTimestamp` FROM queries WHERE userID=$userID AND querySegmentID IN (".implode(',',$querySegmentIDs).")) UNION (SELECT querySegmentID,`localTimestamp` FROM pages WHERE userID=$userID AND querySegmentID IN (".implode(',',$querySegmentIDs)."))) b ORDER BY b.`localTimestamp`;";
+    $result = $cxn->commit($query);
+    while($line=mysql_fetch_array($result,MYSQL_ASSOC)){
+        if(!in_array($line['querySegmentID'],$ordered_querySegmentIDs)){
+            array_push($ordered_querySegmentIDs,$line['querySegmentID']);
+        }
+    }
 }
 
-$query = "SELECT * FROM intent_assignments WHERE userID=$userID AND querySegmentID IN (".implode(',',$querySegmentIDs).") ORDER BY querySegmentID ASC";
-$result = $cxn->commit($query);
-while($line=mysql_fetch_array($result,MYSQL_ASSOC)){
-    $intentions_data[$line['querySegmentID']] = $line;
+
+$intentions_data =array();
+$intent_querySegmentIDs = array();
+
+if(sizeof($querySegmentIDs)==0){
+    echo "<h3>No intentions data for this session!</h3>";
+//    exit();
+}
+
+if(count($querySegmentIDs)>0){
+    $query = "SELECT * FROM intent_assignments WHERE userID=$userID AND querySegmentID IN (".implode(',',$querySegmentIDs).") ORDER BY querySegmentID ASC";
+    $result = $cxn->commit($query);
+    while($line=mysql_fetch_array($result,MYSQL_ASSOC)){
+        $intentions_data[$line['querySegmentID']] = $line;
+    }
+
+
+
+
+    $query = "SELECT querySegmentID FROM intent_assignments WHERE userID=$userID AND querySegmentID IN (".implode(',',$querySegmentIDs).") ORDER BY querySegmentID ASC";
+    $result = $cxn->commit($query);
+    while($line=mysql_fetch_array($result,MYSQL_ASSOC)){
+        array_push($intent_querySegmentIDs,$line['querySegmentID']);
+    }
 }
 
 
@@ -137,6 +161,15 @@ $intentions_name = array(
 
 <body>
 
+
+<div class="container">
+    <h1>
+    <?php
+        echo "Session $sessionID, Task $taskID";
+    ?>
+    </h1>
+</div>
+
 <div class="container">
     <a type="button" class="btn btn-info btn-lg" href="http://www.coagmento.org/workintent/taskAndSessionExitInterview.php?userID=<?php echo $userID;?>&taskID=<?php echo $taskID;?>"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i> Back</a>
 </div>
@@ -162,8 +195,13 @@ $intentions_name = array(
                 </thead>
                 <tbody id='history_table'>
                 <?php
-                    foreach($intentions_data as $querySegmentID=>$datum){
-                        echo "<tr>";
+                    foreach($ordered_querySegmentIDs as $querySegmentID){
+                        $datum = $intentions_data[$querySegmentID];
+                        $tr_style = '';
+                        if(!in_array($querySegmentID,$intent_querySegmentIDs)){
+                            $tr_style = "class='active'";
+                        }
+                        echo "<tr $tr_style>";
                         echo "<td>$querySegmentID</td>";
                         foreach($intentions_name as $id=>$name){
                             $td_style = "";
@@ -187,6 +225,8 @@ $intentions_name = array(
 
                                 }
                             }
+
+
 
                             echo "<td $td_style>$icon</td>";
                         }
@@ -212,6 +252,8 @@ if(count($day_log)<=0){
                                 <tr>
                                     <!--<th >Time</th>-->
                                     <th >Type</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
                                     <th>Search Segment ID</th>
                                     <th >Title/Query</th>
                                     <th >Domain</th>
@@ -240,8 +282,10 @@ if(count($day_log)<=0){
         }
 
 
-//        $day_table .= "<td>".(isset($page['time'])?$page['time']:"")."</td>";
+
         $day_table .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
+        $day_table .= "<td>".(isset($page['date'])?$page['date']:"")."</td>";
+        $day_table .= "<td>".(isset($page['time'])?$page['time']:"")."</td>";
 
 
 

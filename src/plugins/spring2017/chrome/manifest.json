@@ -2,7 +2,7 @@
     "update_url": "https://clients2.google.com/service/update2/crx",
 
     "manifest_version" : 2,
-    "name" : "Workplace Study Extension - 115",
+    "name" : "Workplace Study Extension - 177",
     "description" : "Companion extension for Workplace Study, 2017.",
     "version" : "1.0.12",
     "content_scripts": [],

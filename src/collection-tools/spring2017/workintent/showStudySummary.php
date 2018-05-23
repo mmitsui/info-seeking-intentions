@@ -266,6 +266,7 @@ $summary = getSummaryData('study');
         }
 
         function updateStatistics(ev){
+
             $("#update_loading_spinner").show();
 
             ev.preventDefault();
@@ -287,10 +288,14 @@ $summary = getSummaryData('study');
                 var d = new Date(response.lastupdate_timestamp*1000);
                 $("span[name='lastupdate_timestamp']").text(addZero(d.getMonth()+1)+"-"+d.getDate()+"-"+d.getFullYear()+" "+addZero(d.getHours())+":"+addZero(d.getMinutes())+":"+addZero(d.getSeconds()));
 
-                $("span[name='study_completion_registered']").text(response.study_completion.registered).css('background-color','aqua');
+                $("span[name='study_completion_registered']").text(response.study_completion.total_registered).css('background-color','aqua');
                 $("span[name='study_completion_completed']").text(response.study_completion.completed).css('background-color','aqua');
+                $("span[name='study_completion_completed_or_running']").text(response.study_completion.completed_or_running).css('background-color','aqua');
                 $("span[name='study_completion_running']").text(response.study_completion.running).css('background-color','aqua');
                 $("span[name='study_completion_open_registrations']").text(response.study_completion.open_registrations).css('background-color','aqua');
+                $("span[name='study_completion_abandoned_registrations']").text(response.study_completion.abandoned).css('background-color','aqua');
+                $("span[name='study_completion_absent_registrations']").text(response.study_completion.absent).css('background-color','aqua');
+                $("span[name='study_completion_pending_registrations']").text(response.study_completion.pending).css('background-color','aqua');
 
 
                 $("span[name='count_tasks_count']").text(response.count_tasks.count).css('background-color','aqua');
@@ -416,11 +421,8 @@ $summary = getSummaryData('study');
             chart_complexity = assign_chart('canvas_complexity',barchartdata_complexity,'Complexity');
             chart_knowledge_topic = assign_chart('canvas_knowledge_topic',barchartdata_knowledge_topic,'Knowledge Topic');
             chart_knowledge_procedures = assign_chart('canvas_knowledge_procedures',barchartdata_knowledge_procedures,'Knowledge Procedures');
-
             chart_successful = assign_chart('canvas_successful',barchartdata_successful,'Successful');
             chart_useful = assign_chart('canvas_useful',barchartdata_useful,'Useful');
-
-
             chart_intention_distribution = assign_chart('canvas_intention_distribution',barchartdata_intention_distribution,'Intention Distribution');
 
 
@@ -546,10 +548,16 @@ $summary = getSummaryData('study');
                 <center><h4>Study Progress</h4></center>
             </div>
             <div class="panel-body">
-                    <p><h4># Users Registered: <span name="study_completion_registered"><?php echo $summary['study_completion']['registered'];?></span></h4></p>
+                    <p><h4>Total # Users Registered: <span name="study_completion_registered"><?php echo $summary['study_completion']['total_registered'];?></span></h4></p>
                     <p><h4># Users Completed: <span name="study_completion_completed"><?php echo $summary['study_completion']['completed'];?></span></h4></p>
                     <p><h4># Running (Not Finished): <span name="study_completion_running"><?php echo $summary['study_completion']['running'];?></span></h4></p>
-                    <p><h4># Open Registrations: <span name="study_completion_open_registrations"><?php echo $summary['study_completion']['open_registrations'];?></span></h4></p>
+                    <p><h4># Users Completed or Running: <span name="study_completion_completed_or_running"><?php echo $summary['study_completion']['completed_or_running'];?></span></h4></p>
+                    <p><h4># Pending Registrations: <span name="study_completion_pending_registrations"><?php echo $summary['study_completion']['pending'];?></span></h4></p>
+
+                <p><h4># Absent Registrations: <span name="study_completion_absent_registrations"><?php echo $summary['study_completion']['absent'];?></span></h4></p>
+                <p><h4># Abandoned Registrations: <span name="study_completion_abandoned_registrations"><?php echo $summary['study_completion']['abandoned'];?></span></h4></p>
+
+                    <p><h4># Open Registration Slots: <span name="study_completion_open_registrations"><?php echo $summary['study_completion']['open_registrations'];?></span></h4></p>
             </div>
         </div>
 

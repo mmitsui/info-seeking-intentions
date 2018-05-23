@@ -16,6 +16,9 @@ if (Base::getInstance()->isSessionActive())
     $time = $base->getTime();
     $date = $base->getDate();
     $timestamp = $base->getTimestamp();
+    if(!isset($_POST['mouse_actions'])){
+        exit();
+    }
     $mouse_buffer = $_POST['mouse_actions'];
     $values_array = array();
     foreach($mouse_buffer as $lTs=>$mouse_data){

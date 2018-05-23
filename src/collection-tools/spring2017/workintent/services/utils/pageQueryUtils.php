@@ -135,7 +135,9 @@ function getHomePageTables($userID,$startTimestamp,$endTimestamp){
         $day_table = '<center><h3 class=\'bg-danger\'>You have not done anything today.  Please log some activity.</h3></center>';
     }else{
         $day_table = "
-         <div class='well'><input class=\"form-control\" id=\"history_search\" type=\"text\" placeholder=\"Search your history\"></div>
+         <div class='well'>
+             <input class=\"form-control\" id=\"history_search\" type=\"text\" placeholder=\"Search your history\">
+             </div>
         <table  class=\"table table-bordered table-fixed\">
                                 <thead>
                                 <tr>

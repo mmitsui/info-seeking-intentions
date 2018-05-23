@@ -387,7 +387,9 @@ function getDataExitSessionsInterview($studyOrUser,$metadata){
         $result = $cxn->commit($query);
 
         while($line = mysql_fetch_array($result,MYSQL_ASSOC)){
-            $data[$c][$line[$c]-1] = intval($line['ct']);
+            if($line[$c]>0){
+                $data[$c][$line[$c]-1] = intval($line['ct']);
+            }
         }
 
         $output["barchartdata_$c"] = array(
@@ -670,27 +672,97 @@ function getIntentionCounts($studyOrUser,$data){
 
 
 function getStudyCompletionCounts(){
-    $query = 'SELECT * FROM questionnaire_exit_tasks WHERE userID<500 AND userID >=112 GROUP BY userID';
+    $query = 'SELECT * FROM questionnaire_exit_tool WHERE userID<500 AND userID >=112 GROUP BY userID';
     $cxn = Connection::getInstance();
     $result = $cxn->commit($query);
     $completed_users = mysql_num_rows($result);
 
-    $query = 'SELECT * FROM pages WHERE userID<500 AND userID >=112 GROUP BY userID';
-    $result = $cxn->commit($query);
-    $running_users = $completed_users - mysql_num_rows($result);
+
+
+
 
     $query = 'SELECT * FROM recruits WHERE userID<500 AND userID >=112  GROUP BY userID';
     $result = $cxn->commit($query);
-    $registered_users = mysql_num_rows($result) - $completed_users - $running_users;
+    $total_registered_users = mysql_num_rows($result);
 
 
-    $remaining_registrations = 36-$completed_users-$running_users-$registered_users;
+    $userIDs_entrydone = array();
+    $userIDs_exitdone = array();
+    $userIDs_entrypassed = array();
+    $userIDs_exitpassed = array();
+
+    $abandoned_registration_userIDs = array();
+    $absent_registration_userIDs = array();
+    $pending_userIDs = array();
+
+    $query = 'SELECT * FROM questionnaire_exit_tool WHERE userID<500 AND userID >=112 GROUP BY userID';
+    $result = $cxn->commit($query);
+    while($line=mysql_fetch_array($result,MYSQL_ASSOC)){
+        array_push($userIDs_exitdone,$line['userID']);
+    }
+
+    $query = 'SELECT * FROM questionnaire_entry_demographic WHERE userID<500 AND userID >=112 GROUP BY userID';
+    $result = $cxn->commit($query);
+    while($line=mysql_fetch_array($result,MYSQL_ASSOC)){
+        array_push($userIDs_entrydone,$line['userID']);
+    }
+
+    $pages_done_userIDs = array();
+    $query = 'SELECT * FROM pages WHERE userID<500 AND userID >=112 GROUP BY userID';
+    $result = $cxn->commit($query);
+    while($line=mysql_fetch_array($result,MYSQL_ASSOC)){
+        array_push($pages_done_userIDs,$line['userID']);
+    }
+
+    $query = 'SELECT * FROM recruits WHERE userID<500 AND userID >=112 GROUP BY userID';
+    $result = $cxn->commit($query);
+    while($line=mysql_fetch_array($result,MYSQL_ASSOC)){
+        $userID = $line['userID'];
+        $d = explode("-",$line['date_firstchoice']);
+        $timestampentry = strtotime($d[0]);
+        $d = explode("-",$line['date_secondchoice']);
+        $timestampexit = strtotime($d[0]);
+        $currenttime = time();
+
+
+        if(in_array($userIDs_exitdone,$userID)){
+            continue;
+        }else if($currenttime-$timestampexit>0 and !in_array($userID,$userIDs_exitdone) and (in_array($userID,$pages_done_userIDs) or in_array($userID,$userIDs_entrydone))){
+//            Abandoned.  Exit interview passed and not done but they still did work
+            array_push($abandoned_registration_userIDs,$userID);
+        }else if($currenttime-$timestampentry>0 and !in_array($userID,$userIDs_entrydone)){
+            array_push($userIDs_entrypassed,$userID);
+        }else if($currenttime-$timestampexit>0 and !in_array($userID,$userIDs_exitdone)){
+            array_push($userIDs_exitpassed,$userID);
+        }else if (!in_array($userID,$userIDs_exitdone) and !in_array($userID,$userIDs_entrydone)){
+            array_push($pending_userIDs,$userID);
+        }
+    }
+
+
+    $abandoned_registration_userIDs = array_unique($abandoned_registration_userIDs);
+    $absent_registration_userIDs = array_unique(array_merge($userIDs_entrypassed,$userIDs_exitpassed));
+    $dead_registration_userIDs = array_unique(array_merge($abandoned_registration_userIDs,$absent_registration_userIDs));
+    $pending_userIDs = array_unique($pending_userIDs);
+
+
+    $query = "SELECT extensionID FROM users WHERE userID<500 AND userID >=112 AND userID NOT IN (".implode(',',$dead_registration_userIDs).") AND extensionID IS NOT NULL GROUP BY userID";
+    $result = $cxn->commit($query);
+    $running_users = mysql_num_rows($result)-$completed_users;
+
+
+
+    $remaining_registrations = 40-count($pending_userIDs)-$completed_users-$running_users;
 
     return array(
         'completed'=>$completed_users,
         'running'=>$running_users,
-        'registered'=>$registered_users,
-        'open_registrations'=>$remaining_registrations
+        'total_registered'=>$total_registered_users,
+        'open_registrations'=>$remaining_registrations,
+        'completed_or_running'=>$completed_users+$running_users,
+        'abandoned'=>count($abandoned_registration_userIDs),
+        'absent'=>count($absent_registration_userIDs),
+        'pending'=>count($pending_userIDs),
     );
 }
 

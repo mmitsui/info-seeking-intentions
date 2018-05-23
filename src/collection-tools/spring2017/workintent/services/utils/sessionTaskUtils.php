@@ -24,13 +24,13 @@ function addTask($userID,$taskName){
     return $taskID;
 }
 
-function addTask_returnabs($userID,$taskName){
+function addTask_returnabs($userID,$taskName,$byresearcher){
     $query = "SELECT IFNULL(MAX(taskID),0) as maxTaskID FROM task_labels_user WHERE userID=$userID";
     $cxn = Connection::getInstance();
     $result = $cxn->commit($query);
     $line = mysql_fetch_array($result,MYSQL_ASSOC);
     $taskID = $line['maxTaskID']+1;
-    $query = "INSERT INTO task_labels_user (`userID`,`projectID`,`taskID`,`taskName`,`deleted`) VALUES ('$userID','$userID','$taskID','$taskName',0)";
+    $query = "INSERT INTO task_labels_user (`userID`,`projectID`,`taskID`,`taskName`,`deleted`,`by_researcher`) VALUES ('$userID','$userID','$taskID','$taskName',0,'$byresearcher')";
     $cxn->commit($query);
     return $cxn->getLastID();
 }

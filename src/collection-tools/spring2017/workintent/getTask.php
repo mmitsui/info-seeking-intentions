@@ -19,7 +19,7 @@ $taskIDNameMap = getTaskIDNameMap($userID);
 <html>
 <head>
     <title>
-        Tutorial
+        Task
     </title>
 
     <link rel="stylesheet" href="./study_styles/bootstrap-3.3.7-dist/css/bootstrap.min.css">
@@ -28,13 +28,31 @@ $taskIDNameMap = getTaskIDNameMap($userID);
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="../lib/bootstrap_notify/bootstrap-notify.min.js"></script>
 
+    <script>
+
+
+        var search_history = function(ev){
+            var value = $(this).val().toLowerCase();
+            $("#history_table tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        }
+
+        $(document).ready(function(){
+
+
+            $('#history_search').keyup(search_history);
+
+        });
+
+    </script>
+
 </head>
 
 
 
 
 <body>
-<!--<h3>Task Log for User --><?php //echo $userID;?><!--</h3>-->
 
 <?php
 
@@ -42,11 +60,16 @@ if(count($day_log)<=0){
     $day_table = '<center><h3 class=\'bg-danger\'>The user has not done anything for this task.</h3></center>';
 }else{
     $day_table = "
+        <div class='well'>
+                <input class=\"form-control\" id=\"history_search\" type=\"text\" placeholder=\"Search your history\">
+             </div>
         <table  class=\"table table-bordered table-fixed\">
                                 <thead>
                                 <tr>
                                     <!--<th >Time</th>-->
                                     <th >Type</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
                                     <th >Title/Query</th>
                                     <th >Domain</th>
                                 </tr>
@@ -71,7 +94,10 @@ if(count($day_log)<=0){
 
 
 //        $day_table .= "<td>".(isset($page['time'])?$page['time']:"")."</td>";
+
         $day_table .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
+        $day_table .= "<td>".(isset($page['date'])?$page['date']:"")."</td>";
+        $day_table .= "<td>".(isset($page['time'])?$page['time']:"")."</td>";
 
 
 
@@ -104,29 +130,27 @@ if(count($day_log)<=0){
                     </table>";
 
 
-
-
-
 }
 
 ?>
 
 
 <div class="container">
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <?php
-            echo "Task: ".$taskIDNameMap[$taskID];
-            ?>
-        </div>
-
-        <div class="panel-body">
-            <?php
-            echo $day_table;
-            ?>
-        </div>
-    </div>
+    <h1>
+        <?php
+        echo "Task: ".$taskIDNameMap[$taskID];
+        ?>
+    </h1>
 </div>
+
+<div class="container">
+<?php
+    echo $day_table;
+?>
+</div>
+
+
+
 
 
 

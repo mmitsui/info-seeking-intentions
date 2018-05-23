@@ -35,7 +35,7 @@ Maybe we can use this as a replacement for the sidebar login as well.
         $individual_complete = mysql_escape_string($_POST['individual_complete']);
         $num_collaborators = mysql_escape_string($_POST['num_collaborators']);
         $task_name = mysql_escape_string($_POST['task_name']);
-        $taskID = addTask_returnabs($userID,$task_name);
+        $taskID = addTask_returnabs($userID,$task_name,1);
 
         $query = "INSERT INTO questionnaire_entry_tasks (`userID`,`task_idcolumn`,`name`,`description`,`frequency`,`familiarity`,`completiontime`,`individual_complete`,`num_collaborators`) VALUES ('$userID','$taskID','$task_name','$description','$frequency','$familiarity','$completiontime','$individual_complete','$num_collaborators')";
         $results = $cxn->commit($query);

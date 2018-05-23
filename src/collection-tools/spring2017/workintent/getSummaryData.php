@@ -10,7 +10,7 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/workintent/services/utils/sessionTaskUt
 
 
 
-function getSummaryData($summaryType,$data){
+function getSummaryData($summaryType,$data=array()){
     $cxn = Connection::getInstance();
     if($summaryType=='study'){
         $query = "SELECT * FROM study_progress WHERE `slice_by`='study'";

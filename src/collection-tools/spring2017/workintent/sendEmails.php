@@ -111,8 +111,8 @@ SIGNATURE
             $message = "<body>
 Hello FIRSTNAME LASTNAME,<br/><br/>
 This is a reminder for your entry interview for our research study. Your interview will begin at:<br/><br/> 
-Date of Pre-Task Interview: PREDATE<br/><br/>
-If you cannot make this time, please contact us at EMAIL.  In addition, please re-register at https://tinyurl.com/istudynat. We look forward to seeing you soon!<br/><br/><br/>
+Date of Pre-Task Interview (<strong>Eastern Standard Time</strong>): PREDATE<br/><br/>
+If you cannot make this time, please contact us at EMAIL, and please re-register at https://tinyurl.com/istudynat. We look forward to seeing you soon!<br/><br/><br/>
 SIGNATURE
 </body>
 ";
@@ -128,7 +128,7 @@ SIGNATURE
             $message = "<body>
 Hello FIRSTNAME LASTNAME,<br/><br/>
 Thank you for your participation in our study!  You’re almost done! This is a reminder for your exit interview for our research study. Your interview will begin at:<br/><br/> 
-Date of Post-Task Interview: POSTDATE<br/><br/>
+Date of Post-Task Interview (<strong>Eastern Standard Time</strong>): POSTDATE<br/><br/>
 If you cannot make this time, please contact us at EMAIL. We look forward to seeing you soon!<br/><br/><br/>
 SIGNATURE
 </body>

@@ -14,12 +14,27 @@ $day_log = getInterleavedPagesQueries($userID,$startTimestamp,$endTimestamp,0,-1
 $taskIDNameMap = getTaskIDNameMap($userID);
 
 
+$cxn = Connection::getInstance();
+$query = "(SELECT sessionID,querySegmentID FROM pages WHERE userID=$userID AND taskID=$taskID AND querySegmentID IS NOT NULL GROUP BY sessionID,querySegmentID) UNION (SELECT sessionID,querySegmentID FROM queries WHERE userID=$userID AND taskID=$taskID AND querySegmentID IS NOT NULL GROUP BY sessionID,querySegmentID)";
+$result = $cxn->commit($query);
+
+while($line=mysql_fetch_array($result,MYSQL_ASSOC)){
+    if(array_key_exists($line['sessionID'],$sessionData)){
+        $sessionData[$line['sessionID']]['ct_searchsegments'] += 1;
+    }else{
+        $sessionData[$line['sessionID']]['ct_searchsegments'] = 1;
+    }
+
+}
+
+
+
 ?>
 
 <html>
 <head>
     <title>
-        Exit Interview
+        Task + Session Exit Interview
     </title>
 
     <link rel="stylesheet" href="./study_styles/bootstrap-3.3.7-dist/css/bootstrap.min.css">
@@ -120,6 +135,11 @@ $taskIDNameMap = getTaskIDNameMap($userID);
             }).done(function(response) {
                 response = JSON.parse(response);
                 if(response.hasOwnProperty('success') && response['success']){
+
+                    var sessionID = $('input[name="sessionID"]').val();
+
+                    $('tr[data-table="session_table"][data-session-id="'+sessionID+'"]').addClass('success');
+
                     $.notify(
                         {message:"Session exit interview has been conducted successfully!"},
                         {type: 'success'}
@@ -198,6 +218,8 @@ if(count($day_log)<=0){
                                 <tr>
                                     <!--<th >Time</th>-->
                                     <th >Type</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
                                     <th >Title/Query</th>
                                     <th> Session ID</th>
                                     <th >Domain</th>
@@ -206,9 +228,13 @@ if(count($day_log)<=0){
                                 <tbody id='history_table'>";
 
     $table_row_index = 0;
+
+
     foreach($day_log as $page){
         $table_row_index += 1;
+
         $day_table .= "<tr data-table='day_table' data-table-row-index='$table_row_index'>";
+
 
         $name = '';
         $color = '';
@@ -222,8 +248,10 @@ if(count($day_log)<=0){
         $value = $page['id'];
 
 
-//        $day_table .= "<td>".(isset($page['time'])?$page['time']:"")."</td>";
+
         $day_table .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
+        $day_table .= "<td>".(isset($page['date'])?$page['date']:"")."</td>";
+        $day_table .= "<td>".(isset($page['time'])?$page['time']:"")."</td>";
 
 
 
@@ -342,6 +370,8 @@ if(count($day_log)<=0){
 </div>
 
 
+
+
 <div class="container">
     <div class="panel panel-primary">
         <div class="panel-heading">
@@ -355,18 +385,33 @@ if(count($day_log)<=0){
                 <thead>
                 <tr>
                     <th >Session ID</th>
+                    <th># Search Segments</th>
                     <th >Options</th>
                 </tr>
                 </thead>
                 <tbody id='session_table'>
 
             <?php
+
+            $sessions_intentionexit = array();
+            $query = "SELECT sessionID FROM questionnaire_exit_sessions WHERE userID=$userID AND ((intention_clarifications IS NOT NULL) OR (intention_transitions IS NOT NULL))";
+            $result = $cxn->commit($query);
+            while($line=mysql_fetch_array($result,MYSQL_ASSOC)){
+                array_push($sessions_intentionexit,$line['sessionID']);
+            }
+
+
                 $query = "SELECT * FROM pages WHERE userID=$userID AND taskID=$taskID AND sessionID IS NOT NULL GROUP BY sessionID ORDER BY sessionID ASC";
                 $result = $cxn->commit($query);
                 while($line=mysql_fetch_array($result,MYSQL_ASSOC)){
                     $sessionID = $line['sessionID'];
-                    echo "<tr>";
-                    echo "<td>".$line['sessionID']."</td>";
+                    if(in_array($sessionID,$sessions_intentionexit)){
+                        echo "<tr class='success' data-session-id='$sessionID' data-table='session_table' >";
+                    }else{
+                        echo "<tr data-session-id='$sessionID' data-table='session_table' >";
+                    }
+                    echo "<td>".$sessionID."</td>";
+                    echo "<td>".$sessionData[$sessionID]['ct_searchsegments']."</td>";
                     $button1 = "<button name='session_url_copy_button' data-session-url='http://coagmento.org/workintent/getSession.php?userID=$userID&sessionID=$sessionID' class='btn btn-success'>Copy Session URL to Clipboard</button>";
                     $button2 = "<button data-session-id='$sessionID' name='session_interview_show_button' class='btn btn-primary' data-toggle=\"modal\" data-target=\"#session_interview_modal\">Conduct Session Interview</button>";
                     $button3 = "<button data-session-id='$sessionID' class='btn btn-default' onclick='window.open(\"http://coagmento.org/workintent/showIntentionsForSession.php?userID=$userID&sessionID=$sessionID&taskID=$taskID\",\"_blank\");'>View Intentions For Session</button>";

@@ -6,11 +6,20 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/workintent/services/utils/pageQueryUtil
 require_once($_SERVER["DOCUMENT_ROOT"]."/workintent/services/utils/sessionTaskUtils.php");
 require_once($_SERVER["DOCUMENT_ROOT"]."/workintent/services/utils/querySegmentIntentUtils.php");
 
+function getTimezone($userID){
+    $query = "SELECT * FROM recruits WHERE userID=$userID";
+    $cxn = Connection::getInstance();
+    $result = $cxn->commit($query);
+    $line = mysql_fetch_array($result,MYSQL_ASSOC);
+    return $line['timezone'];
+}
 
 function findNextQuerySegmentLabel($userID,$startTimestamp){
     $base = Base::getInstance();
+    if(!isset($base->userTimezone)){
+        $base->setUserTimezone(getTimezone($userID));
+    }
     date_default_timezone_set($base->getUserTimezone());
-//    date_default_timezone_set('America/New_York');
     $date = date('Y-m-d', $startTimestamp);
     $query = "SELECT IFNULL(MAX(querySegmentLabel),0) as maxQuerySegmentID FROM querysegment_labels_user WHERE userID='$userID' AND `date`='$date'";
 //    $query = "SELECT IFNULL(MAX(querySegmentID),0) as maxQuerySegmentID FROM querysegment_labels_user WHERE userID=$userID";
@@ -24,8 +33,10 @@ function findNextQuerySegmentLabel($userID,$startTimestamp){
 
 function markQuerySegmentLabel($userID,$querySegmentID,$startTimestamp){
     $base = Base::getInstance();
+    if(!isset($base->userTimezone)){
+        $base->setUserTimezone(getTimezone($userID));
+    }
     date_default_timezone_set($base->getUserTimezone());
-//    date_default_timezone_set('America/New_York');
     $date = date('Y-m-d', $startTimestamp);
     $query = "INSERT INTO querysegment_labels_user (`userID`,`projectID`,`querySegmentLabel`,`deleted`,`date`) VALUES ('$userID','$userID','$querySegmentID',0,'$date')";
     $cxn = Connection::getInstance();
@@ -247,8 +258,16 @@ if(isset($_GET['action'])){
 //        echo json_encode(array_merge(getTasksPanel($userID),getMarkTasksPanels($userID,$startTimestamp,$endTimestamp)));
         exit();
     }else if($action=='markQuerySegment'){
-        $pageIDs = postInputAsArray($_POST['pages']);
-        $queryIDs = postInputAsArray($_POST['queries']);
+        $pageIDs = array();
+        $queryIDs = array();
+
+        if(isset($_POST['pages'])){
+            $pageIDs = postInputAsArray($_POST['pages']);
+        }
+        if(isset($_POST['queries'])){
+            $queryIDs = postInputAsArray($_POST['queries']);
+        }
+
 
         if(count($pageIDs) == 0 && count($queryIDs) == 0){
             echo json_encode(array('error'=>true,'message'=>'No selection given.'));
@@ -302,8 +321,14 @@ if(isset($_GET['action'])){
         $sessionID = $_POST['sessionID'];
         $success = $_POST['successful'];
         $useful = $_POST['useful'];
-        $success_description = $_POST['successful_description'];
-        $useful_description = $_POST['useful_description'];
+        $success_description = '';
+        $useful_description = '';
+        if(isset($_POST['successful_description'])){
+            $success_description = $_POST['successful_description'];
+        }
+        if(isset($_POST['useful_description'])){
+            $useful_description = $_POST['useful_description'];
+        }
 
         markSessionQuestionnaire($userID,$sessionID,$success,$useful,$success_description,$useful_description);
         echo json_encode(array_merge(getSessionQuestionnaireTables($userID,$startTimestamp,$endTimestamp),getSearchQuestionnairePanel($userID,$startTimestamp,$endTimestamp)));

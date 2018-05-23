@@ -31,6 +31,25 @@ $taskName = "<Not Assigned to Task>";
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="../lib/bootstrap_notify/bootstrap-notify.min.js"></script>
 
+    <script>
+
+
+        var search_history = function(ev){
+            var value = $(this).val().toLowerCase();
+            $("#history_table tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        }
+
+        $(document).ready(function(){
+
+
+            $('#history_search').keyup(search_history);
+
+        });
+
+    </script>
+
 </head>
 
 
@@ -44,11 +63,16 @@ if(count($day_log)<=0){
     $day_table = '<center><h3 class=\'bg-danger\'>You have not done anything today.  Please log some activity.</h3></center>';
 }else{
     $day_table = "
+<div class='well'>
+                <input class=\"form-control\" id=\"history_search\" type=\"text\" placeholder=\"Search your history\">
+             </div>
         <table  class=\"table table-bordered table-fixed\">
                                 <thead>
                                 <tr>
                                     <!--<th >Time</th>-->
                                     <th >Type</th>
+                                    <th >Date</th>
+                                    <th >Time</th>
                                     <th>Search Segment ID</th>
                                     <th >Title/Query</th>
                                     <th >Domain</th>
@@ -79,6 +103,8 @@ if(count($day_log)<=0){
 
 //        $day_table .= "<td>".(isset($page['time'])?$page['time']:"")."</td>";
         $day_table .= "<td $color>".(isset($page['type'])?$page['type']:"")."</td>";
+        $day_table .= "<td>".(isset($page['date'])?$page['date']:"")."</td>";
+        $day_table .= "<td>".(isset($page['time'])?$page['time']:"")."</td>";
 
 
 
@@ -127,21 +153,23 @@ if(count($day_log)<=0){
 <!--<div class="container">-->
 <!--    <h3>Session --><?php //echo $sessionID;?><!-- for User --><?php //echo $userID;?><!--</h3>-->
 <!--</div>-->
-<div class="container">
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <?php
-            echo "Session for Task: ".$taskName;
-            ?>
-        </div>
 
-        <div class="panel-body">
-            <?php
-            echo $day_table;
-            ?>
-        </div>
-    </div>
+<div class="container">
+    <h1>
+        <?php
+        echo "Session for Task: ".$taskName;
+        ?>
+    </h1>
+
 </div>
+<div class="container">
+
+    <?php
+    echo $day_table;
+    ?>
+
+</div>
+
 
 
 </body>

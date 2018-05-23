@@ -1536,7 +1536,7 @@ function getSearchQuestionnairePanel($userID,$startTimestamp,$endTimestamp){
 
         $intentions_html .="<div id='failurereason_div_$key' style='display:none'>";
         $intentions_html .="<h5>Why do you say this?</h5>";
-        $intentions_html .= "<textarea class='form-control' rows=\"3\" cols=\"40\" name=\"$key"."_description\" disabled></textarea>";
+        $intentions_html .= "<textarea rows=\"3\" cols=\"40\" name=\"$key"."_description\" disabled></textarea>";
         $intentions_html .="</div>";
 
     }

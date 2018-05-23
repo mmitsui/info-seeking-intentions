@@ -1,12 +1,20 @@
 <?php
 require_once('core/Connection.class.php');
+require_once('updateSummaryData.php');
 
 
-$num_recruits = 0;
-$recruit_limit =44; // Current Recruitment Limit as of 10/6/2014
-
-
+updateSummaryData('study',array());
 $cxn = Connection::getInstance();
+$num_recruits = 0;
+$query = "SELECT * FROM study_progress WHERE `var_name`='study_completion'";
+$result = $cxn->commit($query);
+$line=mysql_fetch_array($result);
+$recruit_counts =json_decode($line['data'],true); // Current Recruitment Limit as of 10/6/2014
+$recruits_remaining = 40-$recruit_counts['pending']-$recruit_counts['completed']-$recruit_counts['running'];
+//echo $recruits_remaining;
+
+
+
 $query = "SELECT COUNT(*) as ct from recruits WHERE userID <500";
 $results = $cxn->commit($query);
 $line = mysql_fetch_array($results, MYSQL_ASSOC);
@@ -20,7 +28,7 @@ $closed=false;
 
 
 
-if($num_recruits<=$recruit_limit &&!$closed)
+if($recruits_remaining > 0 &&!$closed)
 {
 
 ?>

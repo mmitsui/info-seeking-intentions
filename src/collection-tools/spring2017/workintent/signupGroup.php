@@ -128,6 +128,7 @@
                     $password = random_password_generator();
 										$username = username_generator($next_userID);
                     $password_sha1 = sha1($password);
+                    $username_sha1 = sha1($username);
                     $firstName= addslashes($_POST["firstName_$x"]);
                     $lastName = addslashes($_POST["lastName_$x"]);
                     $timezone = addslashes($_POST["timezone_$x"]);
@@ -158,7 +159,7 @@
                     $results = $connection->commit($query);
                     $recruitsID = $connection->getLastID();
 
-                    $query = "INSERT INTO users (userID,projectID,username,password,password_sha1,`status`,study,optout,numUsers,`group`) VALUES ('$next_userID','$next_userID','$username','$password','$password_sha1','1','1','0','$NUM_USERS','study')";
+                    $query = "INSERT INTO users (userID,projectID,username,username_sha1,password,password_sha1,`status`,study,optout,numUsers,`group`) VALUES ('$next_userID','$next_userID','$username','$username_sha1','$password','$password_sha1','1','1','0','$NUM_USERS','study')";
                     $results = $connection->commit($query);
 										$userID = $next_userID;
 
