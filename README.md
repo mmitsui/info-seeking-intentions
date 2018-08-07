@@ -4,7 +4,7 @@ The following repository contains code for the data collection tools of the proj
 We also have code for analyzing the data collected with these tools. That code is in [another repository](https://github.com/mmitsui/information-seeking-intentions).
 
 # Table of Contents
-1. [About the Project](#about-the-project)
+1. [About this Project](#about-this-project)
 2. [User Studies](#user-studies)
 	1. [Information Seeking Intentions](#information-seeking-intentions)
 	2. [Search Intentions in Natural Settings](#search-intentions-in-natural-settings)
@@ -18,21 +18,22 @@ We also have code for analyzing the data collected with these tools. That code i
 6. [Papers from this Project](#papers-from-this-project)
 
 
-# About the Project
+# About this Project
 This research addresses a newly important issue in contemporary life. As people become more accustomed to using the Web for finding information, they are increasingly using it for addressing ever more complex and personally important information problems. However, current Web search engines have been developed and specifically tuned to helping people find simple, mostly factual information, usually as a single response list to a single, simple query. But when they try to address the new types of problems, people need to engage in longer information seeking episodes than the one query-one response paradigm assumes. They may also need to engage in many activities other than just clicking on a search result, such as reading, evaluating, comparing and using information. Current Web search engines do not sufficiently support this model of information seeking and use. This research addresses this problem by studying why people engage in such complex information seeking (that is, the reasons that motivate them to do this), and what they try to accomplish during the course of an information seeking episode (their search intentions). The end-goal of this research is to design and evaluate new types of search engines for supporting people in accomplishing the goals that have led them to engage in information seeking. This means, in essence, being able to personalize system support to the individual, and the individual's goals and context. Specifically, this research will establish relationships between people's behaviors during an information seeking episode, the motivating goals that led them to engage in information seeking, and their specific intentions at any point in an information seeking episode. This will enable development of systems that will be able to predict how best to support the individual person in addressing their information problem. For example, the findings from this project could help build a system that automatically identifies that a searcher is shopping for a car, and help him/her compare cost-benefits of new vs. used cars, buying vs. leasing, and eventually making an informed decision. Research will be integrated with educational activities via developing modules to supplement courses in iSchools and library/information science programs, etc. This is important, since a broad range of students would learn about new methods of searching and related user studies and evaluation.
 
 # User Studies
-The project is broken up into 3 user studies.
+
+To collect data for the above project, we created 3 tools for 3 separate user studies.  Those studies are described below.
 
 ## Information Seeking Intentions
 
-In this study, we collected data about individuals' information-seeking behavior on journalism-based tasks.  Participants were brought to a laboratory and asked to conduct 2 20-minute information seeking tasks on a laboratory computer.  After each task, participants were asked to review their activity (shown a video for review) and to comment on their intentions.  What were they trying to accomplish at each query?  Were they trying to identify specific information, find a specific link, or evaluate the best item among a set of items? The accompanying browser extension recorded participants' search activity while they browsed through web pages and conducted each part of the study.
+In the first study - named *Information Seeking Intentions* -  we collected data about individuals' information-seeking behavior on journalism-based tasks.  Participants were brought to a laboratory and asked to conduct 2 20-minute information seeking tasks on a laboratory computer.  After each task, participants were asked to review their activity (shown a video for review) and to comment on their intentions.  What were they trying to accomplish at each query?  Were they trying to identify specific information, find a specific link, or evaluate the best item among a set of items? The accompanying browser extension recorded participants' search activity while they browsed through web pages and conducted each part of the study.
 
 More details about this study can be found [here](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/collection-tools/fall2015)
 
 ## Search Intentions in Natural Settings
 
-In this study, we collected data about individuals' information-seeking behavior in the workplace.  In contrast with the previous study, this was a live study.  Participants were not brought to a laboratory; they installed a plugin on their workplace machine computer.  The extension passively collected data throughout several days, and participants used the accompanying interface to annotate their search activity. Participants identified sessions in their search activity, assigned tasks to each session, indicated the query segments within each session, the search intentions of each segment, and whether the sessions were successful or useful.
+In the second study - named *Search Intentions in Natural Settings* -  we collected data about individuals' information-seeking behavior in the workplace.  In contrast with the previous study, this was a live study.  Participants were not brought to a laboratory; they installed a plugin on their workplace machine computer.  The extension passively collected data throughout several days, and participants used the accompanying interface to annotate their search activity. Participants identified sessions in their search activity, assigned tasks to each session, indicated the query segments within each session, the search intentions of each segment, and whether the sessions were successful or useful.
 
 More details about this study can be found [here](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/collection-tools/spring2017).
 
