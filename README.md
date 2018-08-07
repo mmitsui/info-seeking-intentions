@@ -69,15 +69,32 @@ You will need the following software on your client and server to get started:
 
 ## Server-side Code
 
-To install this software, simply put upload it to server. WARNING: At the time running this software, our version of PHP was PHP 5.3.3. Future versions of PHP have several modifications to the core API.  Proceed with caution - depending on your version of PHP, some updates may be necessary.  Connection.class.php is also missing in each project - it is a wrapper to MySQL calls and is easy to reverse engineer from the API calls.
+We do not provide instructions here for configuring your own HTTP server.  For instructions on that, please consult your local IT professional.
 
-Configuring the code may be the most time-consuming part.  You will need to search for references to our `coagmento.org` (e.g. `...coagmento.org/workintent/signup_intro.php...`) and change them to yours (e.g. `...yourserver.com/workintent/signup_intro.php`). Each folder also contains the structure of the MySQL databases as a SQL dump in the `mysql-skeleton` folder.
+Once you have configured your HTTP server, to install this software simply put upload it to server. You must then search for references to `coagmento.org` (e.g. `http://coagmento.org/workintent/signup_intro.php.`) and replace them with your server (e.g. `http://yourserver.com/workintent/signup_intro.php`). Each folder also contains the structure of the MySQL databases as a SQL dump in the `mysql-skeleton` folder.
+
+WARNING: At the time running this software, our version of PHP was PHP 5.3.3. Future versions of PHP have several modifications to the core API.  Cepending on your version of PHP update to this code may be necessary.  
+
+Connection.class.php is also missing in each project - it is a wrapper to MySQL calls and will contain your MySQL server credentials, but it is easy to recreate.
 
 ## Client-side Code
 
-Installing these plugins is a drag-and-drop affair.  For the Firefox extension, select the `chrome` folder, `chrome.manifest` and `install.rdf` and compress them into a ZIP.  Rename your `archive.zip` to `archive.xpi`.  Then drag it into Firefox, and you'll be prompted to install and restart.  WARNING: This was created before Firefox version 42.  Afterwards, this version of the extension API became deprecated in favor of several other APIs (and eventually the Web Extensions API).  To get this software to work out of the box, you'll need to downgrade your Firefox version to 42.0 and prevent automatic updates.  Otherwise, we suggest using the Web Extensions API to create an updated version of the software.  For the Chrome extension, enter `chrome://extensions/` into your browser.  Click "Load unpacked extension...".  Then navigate to and select the `chrome` folder.  Any updates/modifications you make to this folder can be tested by reloading the extension in the `chrome://extensions` tab.
+For Firefox extensions:
+	* Select the `chrome` folder, `chrome.manifest` and `install.rdf` and compress them into a ZIP.  
+	* Rename your `*.zip` archive to a `*.xpi` archive.  This will convert it into a .xpi archive.
+	* Drag it into Firefox.  Your Firefox browser will prompt you to install the extension and restart.  
+	* WARNING: Firefox extensions were created before Firefox version 42.  This version of the extension API has since become deprecated and will not work on future versions of Firefox.  You'll need to downgrade your Firefox version to 42.0 and prevent automatic updates.  If you don't want to do this, we suggest converting the extension to use the most recent API (currently the [WebExtensions API](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions)).  
+	
+For Chrome Extensions:
+	* In your Chrome browser, navigate to `chrome://extensions/`.  
+	* Select "LOAD UNPACKED" near the top of your window.
+	* When prompted to select a file, navigate to and select the `chrome` folder of your extension.  
+	* Note: Any updates/modifications you make to this folder can be tested by reloading the extension through the `chrome://extensions` tab.
 
-To configure the software, change all references to `coagmento.org` to your own server.  In the Firefox extension, you can find these references in `chrome/content/coagmento.js`,`chrome/content/coagmento.xul`. In the Chrome extension, you can find these references in `manifest.json`,`background.js`,`payload.js`, and `popup.js`.
+Configuring Extensions:
+	* Change all references to `coagmento.org` to your own server.  
+	* Firefox extensions: these references are in `chrome/content/coagmento.js` and `chrome/content/coagmento.xul`. 
+	* Chrome extensions: these references are in `manifest.json`,`background.js`,`payload.js`, and `popup.js`.
 
 
 # Data Analysis Code
