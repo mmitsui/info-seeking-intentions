@@ -27,13 +27,13 @@ To collect data for the above project, we created 3 tools for 3 separate user st
 
 ## Information Seeking Intentions
 
-In the first study - named *Information Seeking Intentions* -  we collected data about individuals' information-seeking behavior on journalism-based tasks.  Participants were brought to a laboratory and asked to conduct 2 20-minute information seeking tasks on a laboratory computer.  After each task, participants were asked to review their activity (shown a video for review) and to comment on their intentions.  What were they trying to accomplish at each query?  Were they trying to identify specific information, find a specific link, or evaluate the best item among a set of items? The accompanying browser extension recorded participants' search activity while they browsed through web pages and conducted each part of the study.
+In the first study - named *Information Seeking Intentions* -  we collected data about individuals' information-seeking behavior on journalism-based tasks.  Participants were brought to a laboratory and asked to conduct 2 20-minute information seeking tasks on a laboratory computer.  After each task, participants were asked to review their activity in videos and to comment on their intentions.  What were they trying to accomplish at each query?  Were they trying to identify specific information, find a specific link, or evaluate the best item among a set of items? The accompanying Firefox browser extension recorded participants' search activity while they browsed through web pages and conducted each part of the study.
 
 More details about this study can be found [here](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/collection-tools/fall2015)
 
 ## Search Intentions in Natural Settings
 
-In the second study - named *Search Intentions in Natural Settings* -  we collected data about individuals' information-seeking behavior in the workplace.  In contrast with the previous study, this was a live study.  Participants were not brought to a laboratory; they installed a plugin on their workplace machine computer.  The extension passively collected data throughout several days, and participants used the accompanying interface to annotate their search activity. Participants identified sessions in their search activity, assigned tasks to each session, indicated the query segments within each session, the search intentions of each segment, and whether the sessions were successful or useful.
+In the second study - named *Search Intentions in Natural Settings* -  we collected data about individuals' information-seeking behavior in the workplace.  In contrast with the previous study participants were not brought to a laboratory; they installed a plugin on their workplace machine computer.  The extension passively collected data throughout several days, and participants used the accompanying interface to annotate their search activity. Participants identified sessions in their search activity, assigned tasks to each session, indicated the query segments within each session, the search intentions of each segment, and whether the sessions were successful or useful. The accompanying Chrome browser extension recorded participants' search activity while they browsed through web pages and conducted each part of the study.
 
 More details about this study can be found [here](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/collection-tools/spring2017).
 
@@ -44,13 +44,15 @@ TBD.
 # Project Components
 
 The code is broken into the following sections:
-* [Collection Tools - Server Code](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/collection-tools) - Server-side code for all user studies run for this project.  Code is mainly written in PHP.
-	* [Fall 2015 Study](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/collection-tools/fall2015/spring2016intent) - Server-side code for the [Fall 2015 study](#fall-2015-study).
-	* [Spring 2017 Study](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/collection-tools/spring2017/workintent) - Server-side code for the [Spring 2017 study](#spring-2017-study).
+
+* [Collection Tools - Server Code](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/collection-tools) - Server-side code for all user studies run for this project.  Code is written in PHP, HTML, CSS, Bootstrap, and MYSQL.
+	* [Information Seeking Intentions](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/collection-tools/fall2015/spring2016intent) - Server-side code for the [Information Seeking Intentions study](#information-seeking-intentions).
+	* [Search Intentions in Natural Settings](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/collection-tools/spring2017/workintent) - Server-side code for the [Search Intentions in Natural Settings study](#search-intentions-in-natural-settings).
+	* Study 3 - TBD
 * [Plugins - Client Code](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/plugins) - Client-side code installed on participants' machines for each user study.
-	* [Fall 2015 Study - Firefox](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/plugins/fall2015/firefox) - Browser extension installed on the lab machine for the [Fall 2015 study](#fall-2015-study). This is a Firefox extension.
-	* [Spring 2017 Study - Chrome](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/plugins/spring2017/chrome) - Browser extension installed on the participants' remote machines for the [Spring 2017 study](#spring-2017-study). This is a Chrome extension.
-* [Analysis Code] - TBD.  This will contain all analysis code from the project.
+	* [Information Seeking Intentions - Firefox](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/plugins/fall2015/firefox) - Browser extension installed on the lab machine for the [Information Seeking Intentions study](#information-seeking-intentions). This is a Firefox extension.
+	* [Search Intentions in Natural Settings - Chrome](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/plugins/spring2017/chrome) - Browser extension installed on the participants' work machines for the [Search Intentions in Natural Settings study](#search-intentions-in-natural-settings). This is a Chrome extension.
+	* Study 3 - TBD
 
 # Setting Up The Software
 
@@ -106,7 +108,7 @@ Configuring Extensions:
 
 # Data Analysis Code
 
-Currently, this repository only contains code for [here](https://github.com/mmitsui/information-seeking-intentions).
+Currently, this repository only contains code for collecting behavioral data and storing it in a MySQL server. To view code we used to analyze the data, you may look [here](https://github.com/mmitsui/information-seeking-intentions).
 
 # Papers from this Project
 
