@@ -1,5 +1,7 @@
 # Characterizing and Evaluating Whole Session Interactive Information Retrieval
-The following repository contains code for the data collection tools of the project "Characterizing and Evaluating Whole Session Interactive Information Retrieval" (http://inforetrieval.org/iir/).  This repository contains the client-server data collection code for user studies, which collects and stores browsing behavior of users during web search.  For a description of the analysis code, see [here](https://github.com/mmitsui/information-seeking-intentions).
+The following repository contains code for the data collection tools of the project "Characterizing and Evaluating Whole Session Interactive Information Retrieval" (http://inforetrieval.org/iir/).  This repository contains the client-server data collection code for user studies, which collects and stores browsing behavior of users during web search.  
+
+We also have code for analyzing the data collected with these tools. That code is in [another repository](https://github.com/mmitsui/information-seeking-intentions).
 
 # Table of Contents
 1. [About the Project](#about-the-project)
