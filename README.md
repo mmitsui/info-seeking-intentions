@@ -24,11 +24,15 @@ The project is broken up into 3 user studies.
 
 ## Information Seeking Intentions
 
-In this study, we collected data about individuals' information-seeking behavior around journalism-based tasks.  Participants were brought to the lab and asked to conduct 2 information seeking tasks, 20 minutes each.  After each task, participants were asked to look back at their activity (shown a video for review) and to comment on their intentions.  What were they trying to accomplish at each query?  Were they trying to identify specific information, find a specific link, or evaluate the best item among a set of items? The accompanying browser extension recorded participants' search activity while they browsed through web pages and conducted each part of the study.
+In this study, we collected data about individuals' information-seeking behavior on journalism-based tasks.  Participants were brought to a laboratory and asked to conduct 2 20-minute information seeking tasks on a laboratory computer.  After each task, participants were asked to review their activity (shown a video for review) and to comment on their intentions.  What were they trying to accomplish at each query?  Were they trying to identify specific information, find a specific link, or evaluate the best item among a set of items? The accompanying browser extension recorded participants' search activity while they browsed through web pages and conducted each part of the study.
+
+More details about this study can be found [here](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/collection-tools/fall2015)
 
 ## Search Intentions in Natural Settings
 
-In this study, we collected data about individuals' information-seeking behavior in the workplace.  In contrast with the previous study, this was a live study.  Participants were not brought to the lab but were rather provided a plugin to install at their work place.  The plugin passively collected data throughout several days, and participants used the accompanying interface to annotate their search activity. Participants annotated things such as the sessions of their log, the underlying tasks of each session, and what they were trying to accomplish in each search segment (their intentions).
+In this study, we collected data about individuals' information-seeking behavior in the workplace.  In contrast with the previous study, this was a live study.  Participants were not brought to a laboratory; they installed a plugin on their workplace machine computer.  The extension passively collected data throughout several days, and participants used the accompanying interface to annotate their search activity. Participants identified sessions in their search activity, assigned tasks to each session, indicated the query segments within each session, the search intentions of each segment, and whether the sessions were successful or useful.
+
+More details about this study can be found [here](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/collection-tools/spring2017).
 
 ## Study 3
 
