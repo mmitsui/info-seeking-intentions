@@ -1,5 +1,5 @@
 # Characterizing and Evaluating Whole Session Interactive Information Retrieval
-The following repository is code from the Information Seeking Intentions study (http://inforetrieval.org/iir/).  This page is about the client-server data collection code for our user studies.  For a description of the analysis code, see TBD.
+The following repository is code from the Information Seeking Intentions study (http://inforetrieval.org/iir/).  This page is about the client-server data collection code for our user studies.  For a description of the analysis code, see [here](https://github.com/mmitsui/information-seeking-intentions).
 
 # Table of Contents
 1. [About the Project](#about-the-project)
