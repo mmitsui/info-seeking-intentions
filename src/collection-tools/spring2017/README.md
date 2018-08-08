@@ -16,7 +16,7 @@ This README contains documentation about the code for the *Search Intentions in 
 
 # Study Overview
 
-In this study, participants conducted two searches in an experimental setting for information relating to different kinds of information search tasks related to journalism assignments. Each experimental session lasted on average about two hours, and the study was held in a university laboratory setting. Participants completed a background questionnaire about each search task and assignment, and then conducted searches for information relating to the assignment. After each search session, participants evaluated the information that they found and explain their search intentions at selected points. Various aspects of their searching behavior were recorded for subsequent analysis.
+In this study, participants conducted searches for their work in a naturalistic setting - i.e., their work environment - for information relating to different kinds of information search tasks related to their employment. Participants first conducted an initial interview in which they were asked for demographic information, introduced to the study’s software, and asked about regular search tasks. This initial interview lasted about one hour. This was followed by an experimental session. Participants were asked to record their searching activity over the course of five days and to annotate the tasks that they conduct. They were aslo asked to explain their search intentions at self-selected points during their tasks. This annotation took on average about one hour each day.  Various aspects of their searching behavior were recorded for subsequent analysis. The study concluded with an exit interview, in which participants were asked to analyze their search experiences and to give characterizations of the tasks they performed during the five days. This final exit interview lasted about one hour.
 
 # Requirements
 
@@ -32,9 +32,13 @@ At least two machines are required to conduct this study.  There are no other re
 
 ## Registration
 
-A user's participation in the study begins with registration at `signup_intro.php`. Then, participants register for a date for arriving in the lab and conducting the study.  They receive a confirmation e-mail regarding the time of their study.
+A user's participation in the study begins with registration at `signup_intro.php`. Then, participants provide their consent. Then, participants register for an entry interview date on a Friday, as well as an exit interview required to take place on a Monday 10 days after the entry interview.  They receive a confirmation e-mail regarding the time of their study.
 
 ## Conducting The Study
+
+The study takes place entirely removely in several steps.  These steps are as follows:
+
+### Hello
 
 When participants arrive to the site of the study, the study facilitator must set `arrived` in the `users` table to 1 to indicate that the participant has arrived and will conduct the study. This is done through `editUsers.php`. The participant completes handwritten consent forms. The participant then signs into the study through `index.php`. The participant then conducts the study by proceeding through the following stages (located in the `instruments` folder):
 
