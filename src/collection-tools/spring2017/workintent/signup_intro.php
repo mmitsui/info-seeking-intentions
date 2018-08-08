@@ -10,7 +10,7 @@ $query = "SELECT * FROM study_progress WHERE `var_name`='study_completion'";
 $result = $cxn->commit($query);
 $line=mysql_fetch_array($result);
 $recruit_counts =json_decode($line['data'],true); // Current Recruitment Limit as of 10/6/2014
-$recruits_remaining = 40-$recruit_counts['pending']-$recruit_counts['completed']-$recruit_counts['running'];
+$recruits_remaining = 33-$recruit_counts['pending']-$recruit_counts['completed']-$recruit_counts['running'];
 //echo $recruits_remaining;
 
 
@@ -19,7 +19,8 @@ $query = "SELECT COUNT(*) as ct from recruits WHERE userID <500";
 $results = $cxn->commit($query);
 $line = mysql_fetch_array($results, MYSQL_ASSOC);
 $num_recruits = $line['ct'];
-$closed=false;
+$closed = true;
+//$closed = false;
 
 
 
@@ -175,7 +176,8 @@ function isRadioSelected(radioButtons, obj)
 <?php
 }
 
-else if (!$closed) {
+else {
+//else if (!$closed) {
     echo "<html>\n";
     echo "<head>\n";
     echo "<title>Collaborative Search Study: Currently Closed</title>\n";

@@ -13,10 +13,11 @@ $query = "SELECT * FROM study_progress WHERE `var_name`='study_completion'";
 $result = $cxn->commit($query);
 $line=mysql_fetch_array($result);
 $recruit_counts =json_decode($line['data'],true); // Current Recruitment Limit as of 10/6/2014
-$recruits_remaining = 40-$recruit_counts['pending']-$recruit_counts['completed']-$recruit_counts['running'];
+$recruits_remaining = 33-$recruit_counts['pending']-$recruit_counts['completed']-$recruit_counts['running'];
 
 $section_closed = false;
-$closed = false;
+$closed = true;
+//$closed = false;
 
 
 $cxn = Connection::getInstance();

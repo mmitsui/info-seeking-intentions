@@ -752,7 +752,7 @@ function getStudyCompletionCounts(){
 
 
 
-    $remaining_registrations = 40-count($pending_userIDs)-$completed_users-$running_users;
+    $remaining_registrations = 33-count($pending_userIDs)-$completed_users-$running_users;
 
     return array(
         'completed'=>$completed_users,

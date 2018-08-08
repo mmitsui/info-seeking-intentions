@@ -61,7 +61,6 @@ function start_date_to_int($start_date){
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="./lib/bootstrap_notify/bootstrap-notify.min.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
 
 
@@ -182,8 +181,6 @@ function start_date_to_int($start_date){
 
 
     $abandoned_registration_userIDs = array_unique($abandoned_registration_userIDs);
-
-
     $absent_registration_userIDs = array_unique(array_merge($userIDs_entrypassed,$userIDs_exitpassed));
     $pending_userIDs = array_unique($pending_userIDs);
 
@@ -193,12 +190,7 @@ function start_date_to_int($start_date){
         <center><h1>Study Summary</h1></center>
     </div>
 
-
-
-
-
     <div class="container">
-
         <table  id='participantsTable' class="table table-bordered table-fixed table-striped sortable-theme-bootstrap" data-sortable>
             <thead>
             <tr>
@@ -243,14 +235,6 @@ function start_date_to_int($start_date){
             </tbody>
 
         </table>
-
-
-
-
-
-
-
-
 
 
     </div>
