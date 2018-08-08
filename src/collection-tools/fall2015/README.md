@@ -1,21 +1,80 @@
 # Information Seeking Intentions Study
+
 This README contains documentation about the code for the *Information Seeking Intentions* study.  It begins with an outline of the design of the study tools - the structure and flow of conducting the study. It then discusses the folder structure of the code.  It concludes with an overview of the MySQL data collected in this study.
 
 # Table of Contents
-1. [Study Design Outline](#study-design-outline)
-2. [Code Structure](#code-structure)
-  1. [Server Code Structure](#server-code-structure)
-  2. [Extension Code Structure](#extension-code-structure)
-3. [MySQL Structure](#mysql-structure)
+1. [Study Overview](#study-overview)
+2. [Requirements](#requirements)
+3. [Study Design Outline](#study-design-outline)
+	1. [Registration](#registration)
+	2. [Conducting The Study](#conducting-the-study)
+4. [Code Structure](#code-structure)
+	1. [Server Code Structure](#server-code-structure)
+	2. [Extension Code Structure](#extension-code-structure)
+5. [MySQL Structure](#mysql-structure)
+6. [Contact Us](#contact-us)
+
+# Study Overview
+
+In this study, participants conducted two searches in an experimental setting for information relating to different kinds of information search tasks related to journalism assignments. Each experimental session lasted on average about two hours, and was held in a university laboratory setting. Participants completed a background questionnaire about each search task and assignment, and then conducted searches for information relating to the assignment. After each search session, participants evaluated the information that they found and explain their search intentions at selected points. Various aspects of their searching behavior were recorded for subsequent analysis.
+
+# Requirements
+
+The following tools were set up
+* Participant Machine
+	* GazePoint GP3 + all accompanying software
+	* Morae Recorder
+	* Firefox (+ installed extension)
+* Researcher Machine
+	* Morae Observer
+	* Morae Manage
+	* A web browser (for managing the participant's progress)
 
 # Study Design Outline
 
-* What is a stage?  What are the stages?
+## Registration
+
+A user's participation in the study begins with registration at `signup_intro.php`. Registrants click through to a consent form. Then, participants register for a date and receive a confirmation e-mail regarding the time of their study.
+
+## Conducting The Study
+
+When participants arrive to the site of the study, the study facilitator must mark `arrived` in the `users` table to 1 to indicate that the participant has arrived and will conduct the study. The participant signs in through `index.php`.  The participant then conducts the study by proceeding through the following stages:
+
+* Welcome (`welcome.php`) - Welcomes the participant to the study.
+* Background Questionnaire (`pretask_q.php`) - The participant completes a basic demographic questionnaire regarding things such as gender, age, search expertise, and the participant's first language.
+* System Tutorial (`system_tutorial.php`) - The participant views a tutorial on how to use the Firefox extension toolbar and sidebar to complete the proceeding search task.  The participant then confirms that (s)he viewed the video.
+* Pre-Search Questionnaire (`presearch_q.php`) - The participant is shown the task description and answers questions regarding the task (e.g. their familiarity with the task/topic). **THE USER MUST NOT WORK ON THE TASK DURING THIS STAGE! AT THIS TIME, THE RESEARCHER MUST ALSO CALIBRATE AND BEGIN RECORDING OF THE GAZEPOINT EYE TRACKER.**
+* Main Task (`maintask.php`) - The participant is shown the task prompt. **NOW THE USER MAY WORK ON THE TASK.**  The Firefox extension should now display a timer which starts at 20 minute timer.  It will also show the participant's bookmarks, pages, and queries.  The user may end early by clicking a button in the Firefox extension sidebar.
+	* NOTE: During this time, the researcher will use Morae on a second machine to monitor the searcher's activity.  The researcher will use the Markers in Morae to record: the start of query segments, bookmark actions, unsave actions.
+* Post-Search Warning (`maintask_postwarning.php`) - This is a warning given to participants. This warning informs them to not click anything.  At this time, the researcher must save the Morae recording, which will be saved and stored on the participant's machine. 
+* **AT THIS TIME, PLEASE SAVE ANY RECORDINGS FROM MORAE - CSV AND VIDEO -  ONTO A USB AND TRANSFER THEM TO THE RESEARCHER MACHINE. EDIT ANY INCORRECT MORAE MARKERS. UPLOAD ALL FILES `editUser.php`. THE RESEARCHER MUST ALSO STOP RECORDING FROM THE GAZEPOINT EYE TRACKER.**  .
+* Post-Search Questionnaire (`postsearch_q.php`) - While transferring, editing, and uploading files as in the previous step, show users this stage.  They will complete a post-task questionnaire regarding the previous task (e.g. difficulty).
+* Intention Tutorial (`intent_tutorial.php`) - While transferring, show users this stage.  This is a tutorial video on how to annotate the intentions of query segments and to mark the usefulness of bookmarks, their reasons for reformulation, and their reasons for unsaving pages.
+* Intention Transition (`transition_intent.php`) - Users will stop at this stage while waiting for you to finish upload and transfer.  When the researcher is finished. Please confirm that the participant understood the previous instructions before allowing them to proceed to the next step.
+* Intention Annotation (`intent.php`) - The main intention interface.  Participants will annotate the intentions of query segments, the usefulness of bookmarks, their reasons for reformulation, and their reasons for unsaving.  Researchers may monitor the participant's progress remotely through `intentVisualization.php`.
+* Main Task Transition (`transition_maintask.php`) - Users will stop at this page after completing the intention annotation. The researcher must allow them to continue to the next task through `editUser.php`.
+* **Repeat of System Tutorial-Intention Annotation**
+* Finish Session (`finish_session.php`) - The user is told that they have completed the study.  At this point, the researcher should compensate the participant with appropriate payment.  The user is also automatically logged out of the system.
+* Exit System (`index.php`) - (A necessary stage put at the end of the stages table.)
+
+**NOTE**: It is assumed that the Firefox extension is installed on the computer on which the participant will conduct the study.
+
+**NOTE**: It is encouraged that study facilitators clear cookies and history from the browser on which the user conducted the study, so that future participants will not receive previous participants' search suggestions or page suggestions.
+
+
+
+37	System Tutorial	system_tutorial.php
+40	Pre-Search Questionnaire	presearch_q.php
+45	Main Task	maintask.php
+46	Post-Search Warning	maintask_postwarning.php
+50	Post-Search Questionnaire	postsearch_q.php
+51	Intention Tutorial	intent_tutorial.php
+52	Intention Transition	transition_intent.php
+55	Intention Annotation	intent.php
+65	Finish Session	finish_session.php
+300	Exit System	index.php
 
 # Code Structure
-
-
-  
 
 ## Server Code Structure
 
@@ -60,98 +119,25 @@ All data from the study was stored in MySQL tables.  Data takes the form of user
 * `paste_data` - Copy activity of users - e.g., any time they pasted text through Ctrl+V.
 * `queries` - A timestamped log of queries issued to search engines by users
 * `questionnaire_answers` - Unused in this study.
-* `questionnaire_demographic` - Answers to an introductory demographic questionnaire asked to users
-* `questionnaire_postsearch` - 
-* `questionnaire_pretask` - 
-* `questionnaire_questions` - Contains
-* `questionnaire_recruitment` - 
-* `questions_progress` - 
-* `questions_study` - 
-* `recruits` - 
-* `scroll_data` - 
+* `questionnaire_demographic` - Answers to an introductory demographic questionnaire asked to users.
+* `questionnaire_postsearch` - Answers to an post-search questionnaire asked after each search task.
+* `questionnaire_pretask` - Answers to an post-search questionnaire asked before each search task.
+* `questionnaire_questions` - Contains configuration data regarding different questions asked to users during the study (e.g. question type, question options).
+* `questionnaire_recruitment` - Answers to the recruitment questionnaire at registration.  Duplicates information in the recruits table.
+* `questions_progress` - Indicates the start and completion time of questions for each user during the study.
+* `questions_study` - The task prompts given to users during the study and their data (e.g. question prompt and task types)
+* `recruits` - Registration information of participants (names, e-mails, requested date to conduct the study, etc.)
+* `scroll_data` - Scroll activity of users on pages.
 * `session_progress` - A timestamped log of the progress users made in the study - the times they entered and exited each stage of the study
 * `session_stages` - A list of the different stages in the study.  Stages were visited by users in increasing order.  The `stageID` column in other tables refers to which of these stages the user was in.
 * `tag_assignments` - Unused in this study.
 * `timeline_display_data` - Unused in this study.
 * `users` - Login and metadata information about the users
-* `video_intent_assignments` - Users' annotations of intentions for each query
-* `video_reformulation_history` - 
-* `video_save_history` - 
-* `video_segments` - 
-* `video_unsave_history` - 
-
-# Project Components
-
-The code is broken into the following sections:
-
-* [Collection Tools - Server Code](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/collection-tools) - Server-side code for all user studies run for this project.  Code is written in PHP, HTML, CSS, Bootstrap, and MYSQL.
-	* [Information Seeking Intentions](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/collection-tools/fall2015/spring2016intent) - Server-side code for the [Information Seeking Intentions study](#information-seeking-intentions).
-	* [Search Intentions in Natural Settings](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/collection-tools/spring2017/workintent) - Server-side code for the [Search Intentions in Natural Settings study](#search-intentions-in-natural-settings).
-	* Study 3 - TBD
-* [Plugins - Client Code](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/plugins) - Client-side code installed on participants' machines for each user study.
-	* [Information Seeking Intentions - Firefox](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/plugins/fall2015/firefox) - Browser extension installed on the lab machine for the [Information Seeking Intentions study](#information-seeking-intentions). This is a Firefox extension.
-	* [Search Intentions in Natural Settings - Chrome](https://github.com/mmitsui/info-seeking-intentions/tree/master/src/plugins/spring2017/chrome) - Browser extension installed on the participants' work machines for the [Search Intentions in Natural Settings study](#search-intentions-in-natural-settings). This is a Chrome extension.
-	* Study 3 - TBD
-
-# Setting Up The Software
-
-## Requirements
-
-You will need the following software on your client and server to get started:
-
-* Information Seeking Intentions
-	* Server
-		* PHP (ver. 5.3.3)
-		* MySQL
-	* Client
-		* Firefox (42.0 or lower)
-* Search Intentions in Natural Settings
-	* Server
-		* PHP (ver. 5.3.3)
-		* MySQL
-	* Client
-		* Chrome Browser
-
-* Study 3
-	* TBD
-
-## Server-side Code
-
-We do not provide instructions here for configuring your own HTTP server.  For instructions on that, please consult your local IT professional.
-
-Once you have configured your HTTP server, to install this software simply put upload it to server. You must then search for references to `coagmento.org` (e.g. `http://coagmento.org/workintent/signup_intro.php.`) and replace them with your server (e.g. `http://yourserver.com/workintent/signup_intro.php`). Each folder also contains the structure of the MySQL databases as a SQL dump in the `mysql-skeleton` folder.
-
-WARNING: At the time running this software, our version of PHP was PHP 5.3.3. Future versions of PHP have several modifications to the core API.  Cepending on your version of PHP update to this code may be necessary.  
-
-Connection.class.php is also missing in each project - it is a wrapper to MySQL calls and will contain your MySQL server credentials, but it is easy to recreate.
-
-## Client-side Code
-
-For Firefox extensions:
-	* Select the `chrome` folder, `chrome.manifest` and `install.rdf` and compress them into a ZIP.  
-	* Rename your `*.zip` archive to a `*.xpi` archive.  This will convert it into a .xpi archive.
-	* Drag it into Firefox.  Your Firefox browser will prompt you to install the extension and restart.  
-	* WARNING: Firefox extensions were created before Firefox version 42.  This version of the extension API has since become deprecated and will not work on future versions of Firefox.  You'll need to downgrade your Firefox version to 42.0 and prevent automatic updates.  If you don't want to do this, we suggest converting the extension to use the most recent API (currently the [WebExtensions API](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions)).  
-	
-For Chrome Extensions:
-	* In your Chrome browser, navigate to `chrome://extensions/`.  
-	* Select "LOAD UNPACKED" near the top of your window.
-	* When prompted to select a file, navigate to and select the `chrome` folder of your extension.  
-	* Note: Any updates/modifications you make to this folder can be tested by reloading the extension through the `chrome://extensions` tab.
-
-Configuring Extensions:
-	* Change all references to `coagmento.org` to your own server.  
-	* Firefox extensions: these references are in `chrome/content/coagmento.js` and `chrome/content/coagmento.xul`. 
-	* Chrome extensions: these references are in `manifest.json`,`background.js`,`payload.js`, and `popup.js`.
-
-
-# Data Analysis Code
-
-Currently, this repository only contains code for collecting behavioral data and storing it in a MySQL server. To view code we used to analyze the data, you may look [here](https://github.com/mmitsui/information-seeking-intentions).
-
-# Papers from this Project
-
-Several papers have been written based on the studies conducted with this software! You can check them out at http://inforetrieval.org/iir/.
+* `video_intent_assignments` - Users' annotations of intentions for each query.
+* `video_reformulation_history` - Users' annotations of reformulations for each query.
+* `video_save_history` - Users' annotations of bookmark usefulness.
+* `video_segments` - Metadata regarding segments (userID, stageID, etc.)
+* `video_unsave_history` - Users' annotations of their reasons for unsaving bookmarks.
 
 # Contact Us
 
