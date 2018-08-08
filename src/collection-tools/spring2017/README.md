@@ -8,6 +8,9 @@ This README contains documentation about the code for the *Search Intentions in 
 3. [Study Design Outline](#study-design-outline)
 	1. [Registration](#registration)
 	2. [Conducting The Study](#conducting-the-study)
+		1.[Entry Interview](#entry-interview)
+		2.[Five Day Annotation](#five-day-annotation)
+		3.[Exit Interview](#exit-interview)
 4. [Code Structure](#code-structure)
 	1. [Server Code Structure](#server-code-structure)
 	2. [Extension Code Structure](#extension-code-structure)
@@ -16,14 +19,15 @@ This README contains documentation about the code for the *Search Intentions in 
 
 # Study Overview
 
-In this study, participants conducted searches for their work in a naturalistic setting - i.e., their work environment - for information relating to different kinds of information search tasks related to their employment. Participants first conducted an initial interview in which they were asked for demographic information, introduced to the study’s software, and asked about regular search tasks. This initial interview lasted about one hour. This was followed by an experimental session. Participants were asked to record their searching activity over the course of five days and to annotate the tasks that they conduct. They were aslo asked to explain their search intentions at self-selected points during their tasks. This annotation took on average about one hour each day.  Various aspects of their searching behavior were recorded for subsequent analysis. The study concluded with an exit interview, in which participants were asked to analyze their search experiences and to give characterizations of the tasks they performed during the five days. This final exit interview lasted about one hour.
+In this study, participants conducted searches for their work in a naturalistic setting - i.e., their work environment - for information relating to different kinds of information search tasks related to their employment. Participants first conducted an initial interview in which they were asked for demographic information, introduced to the study’s software, and asked about regular search tasks. This initial interview lasted about one hour. This was followed by an experimental session. Participants were asked to record their searching activity over the course of five days and to annotate the tasks that they conducted. They were also asked to explain their search intentions at self-selected points during their tasks. This annotation took on average about one hour each day.  Various aspects of their searching behavior were recorded for subsequent analysis. The study concluded with an exit interview, in which participants were asked to analyze their search experiences and to give characterizations of the tasks they performed during the five days. This final exit interview lasted about one hour.
 
 # Requirements
 
-At least two machines are required to conduct this study.  There are no other restrictions on the machines.
+At least two machines are required to conduct this study.  There are no restrictions on the machines other than what is listed below.
 
 * Participant Machine
 	* Chrome browser (+ extension)
+	* Access to video conferencing tools (e.g. Skype, Zoom, Google Hangouts)
 * Researcher Machine
 	* A web browser (for managing the participant's progress)
 	* Video conferencing tools (at least Skype, Zoom, and Google Hangouts)
@@ -33,9 +37,9 @@ At least two machines are required to conduct this study.  There are no other re
 
 ## Registration
 
-A user's participation in the study begins with registration at `signup_intro.php`. Then, participants provide their consent. Then, participants register for an entry interview date on a Friday, as well as an exit interview required to take place on a Monday 10 days after the entry interview.  They receive a confirmation e-mail regarding the time of their study.
+A user's participation in the study begins with registration at `signup_intro.php`. Then, participants provide their consent. Then,  participants register for an entry interview date (e.g. on a Friday), as well as an exit interview required to take place 10 days after the entry interview (e.g. on the Monday 10 days after).  They receive a confirmation e-mail regarding the time of their interviews.
 
-The participant also provides the preferred medium for interviews (e.g. Skype) as well as their username for said interview medium (e.g. Skype username).
+The participant also provides the preferred medium for interviews (e.g. Skype) as well as their username for the interview medium (e.g. Skype username).
 
 ## Conducting The Study
 
@@ -43,36 +47,38 @@ The study takes place entirely removely in several steps.  These steps are as fo
 
 ### Entry Interview
 
-At the time of the entry interview, the research facilitator contacts the participant for the remote interview.
+The participant and researcher conduct a remote interview at the time specified during registration. At the time of the entry interview, the researcher contacts the participant to conduct the remote interview.
 
-The user will proceed with the entry interview, accessible through `userDataEntry.php`.  The facilitator begins with the exit interview (`demographicSurvey.php`). The facilitator then asks the participant to provide as many work tasks as possible and to answer questions about each task.  These questions are given in `tasksSurvey.php`.
+The researcher will proceed with the entry interview, accessible through `userDataEntry.php`.  The researcher begins with the demographic interview (`demographicSurvey.php`). The facilitator then asks the participant to provide as many work tasks as possible and to answer questions about each task.  The questions for each task are given in `tasksSurvey.php`.
 
-When the user has provided all of their tasks or cannot think of any more tasks to add, the user the proceeds with a tutorial.  The tutorial should be a screenshared walkthrough of the tool.  The researcher must show the following:
+When the user has provided all of their tasks or cannot think of any more tasks to add, the user the proceeds with a tutorial.  The tutorial should be a screenshared video walkthrough of the tool.  The researcher must show the following:
 
 * Login/logout - How to log in/out of the extension.  The researcher must emphasize that a participant's log activity is recorded if and only if they are logged in.
-* The tutorial page - This page is accessible through a button in the extension and leads to `getTutorial.php`.  This is a detailed reference manual.
-* Step 1: Mark Private Items (`instruments/getHome.php`) - Here, the user deletes any items in their log they do not wish to share.  They have the ability to do the following:
-	* Search for activity with a search function.
-	* Select and send multiple items to a trash bin.
-	* Undo deletions from the trash bin.
-	* Permanently delete items in the trash bin.
-	* **TO TRULY DELETE AN ITEM SO THAT IT IS NOT VISIBLE SHARED WITH THE RESEARCHERS, THE PARTICIPANT MUST PERMANENTLY DELETE ITEMS IN THE TRASH BIN**
-* Step 2: Mark Sessions (`markSessions.php`) - Here, the user marks the beginning and end of search segments.  Users must be shown the following:
-	* The definition of a session (see the 'Help' section of the interface).
-	* **The importance of identifying sessions properly.** - Later, users will be asked to identify the tasks of sessiosn and search segments within sessions, so proper session identification is crucial.
-	* How to mark the beginning and end of (potentially interleaved) sessions with Begin/End buttons.
-	* How to cancel a selection with the 'Cancel' button.
-	* How to finalize a selection with the 'Identify Sessions' button.
-* Step 3: Assign Tasks to Sessions (`markTasks.php`) - Here, the user assigns tasks to sessions.  The user must be shown the following:
-	* The tasks on the right hand side of the interface.  Initially, these tasks correspond to the tasks provided in the entry interview.
-	* How to add new tasks.
-	* How to assign tasks to the sessions.
-* Step 4: Mark Search Segments and Intentions (`markIntentions.php`) - Here, the user identifies search segments (if necessary) and the intentions of those search segments.  The researcher must show the user the following:
-	* The definition of a search segment (see the 'Help' section of the interface).
-	* How to identify a new search segment with 'Begin/End' buttons.
-	* How search segments through Google are automatically identified but may need correction.
-	* How to identify intentions: by clicking the 'Mark Intentions' button and select any combination of intentions in the right sidebar (incl. other).
-* Step 5: Mark Success and Usefulness (of Sessions) (`searchSessionQuestionnaire.php`) - Here, the user identifies the success and usefulness of each session, with respect to task completion.  The researcher must show the user the following:
+* The tutorial page - This page is accessible through a button in the extension and leads to `getTutorial.php`.  This is a detailed reference manual of each step of the annotation.
+* The researcher must indicate that users are to annotate work-related search activity over the 5 days of their study participation during the work week (e.g., in our running example, Monday-Friday).
+* The daily annotation is composed of 5 ordered steps:
+	* Step 1: Mark Private Items (`instruments/getHome.php`) - Here, the user deletes any items in their log they do not wish to share.  They have the ability to do the following:
+		* Search for activity using a built-in search function.
+		* Select and send multiple items to a trash bin.
+		* Undo deletions from the trash bin.
+		* Permanently delete items in the trash bin.
+		* **TO TRULY DELETE AN ITEM SO THAT IT IS NOT VISIBLE AND NOT SHARED WITH THE RESEARCHERS, THE PARTICIPANT MUST PERMANENTLY DELETE ITEMS IN THE TRASH BIN**
+	* Step 2: Mark Sessions (`instruments/markSessions.php`) - Here, the user marks the beginning and end of search segments.  Users must be shown the following:
+		* The definition of a session (see the 'Help' section of the interface).
+		* **The importance of identifying sessions properly.** - Later, users will be asked to identify the tasks of sessions and search segments within sessions, so proper session identification is crucial.
+		* How to mark the beginning and end of (potentially interleaved) sessions with Begin/End buttons.
+		* How to cancel a selection with the 'Cancel' button.
+		* How to finalize a selection with the 'Identify Sessions' button.
+	* Step 3: Assign Tasks to Sessions (`instruments/markTasks.php`) - Here, the user assigns tasks to sessions.  The user must be shown the following:
+		* The tasks on the right hand side of the interface.  Initially, these tasks correspond to the tasks provided in the entry interview.
+		* How to add new tasks.
+		* How to assign tasks to the sessions.
+	* Step 4: Mark Search Segments and Intentions (`instruments/markIntentions.php`) - Here, the user identifies search segments (if necessary) and the intentions of those search segments.  The researcher must show the user the following:
+		* The definition of a search segment (see the 'Help' section of the interface).
+		* How to identify a new search segment with 'Begin/End' buttons.
+		* How search segments through Google are automatically identified but may need correction.
+		* How to identify intentions: by clicking the 'Mark Intentions' button and select any combination of intentions in the right sidebar (incl. other).
+	* Step 5: Mark Success and Usefulness (of Sessions) (`instruments/searchSessionQuestionnaire.php`) - Here, the user identifies the success and usefulness of each session, with respect to task completion.  The researcher must show the user the following:
 	* How to mark the success and usefulness of each individual search session.
 
 This completes the entry interview. Participants are then told that they will be asked to complete this annotation 1x/day, every day (if possible) on Monday-Friday (a total of 5 days). Participants will then return for the exit interview on the following Monday.
