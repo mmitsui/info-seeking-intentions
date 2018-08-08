@@ -20,16 +20,13 @@ In this study, participants conducted two searches in an experimental setting fo
 
 # Requirements
 
-Two separate computers are required to conduct this study.  They must be remote (e.g. in separate rooms) and accessible to each other remotely (e.g. via Ethernet).
+At least two machines are required to conduct this study.  There are no other restrictions on the machines.
 
 * Participant Machine
-	* GazePoint GP3 + all accompanying software
-	* Morae Recorder
-	* Firefox (+ installed extension)
+	* Chrome browser (+ extension)
 * Researcher Machine
-	* Morae Observer
-	* Morae Manage
 	* A web browser (for managing the participant's progress)
+	* Video conferencing tools (at least Skype, Zoom, and Google Hangouts)
 
 # Study Design Outline
 
@@ -68,24 +65,24 @@ The server code is organized into several folders.  Below is a brief description
   * `core` - Core classes used to track a user's session while conducting the study.  `Base.class.php`, for instance, tracks the user's ID, and `Stage.class.php` manages the flow between stages.
   * `data` - Contains video and data files presented to users during the study - for instance tutorial videos.
   * `img` - Images (unused in this study).
-  * `instruments` - Contains code for different stages in the study. Each PHP file is a different stage.
+  * `instruments` - (Unused in this study) Contains code for different stages in the study. Each PHP file is a different stage.
   * `lib` - External library code imported throughout the study (e.g. Bootstrap, jQuery).
-  * `old_images` - Images (unused in this study).
-  * `services` - Code used to interact with the database and push/pull data.  Typically accessed through the tool's web interface or Firefox extension.
-  * `sidebar` - Code called from the Firefox extension sidebar to push/pull data.
+  * `old_image` - Images (unused in this study).
+  * `services` - Code used to interact with the database and push/pull data.
   * `study_styles` - More external library code imported throughout the study.
   * `webPages` - a folder used to store the HTML and JSON for web pages visited and search queries issued by users during the study.
-  * `./*.php` - General frontend functions.  Some of these are administrator web pages used to view users' progress through the study and to annotate user tasks.
+  * `./*.php` - General frontend functions.  Some of these are the pages a user accesses to annotate their daily activity.  Some of these are administrator web pages used to view users' progress through the study and to annotate user tasks.
 
 ## Extension Code Structure
 
 The following is a description of the oganization of the `chrome` folder of the Firefox extension:
 
-* `chrome/coagmento.js` - Collects live interaction data and pushes it to the server (e.g. page visits, copy/paste behavior).
-* `chrome/coagmento.xul` - Structures the toolbar of the extension.
-* `chrome/sidebar.xul` - Structures the sidebar of the extension.
-* `locale/en-US/sidebar.dtd` - Hot keys for the extension.
-* `skin/*` - Images and CSS for visualizing the buttons of the extension toolbar.
+* `background.js` - Background scripts run when the extension starts up.
+* `external` - Local copies of external libraries and scripts.
+* `icons` - Icons used in the extension.
+* `manifest.json` - Metadata JSON file used in Chrome extension.  To learn how to configure this, [see this page](https://developer.chrome.com/apps/manifest).
+* `payload.js` - A script injected into each page.  Records live interactive data such as clicks and scrolls.
+* `popup.*` - Code for managing the popup page.  Manages login, logout, and displaying the interactive tool.
 
 
 # MySQL Structure
