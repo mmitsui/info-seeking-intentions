@@ -63,7 +63,7 @@ When the user has provided all of their tasks or cannot think of any more tasks 
 		* Undo deletions from the trash bin.
 		* Permanently delete items in the trash bin.
 		* **TO TRULY DELETE AN ITEM SO THAT IT IS NOT VISIBLE AND NOT SHARED WITH THE RESEARCHERS, THE PARTICIPANT MUST PERMANENTLY DELETE ITEMS IN THE TRASH BIN**
-	* Step 2: Mark Sessions (`instruments/markSessions.php`) - Here, the user marks the beginning and end of search segments.  Users must be shown the following:
+	* Step 2: Mark Sessions (`instruments/markSessions.php`) - Here, the user marks the beginning and end of search sessions.  Users must be shown the following:
 		* The definition of a session (see the 'Help' section of the interface).
 		* **The importance of identifying sessions properly.** - Later, users will be asked to identify the tasks of sessions and search segments within sessions, so proper session identification is crucial.
 		* How to mark the beginning and end of (potentially interleaved) sessions with Begin/End buttons.
@@ -77,23 +77,24 @@ When the user has provided all of their tasks or cannot think of any more tasks 
 		* The definition of a search segment (see the 'Help' section of the interface).
 		* How to identify a new search segment with 'Begin/End' buttons.
 		* How search segments through Google are automatically identified but may need correction.
-		* How to identify intentions: by clicking the 'Mark Intentions' button and select any combination of intentions in the right sidebar (incl. other).
+		* Examples of search segments that may be missed by our systems and may need manual annotation.
+		* How to identify intentions: by clicking the 'Mark Intentions' button and selecting any combination of intentions in the right sidebar (including 'Other').
 	* Step 5: Mark Success and Usefulness (of Sessions) (`instruments/searchSessionQuestionnaire.php`) - Here, the user identifies the success and usefulness of each session, with respect to task completion.  The researcher must show the user the following:
-	* How to mark the success and usefulness of each individual search session.
+		* How to mark the success and usefulness of each individual search session.
 
 This completes the entry interview. Participants are then told that they will be asked to complete this annotation 1x/day, every day (if possible) on Monday-Friday (a total of 5 days). Participants will then return for the exit interview on the following Monday.
 
 ### Five Day Annotation
 
-The participant will then complete the five-days of search activity and annotation, as instructed above.
+The participant will then complete the five-days of search activity and annotation, as instructed above. The researcher will ask them to conduct this - at minimum - for work-related search activity during the work week.
 
 ### Exit Interview
 
 This interview is also conducted remotely through the video conferencing software.
 
-Before the exit interview, the researcher must identify user search activity for which to conduct the exit interview.  Preferably, this identification will be conducted over the weekend.  The researcher will identify the following activity for the interview:
+Before the exit interview, the researcher must identify user search activity for which to conduct the exit interview.  Preferably, this identification will be conducted over the weekend prior to the interview.  The researcher will identify the following activity for the interview:
 * Any tasks with search activity.
-* Any tasks that have been added.
+* Any tasks that have been added by the participant during the five day annotation phase.
 * Any sessions with peculiar session activity (e.g. no search segments, odd intentions, failed intentions, sessions without activity, 'Other' intentions).
 
 Identification of this activity will be conducted through `userDataEntry.php`.
@@ -101,7 +102,7 @@ Identification of this activity will be conducted through `userDataEntry.php`.
 Per-task and per-session interviews are conducted through `taskAndSessionExitInterview.php`.  The interview is conducted in the following order:
 * Tool interview (`userDataEntry.php`) - The researcher asks the participant general questions about the usability of the tool and enters the provided answers to the database.
 * Task interviews (`taskAndSessionExitInterview.php`) - The researcher chooses the selected tasks (as per above) and asks the questions in the task interview ('Conduct Task Interview' button).  The researcher must also share the task information ('Copy Task URL to Clipboard' button) with the participant so they may review the task activity and provide more accurate answers.
-* Session interviews (`taskAndSessionExitInterview.php`) - The researcher chooses the selected sessions (as per above) and asks questions in the session itnerview ('Conduct Session Interview' button).  The researcher must also share the session information ('Copy Session URL to Clipboard' button) with the participant so they may review the session activity and provide more accurate answers. 
+* Session interviews (`taskAndSessionExitInterview.php`) - The researcher chooses the selected sessions (as per above) and asks questions in the session interview ('Conduct Session Interview' button).  The researcher must also share the session information ('Copy Session URL to Clipboard' button) with the participant so they may review the session activity and provide more accurate answers. 
 
 This concludes the exit interview and concludes the entirety of the study.  The researcher must then organize prompt payment to the participant.
 
@@ -118,7 +119,7 @@ The server code is organized into several folders.  Below is a brief description
   * `old_image` - Images (unused in this study).
   * `services` - Code used to interact with the database and push/pull data.
   * `study_styles` - More external library code imported throughout the study.
-  * `webPages` - a folder used to store the HTML and JSON for web pages visited and search queries issued by users during the study.
+  * `webPages` - A folder used to store the HTML and JSON for web pages visited and search queries issued by users during the study.
   * `./*.php` - General frontend functions.  Some of these are the pages a user accesses to annotate their daily activity.  Some of these are administrator web pages used to view users' progress through the study and to annotate user tasks.
 
 ## Extension Code Structure
