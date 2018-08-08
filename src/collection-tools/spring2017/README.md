@@ -27,6 +27,7 @@ At least two machines are required to conduct this study.  There are no other re
 * Researcher Machine
 	* A web browser (for managing the participant's progress)
 	* Video conferencing tools (at least Skype, Zoom, and Google Hangouts)
+	* Audio recording software, to record the interview audio
 
 # Study Design Outline
 
@@ -34,32 +35,69 @@ At least two machines are required to conduct this study.  There are no other re
 
 A user's participation in the study begins with registration at `signup_intro.php`. Then, participants provide their consent. Then, participants register for an entry interview date on a Friday, as well as an exit interview required to take place on a Monday 10 days after the entry interview.  They receive a confirmation e-mail regarding the time of their study.
 
+The participant also provides the preferred medium for interviews (e.g. Skype) as well as their username for said interview medium (e.g. Skype username).
+
 ## Conducting The Study
 
 The study takes place entirely removely in several steps.  These steps are as follows:
 
-### Hello
+### Entry Interview
 
-When participants arrive to the site of the study, the study facilitator must set `arrived` in the `users` table to 1 to indicate that the participant has arrived and will conduct the study. This is done through `editUsers.php`. The participant completes handwritten consent forms. The participant then signs into the study through `index.php`. The participant then conducts the study by proceeding through the following stages (located in the `instruments` folder):
+At the time of the entry interview, the research facilitator contacts the participant for the remote interview.
 
-* Welcome (`welcome.php`) - Welcomes the participant to the study and presents an overview of the study.
-* Background Questionnaire (`pretask_q.php`) - The participant completes a basic demographic questionnaire regarding things such as gender, age, search expertise, and the participant's first language.
-* System Tutorial (`system_tutorial.php`) - The participant views a tutorial on how to use the Firefox extension toolbar and sidebar to complete the proceeding search task.  The participant then confirms that (s)he viewed the video.
-* Pre-Search Questionnaire (`presearch_q.php`) - The participant is shown the task description and answers questions regarding the task (e.g. their familiarity with the task/topic). **THE USER MUST NOT WORK ON THE TASK DURING THIS STAGE! AT THIS TIME, THE RESEARCHER MUST ALSO CALIBRATE AND BEGIN RECORDING OF THE GAZEPOINT EYE TRACKER.**
-* Main Task (`maintask.php`) - The participant is shown the task prompt. **NOW THE USER MAY WORK ON THE TASK.**  The Firefox extension should now display a timer which starts at 20 minutes.  The extensionsidebar  will also show the participant's bookmarks, pages, and queries.  The user may end early by clicking a button in the sidebar.
-	* NOTE: During this time, the researcher will use Morae on a second machine to monitor the searcher's activity.  The researcher will use the Markers in Morae to record: the start of query segments, bookmark actions, unsave actions.
-* Post-Search Warning (`maintask_postwarning.php`) - This is a warning given to participants. This warning informs participants to not click anything.  At this time, the researcher must save the Morae recording, which will be saved and stored on the participant's machine. 
-* **AT THIS TIME, PLEASE SAVE ANY RECORDINGS FROM MORAE - CSV AND VIDEO -  ONTO A USB AND TRANSFER THEM TO THE RESEARCHER MACHINE. EDIT ANY INCORRECT MORAE MARKERS. UPLOAD ALL FILES `editUser.php`. THE RESEARCHER MUST ALSO STOP RECORDING FROM THE GAZEPOINT EYE TRACKER.**  .
-* Post-Search Questionnaire (`postsearch_q.php`) - While transferring, editing, and uploading files as in the previous step, show users this stage.  They will complete a post-task questionnaire regarding the previous task (e.g. difficulty).
-* Intention Tutorial (`intent_tutorial.php`) - While transferring, show users this stage.  This is a tutorial video on how to annotate the intentions of query segments and to mark the usefulness of bookmarks, their reasons for reformulation, and their reasons for unsaving pages.
-* Intention Transition (`transition_intent.php`) - Users will stop at this stage while waiting for the researcher to finish upload and transfer.  When the researcher is finished. Please confirm that the participant understood the previous instructions before allowing them to proceed to the next step.
-* Intention Annotation (`intent.php`) - The main intention interface.  Participants will annotate the intentions of query segments, the usefulness of bookmarks, their reasons for reformulation, and their reasons for unsaving.  Researchers may monitor the participant's progress remotely through `intentVisualization.php`.
-* Main Task Transition (`transition_maintask.php`) - Users will stop at this page after completing the intention annotation. The researcher must allow them to continue to the next task through `editUser.php`.
-* **Repeat System Tutorial to Intention Annotation** - These stages are repeated for the second task.
-* Finish Session (`finish_session.php`) - The user is told that they have completed the study.  At this point, the researcher should compensate the participant with appropriate payment.  The user is also automatically logged out of the system.
-* Exit System (`index.php`) - (A necessary stage put at the end of the stages table.)
+The user will proceed with the entry interview, accessible through `userDataEntry.php`.  The facilitator begins with the exit interview (`demographicSurvey.php`). The facilitator then asks the participant to provide as many work tasks as possible and to answer questions about each task.  These questions are given in `tasksSurvey.php`.
 
-**NOTE**: It is encouraged that study facilitators clear cookies and history from the browser on which the user conducted the study, so that future participants will not receive previous participants' search suggestions or page suggestions.
+When the user has provided all of their tasks or cannot think of any more tasks to add, the user the proceeds with a tutorial.  The tutorial should be a screenshared walkthrough of the tool.  The researcher must show the following:
+
+* Login/logout - How to log in/out of the extension.  The researcher must emphasize that a participant's log activity is recorded if and only if they are logged in.
+* The tutorial page - This page is accessible through a button in the extension and leads to `getTutorial.php`.  This is a detailed reference manual.
+* Step 1: Mark Private Items (`instruments/getHome.php`) - Here, the user deletes any items in their log they do not wish to share.  They have the ability to do the following:
+	* Search for activity with a search function.
+	* Select and send multiple items to a trash bin.
+	* Undo deletions from the trash bin.
+	* Permanently delete items in the trash bin.
+	* **TO TRULY DELETE AN ITEM SO THAT IT IS NOT VISIBLE SHARED WITH THE RESEARCHERS, THE PARTICIPANT MUST PERMANENTLY DELETE ITEMS IN THE TRASH BIN**
+* Step 2: Mark Sessions (`markSessions.php`) - Here, the user marks the beginning and end of search segments.  Users must be shown the following:
+	* The definition of a session (see the 'Help' section of the interface).
+	* **The importance of identifying sessions properly.** - Later, users will be asked to identify the tasks of sessiosn and search segments within sessions, so proper session identification is crucial.
+	* How to mark the beginning and end of (potentially interleaved) sessions with Begin/End buttons.
+	* How to cancel a selection with the 'Cancel' button.
+	* How to finalize a selection with the 'Identify Sessions' button.
+* Step 3: Assign Tasks to Sessions (`markTasks.php`) - Here, the user assigns tasks to sessions.  The user must be shown the following:
+	* The tasks on the right hand side of the interface.  Initially, these tasks correspond to the tasks provided in the entry interview.
+	* How to add new tasks.
+	* How to assign tasks to the sessions.
+* Step 4: Mark Search Segments and Intentions (`markIntentions.php`) - Here, the user identifies search segments (if necessary) and the intentions of those search segments.  The researcher must show the user the following:
+	* The definition of a search segment (see the 'Help' section of the interface).
+	* How to identify a new search segment with 'Begin/End' buttons.
+	* How search segments through Google are automatically identified but may need correction.
+	* How to identify intentions: by clicking the 'Mark Intentions' button and select any combination of intentions in the right sidebar (incl. other).
+* Step 5: Mark Success and Usefulness (of Sessions) (`searchSessionQuestionnaire.php`) - Here, the user identifies the success and usefulness of each session, with respect to task completion.  The researcher must show the user the following:
+	* How to mark the success and usefulness of each individual search session.
+
+This completes the entry interview. Participants are then told that they will be asked to complete this annotation 1x/day, every day (if possible) on Monday-Friday (a total of 5 days). Participants will then return for the exit interview on the following Monday.
+
+### Five Day Annotation
+
+The participant will then complete the five-days of search activity and annotation, as instructed above.
+
+### Exit Interview
+
+This interview is also conducted remotely through the video conferencing software.
+
+Before the exit interview, the researcher must identify user search activity for which to conduct the exit interview.  Preferably, this identification will be conducted over the weekend.  The researcher will identify the following activity for the interview:
+* Any tasks with search activity.
+* Any tasks that have been added.
+* Any sessions with peculiar session activity (e.g. no search segments, odd intentions, failed intentions, sessions without activity, 'Other' intentions).
+
+Identification of this activity will be conducted through `userDataEntry.php`.
+
+Per-task and per-session interviews are conducted through `taskAndSessionExitInterview.php`.  The interview is conducted in the following order:
+* Tool interview (`userDataEntry.php`) - The researcher asks the participant general questions about the usability of the tool and enters the provided answers to the database.
+* Task interviews (`taskAndSessionExitInterview.php`) - The researcher chooses the selected tasks (as per above) and asks the questions in the task interview ('Conduct Task Interview' button).  The researcher must also share the task information ('Copy Task URL to Clipboard' button) with the participant so they may review the task activity and provide more accurate answers.
+* Session interviews (`taskAndSessionExitInterview.php`) - The researcher chooses the selected sessions (as per above) and asks questions in the session itnerview ('Conduct Session Interview' button).  The researcher must also share the session information ('Copy Session URL to Clipboard' button) with the participant so they may review the session activity and provide more accurate answers. 
+
+This concludes the exit interview and concludes the entirety of the study.  The researcher must then organize prompt payment to the participant.
 
 # Code Structure
 
