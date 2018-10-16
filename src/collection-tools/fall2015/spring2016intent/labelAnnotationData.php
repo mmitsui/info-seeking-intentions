@@ -51,11 +51,12 @@
   $taskNum = $_GET['taskNum'];
   $anoType = $_GET['anoType'];
   $res = $cxn->commit("SELECT * FROM users WHERE participantID='$participantID'");
-  $userID = -1;
-  while($line = mysql_fetch_array($res,MYSQL_ASSOC)){
-    $userID = $line['userID'];
-    break;
-  }
+  $userID = $_GET['userID'];
+//  $userID = -1;
+//  while($line = mysql_fetch_array($res,MYSQL_ASSOC)){
+//    $userID = $line['userID'];
+//    break;
+//  }
 
   $filename = "user$userID"."task$taskNum".".mp4";
 
@@ -105,6 +106,8 @@
     $query = "UPDATE video_unsave_history SET bookmarkID=$bookmarkID WHERE assignmentID=$assignmentID";
   }
 
+
+
   if(isset($_POST['intention']) or isset($_POST['reformulation']) or isset($_POST['save']) or isset($_POST['unsave'])){
     $cxn->commit($query);
   }
@@ -124,8 +127,10 @@
     $row = mysql_fetch_array($results,MYSQL_ASSOC);
     $time_start_str = $row['time_start'];
     $query = "UPDATE video_reformulation_history SET queryID1=$queryID,reformulationType1=$reformulationType WHERE userID=$userID AND questionID=$questionID AND time_start_1='$time_start_str'";
+//    echo "1".$query;
     $cxn->commit($query);
     $query = "UPDATE video_reformulation_history SET queryID2=$queryID,reformulationType2=$reformulationType WHERE userID=$userID AND questionID=$questionID AND time_start_2='$time_start_str'";
+//    echo "2".$query;
     $cxn->commit($query);
 
   }else if(isset($_POST['reformulation'])){
@@ -145,12 +150,16 @@
     $time_start_str_1 = $row['time_start_1'];
     $time_start_str_2 = $row['time_start_2'];
     $query = "UPDATE video_intent_assignments SET queryID=$queryID1,reformulationType=$reformulationType1 WHERE userID=$userID AND questionID=$questionID AND time_start='$time_start_str_1'";
+//    echo "3".$query;
     $cxn->commit($query);
     $query = "UPDATE video_intent_assignments SET queryID=$queryID2,reformulationType=$reformulationType2 WHERE userID=$userID AND questionID=$questionID AND time_start='$time_start_str_2'";
+//    echo "4".$query;
     $cxn->commit($query);
 
 
   }
+
+
 
 
 
@@ -492,7 +501,7 @@
         $assignmentID=$line['assignmentID'];
         $hiddeninputassignmentID="<input type=\"hidden\" name=\"assignmentID\" value=$assignmentID>";
 
-        $formprefix="<form action='labelAnnotationData.php?participantID=$participantID&questionID=$questionID&taskNum=$taskNum&anoType=$anoType' method='post' enctype='multipart/form-data'>";
+        $formprefix="<form action='labelAnnotationData.php?participantID=$participantID&questionID=$questionID&taskNum=$taskNum&anoType=$anoType&userID=$userID' method='post' enctype='multipart/form-data'>";
         $formsuffix="</form>";
         $buttonscript = "<button id='playpausebutton' class='btn btn-success' onclick=\"playvideo('".$line['time_start']."');return false;\"><i id='playpauseicon' class='fa fa-repeat'></i> Play</button>";
 

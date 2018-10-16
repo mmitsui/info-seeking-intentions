@@ -111,6 +111,11 @@ if($num_recruits<=$recruit_limit && !allSlotsTaken() && !$closed && !$section_cl
 					required: true,
 					email: true
 				},
+				age_1:{
+				required:true,
+				number:true
+				},
+				
         reEmail_1: {
 					required: true,
 					email: true,
@@ -135,6 +140,11 @@ if($num_recruits<=$recruit_limit && !allSlotsTaken() && !$closed && !$section_cl
     					required: \"<span style='color:red'>Please enter your e-mail address.</span>\",
     					email: \"<span style='color:red'>Please enter a valid e-mail address.</span>\"
     				},
+    				
+    				age_1: {
+							required:\" < span style = 'color:red' > Please enter your age .</span > \",
+							number:\" < span style = 'color:red' > Please enter a number .</span > \"
+						},
             reEmail_1: {
     					required: \"<span style='color:red'>Please enter your e-mail address.</span>\",
     					email: \"<span style='color:red'>Please enter a valid e-mail address.</span>\",

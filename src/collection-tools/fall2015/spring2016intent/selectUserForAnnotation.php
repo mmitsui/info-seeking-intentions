@@ -16,10 +16,10 @@ var is_ff;
 var alertColor = "Red";
 var okColor = "White";
 
-function goToAnnotation(participantID,topicAreaID,taskNum){
+function goToAnnotation(participantID,topicAreaID,taskNum,userID){
 	var anoVal = $("select[participantID="+participantID.toString()+"][topicAreaID="+topicAreaID.toString()+"]").val();
 
-	window.location.href = "http://www.coagmento.org/spring2016intent/labelAnnotationData.php?participantID="+participantID.toString()+"&questionID="+topicAreaID.toString()+"&taskNum="+taskNum.toString()+"&anoType="+anoVal;
+	window.location.href = "http://www.coagmento.org/spring2016intent/labelAnnotationData.php?participantID="+participantID.toString()+"&questionID="+topicAreaID.toString()+"&taskNum="+taskNum.toString()+"&anoType="+anoVal+"&userID="+userID;
 
 }
 
@@ -124,7 +124,7 @@ You don't have Javascript enabled.  You must enable it in your browser to procee
 								$select .="</select>";
 
 								$perc = round(floatval($total_null)/floatval($total)*100,2);
-								echo "<td >$participantID</td><td>$topicAreaID</td><td>$perc%</td><td>$select</td><td><button onclick=\"goToAnnotation('$participantID',$topicAreaID,$taskNum)\">Submit</button></td>";
+								echo "<td >$participantID</td><td>$topicAreaID</td><td>$perc%</td><td>$select</td><td><button onclick=\"goToAnnotation('$participantID',$topicAreaID,$taskNum,'$userID')\">Submit</button></td>";
 								echo "</tr>";
 
 							}

@@ -19,7 +19,7 @@
 
 
 		//BEGIN TEMP: restart test_1
-		$a = array('test_1','test_2','test_3','test_10','test_t','test_c');
+		$a = array('test_1','test_2','test_3','test_10','test_t','test_c','test1');
         if(in_array($userName,$a)){
             foreach($a as $t){
                 $q = "SELECT userID, projectID from users WHERE userName='$userName'";

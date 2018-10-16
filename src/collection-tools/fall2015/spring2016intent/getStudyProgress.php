@@ -585,7 +585,7 @@ You don't have Javascript enabled.  You must enable it in your browser to procee
 	<a href="#task_progress">Task Progress</a>
 	<a href="#study_retention">Study Retention</a>
 	<a href="#eye_tracking_progress">Eye Tracking Progress</a>
-	<a href="#bad_eye_tracking_notes">Bad Eye Tracking Notes</a>
+	<a href="#bad_eye_tracking_notes">Unusable Eye Tracking Notes</a>
 	<a href="#other_eye_tracking_notes">Other Eye Tracking Notes</a>
 	<a href="#intention_annotation_progress">Intention Annotation Progress</a>
 	<a href="#bad_intention_annotation_notes">Bad Intention Annotation Notes</a>
@@ -698,21 +698,22 @@ You don't have Javascript enabled.  You must enable it in your browser to procee
 
 		<center>
 			<div class="panel panel-default" id="bad_eye_tracking_notes" style="width:60%">
-			<div class="panel-heading"><strong>Bad Eye Tracking Notes</strong></div>
+			<div class="panel-heading"><strong>Unusable Eye Tracking Notes</strong></div>
 			<div class="panel-body">
 				<div class="row">
 					<div class="col-md-12">
 						<table id='bad_eyetracking_reasons_table'  class="table  table-striped table-bordered">
-							<thead><tr><th>Subject ID</th><th>Session #</th><th>Task</th><th>Topic</th><th data-sortable="false">Reason</th></tr></thead>
+							<thead><tr><th>Subject ID</th><th>User ID</th><th>Session #</th><th>Task</th><th>Topic</th><th data-sortable="false">Reason</th></tr></thead>
 							<tbody>
 							<?php
 							foreach($eye_tracking_bad_reasons as $row){
 								$participantID = $row['participantID'];
 								$session = $row['session'];
+								$userID = $row['userID'];
 								$task = $row['task'];
 								$topic = $row['topic'];
 								$reason = $row['reason'];
-								echo "<tr><td>$participantID</td><td>$session</td><td>$task</td><td>$topic</td><td>$reason</td></tr>";
+								echo "<tr><td>$participantID</td><td>$userID</td><td>$session</td><td>$task</td><td>$topic</td><td>$reason</td></tr>";
 							}
 							?>
 							</tbody>
@@ -734,16 +735,17 @@ You don't have Javascript enabled.  You must enable it in your browser to procee
 					<div class="row">
 						<div class="col-md-12">
 							<table id='other_eyetracking_reasons_table'  class="table  table-striped table-bordered">
-								<thead><tr><th>Subject ID</th><th>Session #</th><th>Task</th><th>Topic</th><th data-sortable="false">Reason</th></tr></thead>
+								<thead><tr><th>Subject ID</th><th>User ID</th><th>Session #</th><th>Task</th><th>Topic</th><th data-sortable="false">Reason</th></tr></thead>
                                 <tbody>
                                 <?php
                                 foreach($eye_tracking_other_reasons as $row){
                                     $participantID = $row['participantID'];
+                                    $userID = $row['userID'];
                                     $session = $row['session'];
                                     $task = $row['task'];
                                     $topic = $row['topic'];
                                     $reason = $row['reason'];
-                                    echo "<tr><td>$participantID</td><td>$session</td><td>$task</td><td>$topic</td><td>$reason</td></tr>";
+                                    echo "<tr><td>$participantID</td><td>$userID</td><td>$session</td><td>$task</td><td>$topic</td><td>$reason</td></tr>";
                                 }
                                 ?>
                                 </tbody>
@@ -802,7 +804,7 @@ You don't have Javascript enabled.  You must enable it in your browser to procee
 					<div class="row">
 						<div class="col-md-12">
 							<table id='bad_intention_reasons_table' class="table  table-striped table-bordered">
-								<thead><tr><th>Subject ID</th><th>Session #</th><th>Task</th><th>Topic</th><th data-sortable="false">Reason</th></tr></thead>
+								<thead><tr><th>Subject ID</th><th>User ID</th><th>Session #</th><th>Task</th><th>Topic</th><th data-sortable="false">Reason</th></tr></thead>
 								<tbody>
 								<?php
 								foreach($intention_bad_reasons as $row){
@@ -812,7 +814,7 @@ You don't have Javascript enabled.  You must enable it in your browser to procee
 									$task = $row['task'];
 									$topic = $row['topic'];
 									$reason = $row['reason'];
-									echo "<tr><td>$participantID</td><td>$session</td><td>$task</td><td>$topic</td><td>$reason</td></tr>";
+									echo "<tr><td>$participantID</td><td>$userID</td><td>$session</td><td>$task</td><td>$topic</td><td>$reason</td></tr>";
 								}
 								?>
 								</tbody>
