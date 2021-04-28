@@ -116,4 +116,4 @@ Several papers have been written based on the studies conducted with this softwa
 
 # Contact Us
 
-For any questions, please Soumik Mandal soumik.mandal@rutgers.edu at or Matthew Mitsui at mmitsui@scarletmail.rutgers.edu.
+For any questions, please contact Soumik Mandal at soumik.mandal@rutgers.edu or Matthew Mitsui at mmitsui@scarletmail.rutgers.edu.
